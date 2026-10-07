@@ -73,6 +73,25 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .kalan small{display:block;font-size:13px;opacity:.8}
 .devir{display:block;font-size:12px;opacity:.85;margin-top:3px}
 .kalan strong{display:block;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.1;overflow-wrap:anywhere}
+.kasa{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:4px}
+.kasa > div{border-radius:12px;padding:8px 10px 7px;min-width:0}
+.kasa .giren{background:color-mix(in srgb,var(--yesil) 24%,rgba(255,255,255,.06))}
+.kasa .cikan{background:color-mix(in srgb,var(--turuncu) 24%,rgba(255,255,255,.06))}
+.kasa-satir{display:flex;justify-content:space-between;gap:6px;font-size:12px;line-height:1.6}
+.kasa-satir span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;opacity:.92}
+.kasa-satir em{font-style:normal;font-weight:600;white-space:nowrap}
+.kasa-satir.sifir{opacity:.55}
+@media (max-width:374px){.kasa{gap:6px}.kasa > div{padding:7px 8px 6px}.kasa-satir{font-size:11px;gap:4px}.kasa-top{font-size:12px}}
+.kasa-top{display:flex;justify-content:space-between;gap:6px;border-top:1px solid rgba(255,255,255,.3);margin-top:4px;padding-top:4px;font-size:13px;font-weight:800}
+.elde{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:10px}
+.elde small{font-size:13px;opacity:.85}
+.elde strong{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.1;white-space:nowrap}
+.tahmin{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;border-top:1px solid rgba(255,255,255,.22);margin-top:8px;padding-top:7px}
+.tahmin div{min-width:0}
+.tahmin small{display:block;font-size:11px;opacity:.8;white-space:nowrap}
+.tahmin b{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tahmin div:last-child{text-align:right}
+.tahmin div:nth-child(2){text-align:center}
 .kalan-satir{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .kalan-satir strong{font-size:34px}
 .devir{display:block;text-align:right;margin-left:auto;font-size:11.5px;opacity:.85;line-height:1.35;white-space:nowrap;padding-bottom:4px}
@@ -197,6 +216,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .btn.ana{background:var(--vurgu);color:#fff}
 .btn.ikinci{background:var(--yuzey2);border:1px solid var(--cizgi);color:var(--murekkep)}
 .btn.metin{min-height:44px;line-height:44px;color:var(--soluk);font-weight:600}
+.btn:disabled{opacity:.55}
 .btn.tehlike{color:var(--kirmizi)}
 
 /* ---------- Sabitler ---------- */
@@ -320,7 +340,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 <div class="bildirim" id="bildirim" hidden></div>
 
 <!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
-<script src="ortak.js?v=3.6"></script>
+<script src="ortak.js?v=3.7"></script>
 
 <script>
 /* ---------- Sabitler ---------- */
@@ -341,8 +361,8 @@ const PALET = {
                               koyu: { vurgu:'#8B4580', ust1:'#6E3665', ust2:'#50274A', 'vurgu-acik':'#3A2135', zemin:'#170F16', yuzey:'#22161F', yuzey2:'#2A1C27', cizgi:'#3B2936', soluk:'#AF97A9', murekkep:'#F2E6EF' } }
 };
 const DURUM_RENK = {
-  acik: { yesil:'#1E8449', 'yesil-acik':'#DCF1E3', kirmizi:'#C62828', 'kirmizi-acik':'#FBE1E1', gri:'#4A5258', 'gri-acik':'#E3E7E9', sari:'#8A5D05', 'sari-acik':'#F6EACB' },
-  koyu: { yesil:'#5ACB86', 'yesil-acik':'#173827', kirmizi:'#F07B7B', 'kirmizi-acik':'#431D1F', gri:'#B3BDC2', 'gri-acik':'#2A3539', sari:'#E2B44F', 'sari-acik':'#3A2F14' }
+  acik: { turuncu:'#F59E0B', yesil:'#1E8449', 'yesil-acik':'#DCF1E3', kirmizi:'#C62828', 'kirmizi-acik':'#FBE1E1', gri:'#4A5258', 'gri-acik':'#E3E7E9', sari:'#8A5D05', 'sari-acik':'#F6EACB' },
+  koyu: { turuncu:'#F5A524', yesil:'#5ACB86', 'yesil-acik':'#173827', kirmizi:'#F07B7B', 'kirmizi-acik':'#431D1F', gri:'#B3BDC2', 'gri-acik':'#2A3539', sari:'#E2B44F', 'sari-acik':'#3A2F14' }
 };
 const KOYU_SORGU = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const TIK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
@@ -433,7 +453,7 @@ const gidenKaydet = () => yerelYaz('evb-giden', GIDEN);
 function gonder() {
   if (G.gonderiliyor || !GIDEN.length || !BAG) { durumGoster(); return; }
   G.gonderiliyor = true; G.baslangic = Date.now();
-  setTimeout(durumGoster, 3100);
+  setTimeout(durumGoster, 3100); durumCiz();
   const paket = GIDEN.slice(0, 25), kimlikler = paket.map(x => x.k);
   sunucu('api_satirKaydet', { toplu: paket.map(x => ({ ad: x.ad, args: x.args })) }).then(p => {
     GIDEN = GIDEN.filter(x => kimlikler.indexOf(x.k) < 0); gidenKaydet();
@@ -442,12 +462,12 @@ function gonder() {
     if (GIDEN.length) { gonder(); return; }
     veriAyarla(p); yerelYaz('evb-veri', p);
     if (!D.cek || D.cek.tip !== 'kalem') ciz();
-    durumGoster(sorunluydu ? 'tamam' : '');
+    durumGoster(sorunluydu ? 'tamam' : ''); durumCiz();
   }).catch(e => {
     G.gonderiliyor = false; G.deneme++; G.sonHata = e.message;
     G.durum = e.tur === 'internet' || navigator.onLine === false ? 'internet' : (G.deneme >= 4 ? 'basarisiz' : 'baglanti');
-    durumGoster();
-    if (!G.mesaj) { G.mesaj = true; bildir(durumMesaji()); }
+    durumGoster(); durumCiz();
+    if (!G.mesaj && !(D.cek && D.cek.tip === 'durum')) { G.mesaj = true; bildir(durumMesaji()); }
     clearTimeout(G.zaman);
     G.zaman = setTimeout(gonder, [5, 15, 30, 60, 120][Math.min(G.deneme - 1, 4)] * 1000);
   });
@@ -470,17 +490,29 @@ function durumGoster(ozel) {
 }
 const senkGoster = () => durumGoster();
 function durumAc() {
-  if (!G.durum && !GIDEN.length) return;
+  if (!G.durum && !GIDEN.length && !G.gonderiliyor) return;
   D.cek = { tip: 'durum', iptal: false };
+  durumCiz();
+}
+/** Pencere açıkken gönderim durumu değişirse içerik kendiliğinden güncellenir */
+function durumCiz() {
+  if (!D.cek || D.cek.tip !== 'durum') return;
+  if (!GIDEN.length && !G.durum && !G.gonderiliyor) {
+    cekmeceAc(`<h3>Bekleyen kayıtlar</h3><p class="aciklama" style="color:var(--yesil);font-weight:700;font-size:15px">✓ Her şey kaydedildi</p>`);
+    clearTimeout(durumCiz.t);
+    durumCiz.t = setTimeout(() => { if (D.cek && D.cek.tip === 'durum') cekmeceKapat(); }, 1500);
+    return;
+  }
+  const mesaj = G.gonderiliyor ? 'Kayıtlar gönderiliyor…' : G.durum ? durumMesaji() : 'Kayıtlar gönderilmeyi bekliyor.';
   cekmeceAc(`<h3>Bekleyen kayıtlar</h3>
-    <p class="aciklama">${esc(G.durum ? durumMesaji() : 'Kayıtlar gönderiliyor.')}</p>
+    <p class="aciklama">${esc(mesaj)}</p>
     <div class="bilgi-satirlari">
       <div><span>Bekleyen</span><b>${GIDEN.length} kayıt</b></div>
-      ${G.sonHata ? `<div><span>Son hata</span><b style="white-space:normal">${esc(G.sonHata)}</b></div>` : ''}
+      ${G.sonHata && G.durum ? `<div><span>Son hata</span><b style="white-space:normal">${esc(G.sonHata)}</b></div>` : ''}
     </div>
-    <button class="btn ana" data-act="simdiGonder">Şimdi tekrar dene</button>
-    <button class="btn metin tehlike" data-act="gidenIptal">Bekleyenleri iptal et</button>
-    <p class="ipucu" style="text-align:center">İptal edersen bekleyen değişiklikler silinir ve ekran tablodaki hâle döner.</p>`);
+    <button class="btn ana" data-act="simdiGonder" ${G.gonderiliyor ? 'disabled' : ''}>${G.gonderiliyor ? 'Gönderiliyor…' : 'Şimdi tekrar dene'}</button>
+    ${GIDEN.length ? `<button class="btn metin tehlike" data-act="gidenIptal">${D.cek.iptal ? 'Emin misin? Tekrar dokun' : 'Bekleyenleri iptal et'}</button>
+    <p class="ipucu" style="text-align:center">İptal edersen henüz gönderilmemiş değişiklikler silinir. O an yolda olan bir kayıt durdurulamaz.</p>` : ''}`);
 }
 
 /* ---------- Kilit (geçmiş aylar) ---------- */
@@ -529,6 +561,7 @@ function veriYukle() {
 /** Değişikliği önce telefonda uygular (anında görünür), sonra giden kutusuna ekleyip tabloya gönderir */
 function islem(yerel, fn, ...args) {
   try { yerel(); } catch (e) { hata(e); return false; }
+  D.sonIslem = Date.now();
   yerelYaz('evb-veri', D.raw); ciz();
   GIDEN.push({ k: yeniId_('g'), ad: fn.replace(/^api_/, ''), args: JSON.parse(JSON.stringify(args)) });
   gidenKaydet();
@@ -587,7 +620,6 @@ function ayCiz() {
       <button class="ok" data-act="sonraki" aria-label="Sonraki ay">›</button>
     </div>
     ${kilitCipi(v.ay)}
-    <div class="kalan"><small>Ay sonunda kalan</small><div class="kalan-satir"><strong>${para(o.kalan)}</strong>${devirHTML(v.ay, v)}</div></div>
     ${akisHTML(v)}`;
 
   const hicKalemYok = !D.raw.kalemler.some(k => bool_(k.aktif));
@@ -613,56 +645,67 @@ function ayCiz() {
   }
   if (gelir.length || !hicKalemYok) h += bolum('Gelirler', gelir, toplam(gelir), 'Bu ay gelir yok.');
   if (duzenli.length || !hicKalemYok) h += bolum('Giderler', duzenli, toplam(duzenli), 'Bu ay gider yok.');
-  h += bolum('Diğer harcamalar', diger, toplam(diger), 'Market, benzin, kıyafet gibi harcamaları + ile ekle.');
+  h += bolum('Ek harcamalar', diger, toplam(diger), 'Market, benzin, kıyafet gibi harcamaları + ile ekle.');
   if (borclar.length) h += bolum('Borç ve alacak', borclar, isaretli(borclar.reduce((t, s) => t + (s.tur === 'gelir' ? s.tutar : -s.tutar), 0)), '');
   $('icerik').innerHTML = h;
 }
 /** Önceki ayların kalanlarının toplamı. Sadece bilgi: kayıt oluşturmaz, gelir sayılmaz. */
-/** Ayın para akışı: Giren (gelir, alınan borç, tahsilat) ve Çıkan (gider, borç ödemesi, verilen borç).
- *  Büyük rakam gerçekleşen (alınan/ödenen), yanındaki küçük rakam ay sonunda olacak toplam. */
+/** Ayın para akışı (planlanan ve gerçekleşen). Her alan [gerçekleşen, planlanan] */
 const yalin = n => (D.ayar.kurus === 'evet' ? NF2 : NF0).format(Math.round((n || 0) * 100) / 100);
 const ikiDeger = (g, p) => Math.abs(g - p) < 0.005 ? para(p) : `${para(g)} <small>/ ${yalin(p)}</small>`;
 function akisOzeti(v) {
-  const o = v.ozet;
-  const t = { gelir: [o.gelirAlinan, o.gelir], gider: [o.giderOdenen, o.gider], alinan: [0, 0], tahsilat: [0, 0], odeme: [0, 0], verilen: [0, 0] };
+  const t = { gelir: [0, 0], gider: [0, 0], ek: [0, 0], alinan: [0, 0], tahsilat: [0, 0], odeme: [0, 0], verilen: [0, 0] };
   v.satirlar.forEach(s => {
-    if (!s.tip || s.kart) return;
+    if (s.kart) return;
     const giris = s.tur === 'gelir';
-    const a = s.tip === 'borc' ? (giris ? 'alinan' : 'odeme') : (giris ? 'tahsilat' : 'verilen');
+    const a = s.tip ? (s.tip === 'borc' ? (giris ? 'alinan' : 'odeme') : (giris ? 'tahsilat' : 'verilen'))
+      : giris ? 'gelir' : (s.kalemId ? 'gider' : 'ek');
     t[a][1] += s.tutar; if (s.odendi) t[a][0] += s.tutar;
   });
   const top = ks => [0, 1].map(i => ks.reduce((x, k) => x + t[k][i], 0));
-  t.giren = top(['gelir', 'alinan', 'tahsilat']); t.cikan = top(['gider', 'odeme', 'verilen']);
+  t.giren = top(['gelir', 'alinan', 'tahsilat']); t.cikan = top(['gider', 'odeme', 'verilen', 'ek']);
   return t;
 }
+/** Önceki ayların gerçekleşen (tiklenmiş) giriş-çıkış farkı: bu aya devreden para */
+function devirHesapla(ay) {
+  let ilk = ay;
+  D.raw.hareketler.forEach(h => { if (h.ay && h.ay < ilk) ilk = h.ay; });
+  D.raw.kalemler.forEach(k => { if (bool_(k.aktif) && k.baslangic && k.baslangic < ilk) ilk = k.baslangic; });
+  let devir = 0;
+  for (let a = ilk, n = 0; a < ay && n < 240; a = ayEkle_(a, 1), n++) { const t = akisOzeti(ayHesapla_(a, D.raw)); devir += t.giren[0] - t.cikan[0]; }
+  return devir;
+}
 function akisHTML(v) {
-  const o = v.ozet, t = akisOzeti(v);
-  const satir = (ad, d) => `<div class="akis-satir ${d[1] ? '' : 'sifir'}"><span>${ad}</span><em>${para(d[0])}</em></div>`;
-  const durum = (d, bekliyor, hepsi) => {
-    const kalan = d[1] - d[0], y = d[1] > 0 ? Math.min(100, d[0] / d[1] * 100) : 0;
-    const yazi = d[1] <= 0 ? '' : kalan > 0.005 ? `${para(kalan)} ${bekliyor}` : hepsi;
-    return `<div class="akis-oran"><i><b style="width:${y}%"></b></i>${yazi}</div>`;
-  };
-  // Ayın durumunu tek cümleyle (planlanana göre)
+  const o = v.ozet, t = akisOzeti(v), devir = devirHesapla(v.ay);
+  const satir = (ad, n, isaret) => `<div class="kasa-satir ${n ? '' : 'sifir'}"><span>${ad}</span><em>${isaret && n ? isaretli(n) : para(n)}</em></div>`;
+  const girenTop = devir + t.giren[0], cikanTop = t.cikan[0];
+  const elde = girenTop - cikanTop;
+  const alinacak = t.giren[1] - t.giren[0], odenecek = t.cikan[1] - t.cikan[0];
+  const aySonu = elde + alinacak - odenecek;
+  // Ayın durumu (planlanana göre): gelir - gider, borçlar hariç
   const fark = o.gelir - o.gider, girisBorc = t.alinan[1] + t.tahsilat[1];
   let cumle = '';
-  if (fark > 0) cumle = `Gelirin giderini karşılıyor, ay sonunda ${para(fark)} artı.`;
+  if (fark > 0) cumle = `Bu ay artan ${para(fark)}: gelirin gideri karşılıyor.`;
   else if (fark < 0) {
     const kaynak = t.alinan[1] && t.tahsilat[1] ? 'borç ve tahsilatla' : t.alinan[1] ? 'borçla' : 'tahsilatla';
-    cumle = girisBorc >= -fark ? `Giderin gelirinden ${para(-fark)} fazla, farkı ${kaynak} karşıladın.`
-      : girisBorc > 0 ? `Giderin gelirinden ${para(-fark)} fazla, bir kısmını ${kaynak} karşıladın.`
-      : `Giderin gelirinden ${para(-fark)} fazla.`;
+    cumle = `Bu ay açık ${para(-fark)}: ` + (girisBorc >= -fark ? `farkı ${kaynak} karşıladın.` : girisBorc > 0 ? `bir kısmını ${kaynak} karşıladın.` : (devir > 0 ? 'önceki aylardan kalanla karşılanıyor.' : 'giderin gelirinden fazla.'));
   }
-  return `<div class="akis">
-      <div><div class="akis-bas"><span>Giren</span><b>${ikiDeger(t.giren[0], t.giren[1])}</b></div>
-        ${satir('Gelir', t.gelir)}${satir('Alınan borç', t.alinan)}${satir('Tahsilat', t.tahsilat)}
-        ${durum(t.giren, 'bekliyor', 'Hepsi alındı')}</div>
-      <div><div class="akis-bas"><span>Çıkan</span><b>${ikiDeger(t.cikan[0], t.cikan[1])}</b></div>
-        ${satir('Gider', t.gider)}${satir('Borç ödemesi', t.odeme)}${satir('Verilen borç', t.verilen)}
-        ${durum(t.cikan, 'ödenecek', 'Hepsi ödendi')}</div>
+  return `<div class="kasa">
+      <div class="giren">
+        ${satir('Önceki aydan', devir, true)}${satir('Bu ay gelen', t.gelir[0])}${satir('Alınan borç', t.alinan[0])}${satir('Tahsilat', t.tahsilat[0])}
+        <div class="kasa-top"><span>Toplam</span><span>${para(girenTop)}</span></div></div>
+      <div class="cikan">
+        ${satir('Giderler', t.gider[0])}${satir('Borç ödemesi', t.odeme[0])}${satir('Verilen borç', t.verilen[0])}${satir('Ek harcamalar', t.ek[0])}
+        <div class="kasa-top"><span>Toplam</span><span>${para(cikanTop)}</span></div></div>
     </div>
-    ${cumle ? `<p class="ozet-cumle">${cumle}</p>` : ''}
-    ${o.kart > 0 ? `<p class="ozet-cumle" style="opacity:.75">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}`;
+    <div class="elde"><small>Şu an elde</small><strong>${para(elde)}</strong></div>
+    <div class="tahmin">
+      <div><small>Alınacak</small><b>${alinacak > 0.005 ? '+' + para(alinacak) : para(0)}</b></div>
+      <div><small>Ödenecek</small><b>${odenecek > 0.005 ? '−' + para(odenecek) : para(0)}</b></div>
+      <div><small>Ay sonunda</small><b>${para(aySonu)}</b></div>
+    </div>
+    ${cumle ? `<p class="ozet-cumle" style="margin-top:8px">${cumle}</p>` : '<div style="height:8px"></div>'}
+    ${o.kart > 0 ? `<p class="ozet-cumle" style="opacity:.75;margin-top:-4px">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}`;
 }
 function devirHTML(ay, v) {
   const t = v ? akisOzeti(v) : null;
@@ -1265,6 +1308,28 @@ function qrCiz(kutu, metin) {
   document.head.appendChild(sc);
 }
 
+/* ---------- Diğer cihazlardaki değişiklikleri alma ----------
+   Uygulamaya dönünce hemen, açıkken 30 saniyede bir tabloya bakar.
+   Pencere açıkken, bekleyen kayıt varken ya da az önce işlem yapıldıysa bakmaz. Değişiklik yoksa hiçbir şey yapmaz. */
+const veriImzasi = p => JSON.stringify([p.kalemler, p.hareketler, p.deg, p.ayarlar && p.ayarlar.kategoriler]);
+function tazele() {
+  if (!BAG || !D.raw || D.cek || GIDEN.length || G.gonderiliyor || D.yukleniyor || tazele.suruyor) return;
+  tazele.suruyor = true;
+  sunucu('api_veri').then(p => {
+    tazele.suruyor = false;
+    if (D.cek || GIDEN.length || G.gonderiliyor) return;
+    const degisti = veriImzasi(p) !== veriImzasi(D.raw);
+    if (!degisti && p.bugun === D.raw.bugun) return;
+    veriAyarla(p); yerelYaz('evb-veri', p); ciz();
+    if (degisti) bildir('Diğer cihazdaki değişiklikler alındı');
+  }).catch(() => { tazele.suruyor = false; });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (GIDEN.length) gonder(); else tazele();
+});
+setInterval(() => { if (document.visibilityState === 'visible' && Date.now() - (D.sonIslem || 0) > 30000) tazele(); }, 30000);
+
 /* ---------- Telefonun geri hareketi ----------
    Pencere açıksa kapatır → başka sekmedeyse Aylık liste'ye döner → başka aydaysa bu aya döner → sonra uygulamadan çıkar */
 const anaDurumda = () => !D.cek && (!BAG || D.sekme === 'ay') && (!D.raw || D.ay === D.raw.buAy);
@@ -1434,9 +1499,9 @@ document.addEventListener('click', e => {
       break;
     }
     case 'durum': durumAc(); break;
-    case 'simdiGonder': cekmeceKapat(); G.deneme = 0; clearTimeout(G.zaman); gonder(); break;
+    case 'simdiGonder': G.deneme = 0; clearTimeout(G.zaman); gonder(); durumCiz(); break;
     case 'gidenIptal':
-      if (!D.cek.iptal) { D.cek.iptal = true; t.textContent = 'Emin misin? Tekrar dokun'; break; }
+      if (!D.cek.iptal) { D.cek.iptal = true; durumCiz(); break; }
       cekmeceKapat(); GIDEN = []; gidenKaydet(); G.durum = ''; G.deneme = 0; clearTimeout(G.zaman); durumGoster(); veriYukle();
       bildir('Bekleyen kayıtlar iptal edildi.'); break;
     case 'sKat': D.cek.kat = v; document.querySelectorAll('#sKatlar .cip').forEach(c => c.classList.toggle('on', c.dataset.v === v)); break;
@@ -1480,7 +1545,7 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   const kopya = BAG && yerelOku('evb-veri');
   if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
-  if (ORTAK_SURUM !== '3.6') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
+  if (ORTAK_SURUM !== '3.7') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
   if (GIDEN.length) gonder(); // önceki oturumdan kalan kayıtlar
   veriYukle().then(acilisKapat, acilisKapat);
 })();

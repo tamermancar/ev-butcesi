@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.6';
+var ORTAK_SURUM = '3.7';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -619,7 +619,7 @@ function yillikMatris_(veri, yil) {
   bolumu('duzenli').forEach(function (g) { ekle('gider', g.ad, g); });
   const diger = bolumu('diger');
   if (diger.length) {
-    satirlar.push({ tip: 'ara', ad: 'Diğer harcamalar' });
+    satirlar.push({ tip: 'ara', ad: 'Ek harcamalar' });
     diger.forEach(function (g) { ekle('gider', g.ad, g); });
   }
   toplamSatiri('toplamGider', 'Toplam gider', function (o) { return o.gider; });
