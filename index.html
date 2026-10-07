@@ -27,6 +27,26 @@
 /* ---------- Görünüm yoğunluğu ---------- */
 :root[data-gorunum=siki]{--yazi:14px;--pad:6px;--min:46px;--tik:26px}
 :root[data-gorunum=buyuk]{--pad:13px;--min:64px;--tik:34px}
+/* Sıkı görünüm pencerelerde de: boşluklar daralır, kutu içi yazı 16px kalır (telefon otomatik yakınlaştırmasın) */
+:root[data-gorunum=siki] .cekmece{padding-top:4px}
+:root[data-gorunum=siki] .cekmece-ust{height:22px}
+:root[data-gorunum=siki] .cekmece h3{font-size:17px}
+:root[data-gorunum=siki] .cekmece .aciklama{margin-bottom:10px}
+:root[data-gorunum=siki] .alan{margin-bottom:8px}
+:root[data-gorunum=siki] .alan > span{font-size:12px;margin-bottom:2px}
+:root[data-gorunum=siki] .alan input,:root[data-gorunum=siki] .alan select,:root[data-gorunum=siki] .giris-kutu{height:40px}
+:root[data-gorunum=siki] .btn{min-height:42px;line-height:42px;font-size:15px;margin-top:6px}
+:root[data-gorunum=siki] .btn.metin{min-height:38px;line-height:38px}
+:root[data-gorunum=siki] .seg{margin-bottom:10px}
+:root[data-gorunum=siki] .seg button{min-height:32px;font-size:13px}
+:root[data-gorunum=siki] .cipler{gap:5px;margin-bottom:10px}
+:root[data-gorunum=siki] .cip{padding:6px 11px;font-size:13px}
+:root[data-gorunum=siki] .tutar-giris{margin:2px 0 10px}
+:root[data-gorunum=siki] .tutar-giris input{font-size:28px}
+:root[data-gorunum=siki] .secim{min-height:36px;font-size:14px;margin-bottom:4px}
+:root[data-gorunum=siki] .ipucu{font-size:12px;margin-bottom:10px}
+:root[data-gorunum=siki] .ayar-kart{padding:11px;margin-top:8px}
+:root[data-gorunum=siki] .bilgi-satirlari > div{padding:8px 0}
 :root[data-gorunum=buyuk] #ust,:root[data-gorunum=buyuk] #icerik,:root[data-gorunum=buyuk] .alt,
 :root[data-gorunum=buyuk] .cekmece-ic,:root[data-gorunum=buyuk] .fab{zoom:1.12}
 
@@ -40,7 +60,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 
 /* ---------- Üst bölüm ---------- */
-.ust{background:linear-gradient(160deg,var(--ust1),var(--ust2));color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 0}
+.ust{background:linear-gradient(160deg,var(--ust1),var(--ust2));color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 5px}
 .ust-ic{max-width:560px;margin:0 auto}
 .nav{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;height:44px}
 .nav .ok{width:44px;height:44px;font-size:26px;line-height:1;border-radius:22px;color:inherit}
@@ -59,10 +79,14 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .ikili b{display:block;font-size:18px;font-weight:700;overflow-wrap:anywhere}
 .ikili em{display:block;font-style:normal;font-size:12px;opacity:.85}
 .ilerleme-bas{display:flex;justify-content:space-between;font-size:12px;opacity:.85;margin-bottom:5px}
-.ilerleme{height:6px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;margin-bottom:14px}
+.ilerleme{height:6px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;margin-bottom:0}
 .ilerleme i{display:block;height:100%;background:#fff;border-radius:3px;transition:width .3s}
 .ust-not{font-size:12px;opacity:.85;margin:-6px 0 14px}
-.senk{position:absolute;top:calc(8px + env(safe-area-inset-top,0px));right:10px;z-index:30;font-size:11px;font-weight:700;background:rgba(0,0,0,.35);color:#fff;border-radius:10px;padding:3px 9px}
+.senk{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:30;display:grid;place-items:center;width:30px;height:30px;padding:0;background:none;color:rgba(255,255,255,.72)}
+.senk svg{width:20px;height:20px}
+.senk.uyari{color:#F59E0B}
+.senk.tamam{color:#4ADE80}
+.senk.yazi{width:auto;height:auto;font-size:11px;font-weight:700;background:rgba(0,0,0,.35);color:#fff;border-radius:10px;padding:3px 9px}
 
 /* ---------- Liste ---------- */
 .bolum{margin-top:18px}
@@ -84,7 +108,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .acilis{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(160deg,var(--ust1),var(--ust2));color:#fff;transition:opacity .3s}
 .acilis img{width:96px;height:96px;border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .acilis b{font-size:22px;font-weight:800;letter-spacing:-.01em}
-.acilis small{opacity:.75;font-size:13px}
+.acilis small{opacity:.75;font-size:11px;font-weight:700;letter-spacing:.12em}
 .acilis.kapan{opacity:0;pointer-events:none}
 .rozetler{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;font-size:12px;color:var(--soluk)}
 .rozet{background:var(--yuzey2);border-radius:6px;padding:1px 7px}
@@ -210,6 +234,10 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .ayar-kart h3{margin:0 0 4px;font-size:15px}
 .ayar-kart p.ipucu{margin-bottom:12px}
 .ayar-kart .seg{margin-bottom:4px}
+.tema-satir{display:flex;align-items:center;gap:10px}
+.tema-satir > span{flex:none;width:44px;font-size:12px;font-weight:700;color:var(--soluk)}
+.tema-satir > div{flex:1;min-width:0}
+.tema-ayrac{height:1px;background:var(--cizgi);margin:12px 0}
 .renkler{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .renk{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:12px;border:2px solid transparent;font-size:13px;font-weight:600}
 .renk i{width:38px;height:38px;border-radius:50%;display:block}
@@ -243,12 +271,12 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 </style>
 </head>
 <body>
-<div class="acilis" id="acilis"><img src="ikon-192.png" alt=""><b>Ev Bütçesi</b><small id="acilisDurum">Güncelleniyor…</small></div>
+<div class="acilis" id="acilis"><img src="ikon-192.png" alt=""><b>Ev Bütçesi</b><small id="acilisDurum">YÜKLENİYOR…</small></div>
 <div class="kaydir" id="kaydir">
 <header class="ust"><div class="ust-ic" id="ust"></div></header>
 <main id="icerik"><div class="yukleniyor">Yükleniyor…</div></main>
 </div>
-<div class="senk" id="senk" hidden>Kaydediliyor…</div>
+<button class="senk" id="senk" data-act="durum" aria-label="Kayıt durumu" hidden></button>
 
 <button class="fab" id="fab" data-act="ekle" aria-label="Harcama veya gelir ekle" hidden>+</button>
 
@@ -272,14 +300,14 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 <div class="bildirim" id="bildirim" hidden></div>
 
 <!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
-<script src="ortak.js"></script>
+<script src="ortak.js?v=3.6"></script>
 
 <script>
 /* ---------- Sabitler ---------- */
 const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
-const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir' };
+const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet' };
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -318,7 +346,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const NF0 = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 });
 const NF2 = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 });
-const para = n => (D.ayar.kurus === 'evet' ? NF2 : NF0).format(Math.round((n || 0) * 100) / 100) + ' ₺';
+const para = n => (D.ayar.kurus === 'evet' ? NF2 : NF0).format(Math.round((n || 0) * 100) / 100) + (D.ayar.birim === 'hayir' ? '' : ' ₺');
 const isaretli = n => (n > 0 ? '+' : n < 0 ? '−' : '') + para(Math.abs(n));
 const kisaTarih = t => Number(t.slice(8, 10)) + ' ' + KISA[Number(t.slice(5, 7)) - 1];
 const ayAdi = ay => AYLAR[Number(ay.slice(5)) - 1] + ' ' + ay.slice(0, 4);
@@ -337,14 +365,24 @@ const kategoriler = () => (D.raw && D.raw.ayarlar && D.raw.ayarlar.kategoriler) 
 /* Bağlantı: Apps Script adresi ve anahtar bu telefonda saklanır (koda yazılmaz) */
 let BAG = yerelOku('evb-baglanti');
 let kuyruk = Promise.resolve();
+const htmlBaslik = t => { const m = String(t).match(/<title>([^<]*)<\/title>/i); return m ? m[1].trim() : ''; };
 function istek(bag, islemAdi, args) {
   const kod = { url: new URL('ortak.js', location.href).href, surum: ORTAK_SURUM };
   return fetch(bag.url, { method: 'POST', body: JSON.stringify({ anahtar: bag.anahtar, islem: islemAdi, args: args, kod: kod }) })
-    .then(r => { if (!r.ok) throw new Error('Sunucu yanıt vermedi (' + r.status + ').'); return r.text(); },
-      e => { const h = new Error(navigator.onLine === false ? 'İnternet bağlantısı yok.' : 'Sunucuya ulaşılamadı.'); h.ag = true; h.ayrinti = String(e && e.message || e); throw h; })
+    .then(r => { if (!r.ok) { const h = new Error('Sunucu yanıt vermedi (' + r.status + ').'); h.tur = 'baglanti'; throw h; } return r.text(); },
+      e => {
+        const yok = navigator.onLine === false;
+        const h = new Error(yok ? 'İnternet bağlantısı yok.' : 'Sunucuya ulaşılamadı.');
+        h.ag = true; h.tur = yok ? 'internet' : 'baglanti'; h.ayrinti = String(e && e.message || e); throw h;
+      })
     .then(t => {
-      let j; try { j = JSON.parse(t); } catch (e) { throw new Error('Bağlantı adresi hatalı ya da dağıtımda erişim "Herkes" değil.'); }
-      if (!j.ok) throw new Error(j.hata || 'Bilinmeyen hata.');
+      let j;
+      try { j = JSON.parse(t); } catch (e) {
+        const b = htmlBaslik(t);
+        const h = new Error('Sunucu beklenmeyen bir cevap verdi' + (b ? ' (' + b + ')' : '') + '. Genelde geçicidir.');
+        h.tur = 'baglanti'; throw h;
+      }
+      if (!j.ok) { const h = new Error(j.hata || 'Bilinmeyen hata.'); h.tur = 'islem'; throw h; }
       return j.sonuc;
     });
 }
@@ -358,8 +396,73 @@ function bildir(m, geriAl) {
   b.innerHTML = `<span>${esc(m)}</span>` + (geriAl ? '<button class="geri-btn">Geri al</button>' : '');
   if (geriAl) b.querySelector('button').onclick = () => { b.hidden = true; geriAl(); };
   b.hidden = false;
-  clearTimeout(bildir.t); bildir.t = setTimeout(() => b.hidden = true, geriAl ? 5000 : 2400);
+  clearTimeout(bildir.t); bildir.t = setTimeout(() => b.hidden = true, geriAl ? 5000 : (m.length > 60 ? 4000 : 2400));
 }
+
+/* ---------- Bekleyen kayıtlar (giden kutusu) ----------
+   Her değişiklik önce telefonda uygulanır ve buraya not edilir, sonra tabloya gönderilir.
+   Uygulama erken kapansa bile bir sonraki açılışta kaldığı yerden gönderilir. */
+let GIDEN = yerelOku('evb-giden') || [];
+const G = { gonderiliyor: false, deneme: 0, durum: '', baslangic: 0, zaman: null, mesaj: false, sonHata: '' };
+const IKON = {
+  bulut: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5h.5a3.5 3.5 0 0 1 0 7"/><path d="M12 12v7M9 15l3-3 3 3"/></svg>',
+  uyari: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  tamam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+};
+const gidenKaydet = () => yerelYaz('evb-giden', GIDEN);
+function gonder() {
+  if (G.gonderiliyor || !GIDEN.length || !BAG) { durumGoster(); return; }
+  G.gonderiliyor = true; G.baslangic = Date.now();
+  setTimeout(durumGoster, 3100);
+  const paket = GIDEN.slice(0, 25), kimlikler = paket.map(x => x.k);
+  sunucu('api_satirKaydet', { toplu: paket.map(x => ({ ad: x.ad, args: x.args })) }).then(p => {
+    GIDEN = GIDEN.filter(x => kimlikler.indexOf(x.k) < 0); gidenKaydet();
+    G.gonderiliyor = false; G.deneme = 0; G.mesaj = false;
+    const sorunluydu = !!G.durum; G.durum = '';
+    if (GIDEN.length) { gonder(); return; }
+    veriAyarla(p); yerelYaz('evb-veri', p);
+    if (!D.cek || D.cek.tip !== 'kalem') ciz();
+    durumGoster(sorunluydu ? 'tamam' : '');
+  }).catch(e => {
+    G.gonderiliyor = false; G.deneme++; G.sonHata = e.message;
+    G.durum = e.tur === 'internet' || navigator.onLine === false ? 'internet' : (G.deneme >= 4 ? 'basarisiz' : 'baglanti');
+    durumGoster();
+    if (!G.mesaj) { G.mesaj = true; bildir(durumMesaji()); }
+    clearTimeout(G.zaman);
+    G.zaman = setTimeout(gonder, [5, 15, 30, 60, 120][Math.min(G.deneme - 1, 4)] * 1000);
+  });
+}
+window.addEventListener('online', () => { clearTimeout(G.zaman); gonder(); });
+function durumMesaji() {
+  if (G.durum === 'internet') return 'İnternet yok. Kayıtların telefonda saklanıyor, bağlanınca gönderilecek.';
+  if (G.durum === 'basarisiz') return 'Kayıtlar gönderilemedi. Telefonda saklanıyor, bir süre sonra tekrar denenecek.';
+  return 'Bağlantı sorunu. Kayıtların telefonda saklanıyor, tekrar deneniyor…';
+}
+/** Sağ üstteki küçük simge: bulut (gönderim uzun sürdü), turuncu üçgen (sorun var), yeşil tik (sorun çözüldü) */
+function durumGoster(ozel) {
+  const el = $('senk'); if (!el) return;
+  clearTimeout(durumGoster.t);
+  if (ozel === 'tamam') { el.className = 'senk tamam'; el.innerHTML = IKON.tamam; el.hidden = false; durumGoster.t = setTimeout(() => durumGoster(), 2200); return; }
+  if (G.durum) { el.className = 'senk uyari'; el.innerHTML = IKON.uyari; el.hidden = false; return; }
+  if (G.gonderiliyor && Date.now() - G.baslangic > 3000) { el.className = 'senk'; el.innerHTML = IKON.bulut; el.hidden = false; durumGoster.t = setTimeout(durumGoster, 500); return; }
+  if (D.yukleniyor && !$('acilis')) { el.className = 'senk yazi'; el.textContent = 'Güncelleniyor…'; el.hidden = false; durumGoster.t = setTimeout(durumGoster, 400); return; }
+  el.hidden = true;
+}
+const senkGoster = () => durumGoster();
+function durumAc() {
+  if (!G.durum && !GIDEN.length) return;
+  D.cek = { tip: 'durum', iptal: false };
+  cekmeceAc(`<h3>Bekleyen kayıtlar</h3>
+    <p class="aciklama">${esc(G.durum ? durumMesaji() : 'Kayıtlar gönderiliyor.')}</p>
+    <div class="bilgi-satirlari">
+      <div><span>Bekleyen</span><b>${GIDEN.length} kayıt</b></div>
+      ${G.sonHata ? `<div><span>Son hata</span><b style="white-space:normal">${esc(G.sonHata)}</b></div>` : ''}
+    </div>
+    <button class="btn ana" data-act="simdiGonder">Şimdi tekrar dene</button>
+    <button class="btn metin tehlike" data-act="gidenIptal">Bekleyenleri iptal et</button>
+    <p class="ipucu" style="text-align:center">İptal edersen bekleyen değişiklikler silinir ve ekran tablodaki hâle döner.</p>`);
+}
+
 /* ---------- Kilit (geçmiş aylar) ---------- */
 const duzenlenebilir = () => { const d = ayDurumu_(D.ay); return d === 'acik' || (d === 'kilitli' && D.kilitAcikAy === D.ay); };
 const kilitParam = () => D.kilitAcikAy === D.ay ? true : undefined;
@@ -371,22 +474,18 @@ const hamSatir = id => D.raw.hareketler.find(h => String(h.id) === String(id));
 /** Bir satırın değişiklikten önceki hâlini saklar; Geri al bu hâle döndürür */
 function oncekiHal(s) {
   const h = s.sanal ? null : hamSatir(s.id);
-  return { ay: s.geciken ? s.ay : D.ay, ad: s.kalemId || s.tip ? undefined : s.ad, tutar: s.tutar, odendi: s.odendi, not: s.not, sonTarih: h ? (h.sonTarih || '') : '',
+  const tek = !s.kalemId && !s.tip;
+  return { ay: s.geciken ? s.ay : D.ay, ad: tek ? s.ad : undefined, tutar: s.tutar, odendi: s.odendi, not: s.not, sonTarih: h ? (h.sonTarih || '') : '',
+    kategori: tek ? s.kategori : undefined, kart: tek && s.tur === 'gider' ? !!s.kart : undefined,
     kilitAcik: kilitParam(), gecikenOdeme: s.geciken ? true : undefined };
 }
 function satiraDon(id, once) {
-  const q = temizle({ id: id, ay: once.ay, ad: once.ad, tutar: once.tutar, odendi: once.odendi, not: once.not,
+  const q = temizle({ id: id, ay: once.tasindi ? once.suankiAy : once.ay, yeniAy: once.tasindi ? once.ay : undefined,
+    ad: once.ad, tutar: once.tutar, odendi: once.odendi, not: once.not, kategori: once.kategori, kart: once.kart,
     sonTarih: once.gecikenOdeme ? undefined : once.sonTarih, kilitAcik: once.kilitAcik, gecikenOdeme: once.gecikenOdeme });
   if (islem(() => satirKaydet_(D.raw, q), 'api_satirKaydet', q)) bildir('Geri alındı');
 }
 function hata(e) { bildir((e && e.message) || 'Bir hata oluştu, tekrar deneyin.'); }
-function senkGoster() {
-  clearTimeout(senkGoster.t);
-  const el = $('senk');
-  if (D.bekleyen > 0) { el.textContent = 'Kaydediliyor…'; senkGoster.t = setTimeout(() => { el.hidden = !(D.bekleyen > 0); }, 700); }
-  else if (D.yukleniyor) { el.textContent = 'Güncelleniyor…'; el.hidden = !!$('acilis'); senkGoster.t = setTimeout(senkGoster, 400); }
-  else el.hidden = true;
-}
 
 /* ---------- Veri ---------- */
 function veriAyarla(p) {
@@ -394,30 +493,26 @@ function veriAyarla(p) {
   if (D.ayarBekleyen && D.raw && D.raw.ayarlar) p.ayarlar = D.raw.ayarlar; // kaydı süren ayar ezilmesin
   D.raw = p; D.raw.sanalHepsi = true;
   if (!D.ay || !D.ayElle) D.ay = p.buAy;
-  if (!D.ayarBekleyen) ayarUygula(p.ayarlar || {});
+  // Renk, mod, görünüm gibi ayarlar bu cihaza özeldir; tablodan gelen veri bunları değiştirmez.
 }
 function veriYukle() {
   if (!BAG) return Promise.resolve();
   D.yukleniyor = true; setTimeout(senkGoster, 0);
   return sunucu('api_veri').finally(() => { D.yukleniyor = false; senkGoster(); }).then(p => {
-    if (D.bekleyen) return;
+    if (GIDEN.length) return; // bekleyen kayıtlar gönderilince ekran zaten güncellenecek
     veriAyarla(p); yerelYaz('evb-veri', p); ciz();
   }).catch(e => {
     if (!D.raw) $('icerik').innerHTML = `<div class="karsilama"><h3>Bağlanılamadı</h3><p>${esc(e && e.message || 'İnternet bağlantını kontrol et.')}</p><button class="btn ana" data-act="tekrar">Tekrar dene</button></div>`;
     else hata(e);
   });
 }
-/** Değişikliği önce telefonda uygular (anında görünür), sonra sırayla tabloya kaydeder */
+/** Değişikliği önce telefonda uygular (anında görünür), sonra giden kutusuna ekleyip tabloya gönderir */
 function islem(yerel, fn, ...args) {
   try { yerel(); } catch (e) { hata(e); return false; }
   yerelYaz('evb-veri', D.raw); ciz();
-  D.bekleyen++; senkGoster();
-  sunucu(fn, ...args).then(p => {
-    D.bekleyen--; senkGoster();
-    if (!D.bekleyen) { veriAyarla(p); yerelYaz('evb-veri', p); if (!D.cek || D.cek.tip !== 'kalem') ciz(); }
-  }).catch(e => {
-    D.bekleyen--; senkGoster(); hata(e); veriYukle();
-  });
+  GIDEN.push({ k: yeniId_('g'), ad: fn.replace(/^api_/, ''), args: JSON.parse(JSON.stringify(args)) });
+  gidenKaydet();
+  gonder();
   return true;
 }
 const temizle = o => { Object.keys(o).forEach(k => o[k] === undefined && delete o[k]); return o; };
@@ -434,11 +529,13 @@ function ayarUygula(a) {
   r.style.colorScheme = koyu ? 'dark' : 'light';
   r.dataset.gorunum = D.ayar.gorunum;
   const tm = document.querySelector('meta[name=theme-color]'); if (tm) tm.content = renkler.ust1;
-  yerelYaz('evb-ayar', { renk: D.ayar.renk, mod: D.ayar.mod, gorunum: D.ayar.gorunum, kurus: D.ayar.kurus });
+  yerelYaz('evb-ayar', { renk: D.ayar.renk, mod: D.ayar.mod, gorunum: D.ayar.gorunum, kurus: D.ayar.kurus, birim: D.ayar.birim });
 }
+const koyuMu = () => D.ayar.mod === 'koyu' || (D.ayar.mod === 'otomatik' && KOYU_SORGU && KOYU_SORGU.matches);
 function ayarKaydet(anahtar, deger) {
-  if (anahtar !== 'kategoriler') ayarUygula({ [anahtar]: deger });
-  if (D.raw) D.raw.ayarlar[anahtar] = deger;
+  // Görünüm ayarları bu cihaza kaydedilir (anında, internetsiz). Kategoriler tabloya kaydedilir.
+  if (anahtar !== 'kategoriler') { ayarUygula({ [anahtar]: deger }); ciz(); return; }
+  if (D.raw) { D.raw.ayarlar.kategoriler = deger; yerelYaz('evb-veri', D.raw); }
   ciz();
   D.ayarBekleyen++;
   sunucu('api_ayarKaydet', anahtar, deger).catch(hata).then(() => { D.ayarBekleyen--; });
@@ -446,6 +543,7 @@ function ayarKaydet(anahtar, deger) {
 
 /* ---------- Çizim ---------- */
 function ciz() {
+  geriKontrol();
   if (!BAG) { document.querySelectorAll('.alt button').forEach(b => b.classList.remove('aktif')); return kurulumCiz(); }
   document.querySelectorAll('.alt button').forEach(b => b.classList.toggle('aktif', b.dataset.v === D.sekme));
   $('fab').hidden = !D.raw || !((D.sekme === 'ay' && duzenlenebilir()) || D.sekme === 'sabit');
@@ -583,8 +681,9 @@ function tikla(id, ay) {
   const once = oncekiHal(s);
   const p = satirParam(s, { odendi: !s.odendi });
   const g = s.tur === 'gelir';
-  if (islem(() => satirKaydet_(D.raw, p), 'api_satirKaydet', p))
-    bildir(`${s.ad}: ${p.odendi ? (g ? 'alındı' : 'ödendi') : (g ? 'alınmadı' : 'ödenmedi')}`, () => satiraDon(p.yeniId || s.id, once));
+  // Tik tek dokunuşla geri alınabildiği için balon çıkmaz. Gecikenler'de kayıt listeden kaybolduğu için Geri al kalır.
+  if (islem(() => satirKaydet_(D.raw, p), 'api_satirKaydet', p) && s.geciken)
+    bildir(`${s.ad} (${ayAdi(s.ay)}): ${g ? 'alındı' : 'ödendi'}`, () => satiraDon(p.yeniId || s.id, once));
 }
 
 const uzunTarih = t => Number(t.slice(8, 10)) + ' ' + AYLAR[Number(t.slice(5, 7)) - 1] + ' ' + t.slice(0, 4);
@@ -621,6 +720,7 @@ function satirAc(id, ay) {
   const odYazi = s.tur === 'gelir' ? 'Alındı' : 'Ödendi';
   const giris = borcGirisi(s);
   let b;
+  if (!s.kalemId && !s.tip) D.cek.kat = s.kategori;
   if (s.kart || giris) b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>`;
   else if (!s.odendi || s.atlandi) b = `<button class="btn ana" data-act="satirKaydet" data-odendi="1">${odYazi} olarak kaydet</button>
       <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">Sadece tutarı kaydet</button>`;
@@ -638,7 +738,12 @@ function satirAc(id, ay) {
     <p class="aciklama">${ayAdi(D.ay)}${s.tip ? ', ' + BORC_ETIKET(s) : s.kategori ? ', ' + esc(s.kategori) : ''}</p>
     <label class="tutar-giris"><input id="sTutar" inputmode="decimal" placeholder="0" value="${girisDegeri(s.tutar)}" aria-label="Tutar"><span>₺</span></label>
     ${s.kalemId && !s.atlandi ? `<label class="secim"><input type="checkbox" id="sSonraki" ${s.zam ? 'checked' : ''}> Sonraki aylarda da bu tutar olsun</label>` : ''}
-    ${!s.kalemId && !s.tip ? `<label class="alan"><span>Ad</span><input id="sAd" value="${esc(s.ad)}"></label>` : ''}
+    ${!s.kalemId && !s.tip ? `<label class="alan"><span>Ad</span><input id="sAd" value="${esc(s.ad)}"></label>
+      <div class="cipler" id="sKatlar">${[...new Set((s.tur === 'gelir' ? GELIR_KAT : kategoriler()).concat([s.kategori]).filter(Boolean))].map(x => `<button class="cip ${x === s.kategori ? 'on' : ''}" data-act="sKat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+      <div class="yan">
+        ${s.tur === 'gider' ? `<label class="secim"><input type="checkbox" id="sKart" ${s.kart ? 'checked' : ''}> Kartla ödedim</label>` : '<span></span>'}
+        <label class="alan"><span>Ay</span><input id="sAy" type="month" value="${esc(D.ay)}"></label>
+      </div>` : ''}
     <div class="${sadeGelir ? '' : 'yan'}">
       ${sadeGelir ? '' : `<label class="alan"><span>${s.tur === 'gelir' ? 'Beklenen tarih' : 'Son ödeme tarihi'}</span><input id="sSon" type="date" value="${esc(s.sonTarih || '')}"></label>`}
       <label class="alan"><span>Açıklama</span><input id="sNot" value="${esc(s.atlandi ? '' : s.not)}" placeholder="İsteğe bağlı"></label>
@@ -654,12 +759,16 @@ function satirKaydet(odendi) {
   const p = satirParam(s, { tutar: t, not: $('sNot').value.trim() });
   if ($('sSon') && $('sSon').value !== (s.sonTarih || '')) p.sonTarih = $('sSon').value;
   if ($('sAd') && $('sAd').value.trim() && $('sAd').value.trim() !== s.ad) p.ad = $('sAd').value.trim();
+  if (D.cek.kat && D.cek.kat !== s.kategori) p.kategori = D.cek.kat;
+  if ($('sKart') && $('sKart').checked !== !!s.kart) p.kart = $('sKart').checked;
+  if ($('sAy') && $('sAy').value && $('sAy').value !== D.ay) p.yeniAy = $('sAy').value;
   if (odendi === '1') p.odendi = true; else if (odendi === '0') p.odendi = false;
   if ($('sSonraki') && $('sSonraki').checked) p.sonraki = true;
   const once = oncekiHal(s);
   cekmeceKapat();
+  if (p.yeniAy) { once.suankiAy = p.yeniAy; once.tasindi = true; }
   if (islem(() => satirKaydet_(D.raw, p), 'api_satirKaydet', p))
-    bildir(s.ad + ' kaydedildi', p.sonraki ? null : () => satiraDon(p.yeniId || s.id, once));
+    bildir(p.yeniAy ? `${s.ad} ${ayAdi(p.yeniAy)} ayına taşındı` : s.ad + ' kaydedildi', p.sonraki ? null : () => satiraDon(p.yeniId || s.id, once));
 }
 
 /* Hızlı ekleme: Gider | Gelir | Borç | Alacak */
@@ -775,7 +884,10 @@ function ekleKaydet() {
     if (!p.ad) { bildir(borc ? 'Kimden aldığını yaz.' : 'Kime verdiğini yaz.'); return $('eKisi').focus(); }
     if (p.sekil === 'tek' && !p.tarih) return bildir('Tarihi seç.');
     if (p.sekil === 'taksit' && !(p.taksit > 0 && +p.taksitSayisi > 0)) return bildir('Aylık taksiti ve kaç ay olduğunu yaz.');
-    try { borcEkle_(JSON.parse(JSON.stringify(D.raw)), p); } catch (e) { return hata(e); } // önce kontrol, pencere kapanmadan
+    // Pencere kapanmadan önce bir kopya üzerinde dene (asıl veriye dokunmadan)
+    const asil = D.raw; D.raw = JSON.parse(JSON.stringify(asil));
+    try { borcEkle_(D.raw, p); } catch (e) { D.raw = asil; return hata(e); }
+    D.raw = asil;
     cekmeceKapat();
     if (islem(() => borcEkle_(D.raw, p), 'api_borcEkle', p))
       bildir(`Eklendi: ${p.ad} ${para(t)}`, () => {
@@ -1006,14 +1118,15 @@ function ayarCiz() {
   const seg = (ad, liste) => `<div class="seg">${liste.map(([k, y]) => `<button data-act="ayar" data-k="${ad}" data-v="${k}" class="${a[ad] === k ? 'on' : ''}">${y}</button>`).join('')}</div>`;
   const kats = kategoriler();
   $('icerik').innerHTML = `
-    <section class="ayar-kart"><h3>Renk teması</h3><p class="ipucu">Uygulamanın genel renk tonu. Ödendi (yeşil) ve ödenmedi (kırmızı) her temada aynı kalır.</p>
-      <div class="renkler">${Object.keys(PALET).map(k => `<button class="renk ${a.renk === k ? 'on' : ''}" data-act="ayar" data-k="renk" data-v="${k}"><i style="background:linear-gradient(135deg,${PALET[k].acik.ust1} 50%,${PALET[k].acik.zemin} 50%)"></i>${PALET[k].ad}</button>`).join('')}</div></section>
-    <section class="ayar-kart"><h3>Açık / koyu</h3><p class="ipucu">Otomatik, telefonunun ayarını izler.</p>
-      ${seg('mod', [['otomatik', 'Otomatik'], ['acik', 'Açık'], ['koyu', 'Koyu']])}</section>
+    <section class="ayar-kart"><h3>Tema</h3><p class="ipucu">Ödendi (yeşil) ve ödenmedi (kırmızı) her temada aynı kalır.</p>
+      <div class="tema-satir"><span>Renk</span><div class="renkler">${Object.keys(PALET).map(k => { const r = PALET[k][koyuMu() ? 'koyu' : 'acik']; return `<button class="renk ${a.renk === k ? 'on' : ''}" data-act="ayar" data-k="renk" data-v="${k}"><i style="background:linear-gradient(135deg,${r.ust1} 50%,${r.zemin} 50%)"></i>${PALET[k].ad}</button>`; }).join('')}</div></div>
+      <div class="tema-ayrac"></div>
+      <div class="tema-satir"><span>Mod</span><div>${seg('mod', [['otomatik', 'Otomatik'], ['acik', 'Açık'], ['koyu', 'Koyu']])}</div></div></section>
     <section class="ayar-kart"><h3>Görünüm</h3><p class="ipucu">Sıkı: ekrana daha çok satır sığar. Büyük: yazılar ve dokunma alanları daha büyük.</p>
       ${seg('gorunum', GORUNUMLER)}</section>
     <section class="ayar-kart"><h3>Tutarlar</h3>
-      <label class="secim" style="margin:0"><input type="checkbox" data-ayar-kurus ${a.kurus === 'evet' ? 'checked' : ''}> Kuruşları göster (21.000,50 ₺)</label></section>
+      <label class="secim" style="margin:0"><input type="checkbox" data-ayar-kurus ${a.kurus === 'evet' ? 'checked' : ''}> Kuruşları göster (21.000,50)</label>
+      <label class="secim" style="margin:0"><input type="checkbox" data-ayar-birim ${a.birim !== 'hayir' ? 'checked' : ''}> Para birimini göster (21.000 ₺)</label></section>
     <section class="ayar-kart"><h3>Harcama kategorileri</h3><p class="ipucu">+ ile harcama eklerken çıkan seçenekler. İlk sıradaki varsayılan olarak seçili gelir.</p>
       <div class="cipler">${kats.map((k, i) => `<span class="cip kat-cip">${esc(k)}<button data-act="katSil" data-v="${i}" aria-label="${esc(k)} sil">✕</button></span>`).join('')}</div>
       <div class="kat-ekle"><input id="yeniKat" placeholder="Yeni kategori" maxlength="30"><button data-act="katEkle">Ekle</button></div></section>
@@ -1028,6 +1141,15 @@ function ayarCiz() {
       ${D.raw && D.raw.tabloUrl ? `<a class="btn ikinci" href="${esc(D.raw.tabloUrl)}" target="_blank" rel="noopener">Tabloyu aç</a>` : ''}
       <button class="btn metin tehlike" data-act="baglantiKaldir">${D.bagSil ? 'Emin misin? Tekrar dokun' : 'Bu cihazdaki bağlantıyı kaldır'}</button></section>
     <p class="hakkinda">Ev Bütçesi${D.raw && D.raw.surum ? ' · sürüm ' + esc(D.raw.surum) : ''}</p>`;
+}
+
+function katTasiCiz() {
+  const c = D.cek;
+  cekmeceAc(`<h3>${esc(c.eski)} kategorisini sil</h3>
+    <p class="aciklama">Bu kategoride ${c.say} kayıt var. Silmeden önce hangi kategoriye taşınsın?</p>
+    <div class="cipler">${kategoriler().filter(x => x !== c.eski).map(x => `<button class="cip ${x === c.hedef ? 'on' : ''}" data-act="katHedef" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+    <button class="btn ana" data-act="katTasiOnay">${esc(c.hedef)} kategorisine taşı ve sil</button>
+    <button class="btn metin" data-act="kapat">Vazgeç</button>`);
 }
 
 /* ---------- İLK BAĞLANTI ---------- */
@@ -1082,18 +1204,39 @@ function qrCiz(kutu, metin) {
   document.head.appendChild(sc);
 }
 
+/* ---------- Telefonun geri hareketi ----------
+   Pencere açıksa kapatır → başka sekmedeyse Aylık liste'ye döner → başka aydaysa bu aya döner → sonra uygulamadan çıkar */
+const anaDurumda = () => !D.cek && (!BAG || D.sekme === 'ay') && (!D.raw || D.ay === D.raw.buAy);
+let KORUMA = false;
+function geriKontrol() {
+  clearTimeout(geriKontrol.t);
+  geriKontrol.t = setTimeout(() => { if (!anaDurumda() && !KORUMA) { history.pushState({ evb: 1 }, ''); KORUMA = true; } }, 60);
+}
+window.addEventListener('popstate', () => {
+  KORUMA = false;
+  if (D.cek) cekmeceKapat();
+  else if (D.sekme !== 'ay') { D.sekme = 'ay'; $('kaydir').scrollTop = 0; ciz(); }
+  else if (D.raw && D.ay !== D.raw.buAy) { ayDegistir(D.raw.buAy, false); ciz(); }
+  else { history.back(); return; } // ana ekrandayız: uygulamadan çık
+  geriKontrol();
+});
+
 /* ---------- Çekmece ---------- */
 function cekmeceAc(html) {
   $('cekmeceIc').innerHTML = '<div class="cekmece-ust"><div class="tutamak"></div><button class="kapat-btn" data-act="kapat" aria-label="Kapat">✕</button></div>' + html;
   const c = $('cekmece');
-  if (c.hidden) { $('perde').hidden = false; c.hidden = false; requestAnimationFrame(() => c.classList.add('acik')); }
+  clearTimeout(cekmeceKapat.t); // kapanırken hemen yeniden açılırsa gizlenmesin
+  $('perde').hidden = false;
+  if (c.hidden) { c.hidden = false; requestAnimationFrame(() => c.classList.add('acik')); } else c.classList.add('acik');
+  geriKontrol();
 }
 function cekmeceKapat() {
   const c = $('cekmece');
   if (document.activeElement) document.activeElement.blur();
   c.classList.remove('acik'); $('perde').hidden = true;
-  setTimeout(() => { if (!c.classList.contains('acik')) c.hidden = true; }, 230);
+  cekmeceKapat.t = setTimeout(() => { if (!c.classList.contains('acik')) c.hidden = true; }, 230);
   D.cek = null;
+  geriKontrol();
 }
 
 /* ---------- Olaylar ---------- */
@@ -1124,7 +1267,7 @@ document.addEventListener('click', e => {
       break;
     case 'geriYukle':
       if (D.geriOnay !== id) { D.geriOnay = id; $('yedekListe').innerHTML = yedekHTML(); break; }
-      if (D.bekleyen) { bildir('Önce kayıtların bitmesini bekle.'); break; }
+      if (GIDEN.length) { bildir('Önce bekleyen kayıtların gönderilmesini bekle.'); break; }
       D.geriOnay = null; t.disabled = true; t.textContent = 'Yükleniyor…';
       sunucu('api_yedekGeriYukle', id).then(p => { veriAyarla(p); yerelYaz('evb-veri', p); bildir('Yedek geri yüklendi'); yedekleriYukle(); ciz(); })
         .catch(e => { hata(e); ciz(); });
@@ -1202,11 +1345,40 @@ document.addEventListener('click', e => {
       if (!D.cek.sil) { D.cek.sil = true; t.textContent = 'Emin misin? Tekrar dokun'; break; }
       { const kid = D.cek.id; cekmeceKapat(); if (islem(() => kalemSonlandir_(D.raw, kid), 'api_kalemSonlandir', kid)) bildir('Kalem sonlandırıldı'); }
       break;
-    case 'tasi': islem(() => kalemTasi_(D.raw, id, +v), 'api_kalemTasi', id, +v); break;
+    case 'tasi': {
+      // Yeni sırayı telefonda hesapla, tablona tam sırayı gönder
+      const kopya = JSON.parse(JSON.stringify(D.raw)), asil = D.raw;
+      D.raw = kopya; kalemTasi_(D.raw, id, +v); const sira = D.raw.kalemler.filter(k => bool_(k.aktif)).sort((a, b) => num_(a.sira) - num_(b.sira)).map(k => String(k.id)); D.raw = asil;
+      islem(() => kalemTasi_(D.raw, id, +v, sira), 'api_kalemTasi', id, +v, sira); break;
+    }
     case 'yil': D.yil = (D.yil || +D.ay.slice(0, 4)) + (+v); ciz(); break;
     case 'grafikAy': D.sekme = 'ay'; ayDegistir(v, true); $('kaydir').scrollTop = 0; ciz(); break;
     case 'ayar': ayarKaydet(t.dataset.k, v); break;
-    case 'katSil': { const l = kategoriler().slice(); l.splice(+v, 1); ayarKaydet('kategoriler', l); break; }
+    case 'katSil': {
+      const l = kategoriler(), ad = l[+v];
+      const say = D.raw.hareketler.filter(h => !h.tip && h.kategori === ad).length + D.raw.kalemler.filter(k => !k.tip && k.kategori === ad).length;
+      if (!say) { ayarKaydet('kategoriler', l.filter((_, i) => i !== +v)); break; }
+      const digerleri = l.filter(x => x !== ad);
+      if (!digerleri.length) { bildir('Önce başka bir kategori ekle, kayıtlar oraya taşınacak.'); break; }
+      D.cek = { tip: 'katTasi', eski: ad, say: say, hedef: digerleri.includes('Diğer') ? 'Diğer' : digerleri[0] };
+      katTasiCiz(); break;
+    }
+    case 'katHedef': D.cek.hedef = v; katTasiCiz(); break;
+    case 'katTasiOnay': {
+      const eski = D.cek.eski, hedef = D.cek.hedef; cekmeceKapat();
+      if (islem(() => kategoriTasi_(D.raw, eski, hedef), 'api_kategoriTasi', eski, hedef)) {
+        ayarKaydet('kategoriler', kategoriler().filter(x => x !== eski));
+        bildir(`${eski} silindi, kayıtları ${hedef} kategorisine taşındı.`);
+      }
+      break;
+    }
+    case 'durum': durumAc(); break;
+    case 'simdiGonder': cekmeceKapat(); G.deneme = 0; clearTimeout(G.zaman); gonder(); break;
+    case 'gidenIptal':
+      if (!D.cek.iptal) { D.cek.iptal = true; t.textContent = 'Emin misin? Tekrar dokun'; break; }
+      cekmeceKapat(); GIDEN = []; gidenKaydet(); G.durum = ''; G.deneme = 0; clearTimeout(G.zaman); durumGoster(); veriYukle();
+      bildir('Bekleyen kayıtlar iptal edildi.'); break;
+    case 'sKat': D.cek.kat = v; document.querySelectorAll('#sKatlar .cip').forEach(c => c.classList.toggle('on', c.dataset.v === v)); break;
     case 'katEkle': {
       const yeni = $('yeniKat').value.replace(/,/g, ' ').trim();
       if (!yeni) break;
@@ -1220,6 +1392,7 @@ document.addEventListener('change', e => {
   if (['eTaksit', 'eKart'].includes(e.target.id)) ekleIpucu();
   if (e.target.id === 'kBaslamadi') $('kBas').disabled = e.target.checked;
   if (e.target.hasAttribute('data-ayar-kurus')) ayarKaydet('kurus', e.target.checked ? 'evet' : 'hayir');
+  if (e.target.hasAttribute('data-ayar-birim')) ayarKaydet('birim', e.target.checked ? 'evet' : 'hayir');
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'yeniKat') { e.preventDefault(); document.querySelector('[data-act=katEkle]').click(); }
@@ -1246,6 +1419,8 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   const kopya = BAG && yerelOku('evb-veri');
   if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
+  if (ORTAK_SURUM !== '3.6') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
+  if (GIDEN.length) gonder(); // önceki oturumdan kalan kayıtlar
   veriYukle().then(acilisKapat, acilisKapat);
 })();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

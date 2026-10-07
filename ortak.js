@@ -4,7 +4,37 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.5';
+var ORTAK_SURUM = '3.6';
+
+/* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
+   Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
+   Her işlem tekrar gönderilse de aynı sonucu verir (çift kayıt oluşmaz). */
+function topluIslem_(veri, liste) {
+  var islemler = {
+    satirKaydet: satirKaydet_, harcamaEkle: harcamaEkle_, satirSil: satirSil_, satirGeriEkle: satirGeriEkle_,
+    borcEkle: borcEkle_, borcSil: borcSil_, kalemKaydet: kalemKaydet_, kalemSonlandir: kalemSonlandir_,
+    kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_
+  };
+  liste.forEach(function (o, i) {
+    var fn = islemler[o.ad];
+    if (!fn) throw new Error('Bilinmeyen işlem: ' + o.ad);
+    // Sunucuda her işlemden önce tablo yeniden okunur (silinen satırlar yüzünden satır numaraları kaymasın)
+    var v = (i > 0 && typeof veriOku_ === 'function') ? veriOku_() : veri;
+    fn.apply(null, [v].concat(o.args || []));
+  });
+}
+
+/** Bir kategorideki tüm kayıtları başka kategoriye taşır (kategori silinirken) */
+function kategoriTasi_(veri, eski, yeni) {
+  eski = String(eski || '').trim(); yeni = String(yeni || '').trim();
+  if (!eski || !yeni || eski === yeni) return;
+  veri.hareketler.forEach(function (h) {
+    if (!h.tip && String(h.kategori || '') === eski) { h.kategori = yeni; satirYaz_('Hareketler', h); }
+  });
+  veri.kalemler.forEach(function (k) {
+    if (!k.tip && String(k.kategori || '') === eski) { k.kategori = yeni; satirYaz_('Kalemler', k); }
+  });
+}
 
 function ay_(v) {
   if (v === '' || v === null || v === undefined) return '';
@@ -100,6 +130,7 @@ function borcBitti_(k, veri) {
 function borcEkle_(veri, p) {
   const ay = ay_(p.ay) || buAy_();
   kilitKontrol_(ay, p.kilitAcik);
+  if (p.kalemId && veri.kalemler.some(function (x) { return String(x.id) === String(p.kalemId); })) return; // zaten kaydedilmiş
   const tip = p.tip === 'alacak' ? 'alacak' : 'borc';
   const ad = String(p.ad || '').trim();
   if (!ad) throw new Error(tip === 'borc' ? 'Kimden aldığını yaz.' : 'Kime verdiğini yaz.');
@@ -135,7 +166,7 @@ function borcEkle_(veri, p) {
 /** Yanlış girilen borcu tamamen siler. Ödemesi yapılmış borç silinmez (kapatılır). */
 function borcSil_(veri, id, kilitAcik) {
   const k = veri.kalemler.find(function (x) { return String(x.id) === String(id) && x.tip; });
-  if (!k) throw new Error('Borç bulunamadı.');
+  if (!k) return; // zaten silinmiş
   const ait = veri.hareketler.filter(function (h) { return String(h.bagli || '') === String(k.id) || String(h.kalemId) === String(k.id); });
   if (ait.some(function (h) { return h.tur === k.tur && bool_(h.odendi) && h.not !== 'Atlandı'; }))
     throw new Error('Bu kayda ödeme yapılmış, silinemez. Bunun yerine kapatabilirsin.');
@@ -317,6 +348,7 @@ function ayHesapla_(ay, veri) {
 
 /** Bir satırı günceller: tutar, odendi, not, atla, geriAl, sonraki (sonraki aylara da uygula) */
 function satirKaydet_(veri, p) {
+  if (p && p.toplu) return topluIslem_(veri, p.toplu);
   const ay = ay_(p.ay);
   // "Gecikenler" bölümünden yapılan ödeme kilitli aylarda da yapılabilir (tutar + ödendi + not)
   const gecikenOdeme = !!p.gecikenOdeme && !p.atla && !p.geriAl && !p.sonraki && p.sonTarih === undefined;
@@ -329,6 +361,15 @@ function satirKaydet_(veri, p) {
   if (p.odendi !== undefined) { h.odendi = !!p.odendi; h.tarih = h.odendi && (gecikenOdeme || ay >= buAy_()) ? bugun_() : ''; }
   if (p.not !== undefined) h.not = String(p.not);
   if (p.ad !== undefined && !h.kalemId && String(p.ad).trim()) h.ad = String(p.ad).trim();
+  // Tek seferlik kayıtlarda kategori, kart ve ay sonradan değiştirilebilir
+  if (!h.kalemId && !h.tip) {
+    if (p.kategori !== undefined && String(p.kategori).trim()) h.kategori = String(p.kategori).trim();
+    if (p.kart !== undefined && h.tur === 'gider') { h.kart = !!p.kart; if (h.kart) h.odendi = true; }
+    if (p.yeniAy && ay_(p.yeniAy) !== ay_(h.ay)) {
+      if (ayDurumu_(ay_(p.yeniAy)) === 'arsiv') throw new Error('Arşivdeki bir aya taşınamaz.');
+      h.ay = ay_(p.yeniAy);
+    }
+  }
   if (p.sonTarih !== undefined) h.sonTarih = tarihStr_(p.sonTarih);
   if (p.atla) { h.tutar = 0; h.odendi = true; h.not = 'Atlandı'; h.tarih = ''; }
   if (p.geriAl) {
@@ -348,6 +389,8 @@ function harcamaEkle_(veri, p) {
   const n = Math.min(36, Math.max(1, parseInt(p.taksit, 10) || 1));
   const toplam = num_(p.tutar);
   if (!(toplam > 0)) throw new Error('Tutar girin.');
+  // Aynı işlem daha önce kaydedildiyse tekrar ekleme
+  if (p.idler && p.idler.length && veri.hareketler.some(function (h) { return p.idler.indexOf(String(h.id)) >= 0; })) return;
   // Borç ödemesi / tahsilat: bağlı olduğu borç ya da alacağın yönünü alır
   const bk = p.bagli ? veri.kalemler.find(function (x) { return String(x.id) === String(p.bagli) && x.tip; }) : null;
   if (p.bagli && !bk) throw new Error('Borç ya da alacak bulunamadı.');
@@ -390,6 +433,7 @@ function satirSil_(veri, id, kilitAcik) {
 function kalemKaydet_(veri, g) {
   const bu = buAy_();
   if (!String(g.ad || '').trim()) throw new Error('Kalem adı boş olamaz.');
+  if (!g.id && g.yeniId && veri.kalemler.some(function (x) { return String(x.id) === String(g.yeniId); })) return; // zaten eklenmiş
   let k = g.id ? veri.kalemler.find(function (x) { return String(x.id) === String(g.id); }) : null;
   const yeniMi = !k;
   if (yeniMi) {
@@ -440,7 +484,14 @@ function kalemSonlandir_(veri, id) {
   } else senkron_(k, veri);
 }
 
-function kalemTasi_(veri, id, yon) {
+function kalemTasi_(veri, id, yon, siraListesi) {
+  if (Array.isArray(siraListesi) && siraListesi.length) {
+    siraListesi.forEach(function (kid, i) {
+      const k = veri.kalemler.find(function (x) { return String(x.id) === String(kid); });
+      if (k && num_(k.sira) !== i + 1) { k.sira = i + 1; satirYaz_('Kalemler', k); }
+    });
+    return;
+  }
   const grup = veri.kalemler.filter(function (k) { return bool_(k.aktif); })
     .sort(function (a, b) { return num_(a.sira) - num_(b.sira); });
   const yeni = {};
