@@ -73,6 +73,23 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .kalan small{display:block;font-size:13px;opacity:.8}
 .devir{display:block;font-size:12px;opacity:.85;margin-top:3px}
 .kalan strong{display:block;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.1;overflow-wrap:anywhere}
+.kalan-satir{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.kalan-satir strong{font-size:34px}
+.devir{display:block;text-align:right;font-size:11.5px;opacity:.85;line-height:1.35;white-space:nowrap;padding-bottom:4px}
+.devir b{display:block;font-size:14px;font-weight:700;opacity:1}
+.akis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:8px 0 6px}
+.akis > div{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 10px 7px;min-width:0}
+.akis-bas{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:3px}
+.akis-bas span{font-size:12px;font-weight:600;opacity:.85}
+.akis-bas b{font-size:17px;font-weight:800;white-space:nowrap}
+.akis-satir{display:flex;justify-content:space-between;gap:6px;font-size:12px;line-height:1.55;opacity:.88}
+.akis-satir span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.akis-satir em{font-style:normal;font-weight:600;white-space:nowrap}
+.akis-satir.sifir{opacity:.5}
+.akis-oran{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:10.5px;opacity:.85;white-space:nowrap}
+.akis-oran i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden}
+.akis-oran i b{display:block;height:100%;background:#fff;border-radius:2px}
+.ozet-cumle{font-size:12px;opacity:.92;margin:0 2px 8px;line-height:1.4}
 .ikili{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;padding:10px 0 14px}
 .ikili div{background:rgba(255,255,255,.12);border-radius:12px;padding:9px 11px;min-width:0}
 .ikili small{display:block;font-size:12px;opacity:.85}
@@ -257,7 +274,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .giris-kutu{width:100%;height:46px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey2);padding:0 12px;font-size:15px;margin-bottom:12px}
 .hakkinda{text-align:center;color:var(--soluk);font-size:12px;margin:18px 0 0}
 
-.bildirim{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--murekkep);color:var(--zemin);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:20;width:max-content;max-width:90vw;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.bildirim{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--murekkep);color:var(--zemin);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:20;width:max-content;max-width:90vw;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .geri-btn{color:inherit;font-weight:800;text-decoration:underline;text-underline-offset:3px;padding:6px 2px;flex:none}
 .kilit-cip{display:table;margin:0 auto 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.16);color:#fff;border-radius:20px;padding:5px 12px}
 .kilit-cip.acik{background:rgba(255,255,255,.3)}
@@ -560,7 +577,6 @@ function ayCiz() {
   const v = ayHesapla_(D.ay, D.raw);
   D.satirlar = v.satirlar;
   const o = v.ozet;
-  const oran = o.gider > 0 ? Math.min(100, o.giderOdenen / o.gider * 100) : 0;
   $('ust').innerHTML = `
     <div class="nav">
       <button class="ok" data-act="onceki" aria-label="Önceki ay">‹</button>
@@ -568,15 +584,8 @@ function ayCiz() {
       <button class="ok" data-act="sonraki" aria-label="Sonraki ay">›</button>
     </div>
     ${kilitCipi(v.ay)}
-    <div class="kalan"><small>Ay sonunda kalan</small><strong>${para(o.kalan)}</strong>${devirHTML(v.ay)}</div>
-    <div class="ikili">
-      <div><small>Gelir</small><b>${para(o.gelir)}</b><em>${para(o.gelirAlinan)} alındı</em></div>
-      <div><small>Gider</small><b>${para(o.gider)}</b><em>${o.bekleyen > 0 ? para(o.bekleyen) + ' ödenecek' : 'Hepsi ödendi'}</em></div>
-    </div>
-    ${o.borc ? `<p class="ust-not">Borç ve alacak: ${isaretli(o.borc)} (ay sonunda kalana dahil)</p>` : ''}
-    ${o.kart > 0 ? `<p class="ust-not">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}
-    ${o.gider > 0 ? `<div class="ilerleme-bas"><span>Ödenen giderler</span><span>%${Math.round(oran)}</span></div>
-    <div class="ilerleme"><i style="width:${oran}%"></i></div>` : '<div style="height:6px"></div>'}`;
+    <div class="kalan"><small>Ay sonunda kalan</small><div class="kalan-satir"><strong>${para(o.kalan)}</strong>${devirHTML(v.ay)}</div></div>
+    ${akisHTML(v)}`;
 
   const hicKalemYok = !D.raw.kalemler.some(k => bool_(k.aktif));
   const gelir = v.satirlar.filter(s => !s.tip && s.tur === 'gelir');
@@ -606,6 +615,41 @@ function ayCiz() {
   $('icerik').innerHTML = h;
 }
 /** Önceki ayların kalanlarının toplamı. Sadece bilgi: kayıt oluşturmaz, gelir sayılmaz. */
+/** Ayın para akışı: Giren (gelir, alınan borç, tahsilat) ve Çıkan (gider, borç ödemesi, verilen borç) */
+function akisHTML(v) {
+  const o = v.ozet;
+  const t = { alinan: 0, tahsilat: 0, odeme: 0, verilen: 0, girenGercek: o.gelirAlinan, cikanGercek: o.giderOdenen };
+  v.satirlar.forEach(s => {
+    if (!s.tip || s.kart) return;
+    const giris = s.tur === 'gelir';
+    const anahtar = s.tip === 'borc' ? (giris ? 'alinan' : 'odeme') : (giris ? 'tahsilat' : 'verilen');
+    t[anahtar] += s.tutar;
+    if (s.odendi) t[giris ? 'girenGercek' : 'cikanGercek'] += s.tutar;
+  });
+  const giren = o.gelir + t.alinan + t.tahsilat, cikan = o.gider + t.odeme + t.verilen;
+  const satir = (ad, n) => `<div class="akis-satir ${n ? '' : 'sifir'}"><span>${ad}</span><em>${para(n)}</em></div>`;
+  const oran = (g, top, yazi) => { const y = top > 0 ? Math.min(100, Math.round(g / top * 100)) : 0; return `<div class="akis-oran"><i><b style="width:${y}%"></b></i>%${y} ${yazi}</div>`; };
+  // Ayın durumunu tek cümleyle
+  const fark = o.gelir - o.gider, girisBorc = t.alinan + t.tahsilat;
+  let cumle = '';
+  if (fark > 0) cumle = `Gelirin giderini karşıladı, ${para(fark)} arttı.`;
+  else if (fark < 0) {
+    const kaynak = t.alinan && t.tahsilat ? 'borç ve tahsilatla' : t.alinan ? 'borçla' : 'tahsilatla';
+    cumle = girisBorc >= -fark ? `Giderin gelirinden ${para(-fark)} fazla, farkı ${kaynak} karşıladın.`
+      : girisBorc > 0 ? `Giderin gelirinden ${para(-fark)} fazla, bir kısmını ${kaynak} karşıladın.`
+      : `Giderin gelirinden ${para(-fark)} fazla.`;
+  }
+  return `<div class="akis">
+      <div><div class="akis-bas"><span>Giren</span><b>${para(giren)}</b></div>
+        ${satir('Gelir', o.gelir)}${satir('Alınan borç', t.alinan)}${satir('Tahsilat', t.tahsilat)}
+        ${oran(t.girenGercek, giren, 'alındı')}</div>
+      <div><div class="akis-bas"><span>Çıkan</span><b>${para(cikan)}</b></div>
+        ${satir('Gider', o.gider)}${satir('Borç ödemesi', t.odeme)}${satir('Verilen borç', t.verilen)}
+        ${oran(t.cikanGercek, cikan, 'ödendi')}</div>
+    </div>
+    ${cumle ? `<p class="ozet-cumle">${cumle}</p>` : ''}
+    ${o.kart > 0 ? `<p class="ozet-cumle" style="opacity:.75">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}`;
+}
 function devirHTML(ay) {
   let ilk = ay;
   D.raw.hareketler.forEach(h => { if (h.ay && h.ay < ilk) ilk = h.ay; });
@@ -614,7 +658,7 @@ function devirHTML(ay) {
   let devir = 0;
   for (let a = ilk, n = 0; a < ay && n < 240; a = ayEkle_(a, 1), n++) devir += ayHesapla_(a, D.raw).ozet.kalan;
   const bu = ayHesapla_(ay, D.raw).ozet.kalan;
-  return `<span class="devir">Önceki aylardan devir ${isaretli(devir)}, devirle birlikte ${para(devir + bu)}</span>`;
+  return `<span class="devir" title="Önceki aylardan devir ${isaretli(devir)}">devir ${isaretli(devir)}<b>toplam ${para(devir + bu)}</b></span>`;
 }
 /** Bu aydan önceki aylarda vadesi geçmiş, ödenmemiş kayıtlar (borç taksitleri, faturalar, tahsilatlar) */
 function gecikenleriBul() {
