@@ -428,7 +428,7 @@ function ayarKaydet(anahtar, deger) {
 function ciz() {
   if (!BAG) { document.querySelectorAll('.alt button').forEach(b => b.classList.remove('aktif')); return kurulumCiz(); }
   document.querySelectorAll('.alt button').forEach(b => b.classList.toggle('aktif', b.dataset.v === D.sekme));
-  $('fab').hidden = D.sekme !== 'ay' || !D.raw || !duzenlenebilir();
+  $('fab').hidden = !D.raw || !((D.sekme === 'ay' && duzenlenebilir()) || D.sekme === 'sabit');
   if (D.sekme === 'ayar') return ayarCiz();
   if (!D.raw) return;
   if (D.sekme === 'ay') ayCiz();
@@ -530,6 +530,7 @@ function durum(s) {
   if (s.gecikti) return { k: 'gecikti', y: g ? 'Alınmadı' : 'Ödenmedi' };
   return { k: 'bekliyor', y: g ? 'Bekleniyor' : 'Bekliyor' };
 }
+const borcGirisi = s => !!s.tip && !s.kalemId && ((s.tip === 'borc') === (s.tur === 'gelir'));
 const BORC_ETIKET = s => s.tip === 'borc' ? (s.tur === 'gider' ? 'Borç ödemesi' : 'Borç alındı') : (s.tur === 'gelir' ? 'Tahsilat' : 'Borç verildi');
 function satirHTML(s) {
   const d = durum(s), ay = s.geciken ? s.ay : D.ay;
@@ -543,6 +544,7 @@ function satirHTML(s) {
   const notSatiri = s.not && !s.atlandi ? `<div class="not-satir">${esc(s.not)}</div>` : '';
   const tik = s.kart
     ? '<span class="tik kartik" aria-hidden="true">💳</span>'
+    : borcGirisi(s) ? `<span class="tik" aria-hidden="true">${TIK}</span>`
     : `<button class="tik" data-act="tik" data-id="${esc(s.id)}" data-ay="${s.geciken ? s.ay : ''}" aria-label="${esc(s.ad)}: ${d.y}">${TIK}</button>`;
   const bosTutar = !(s.tutar > 0) && !s.atlandi;
   const son = s.sonTarih && !s.odendi && !s.kart && !s.atlandi ? `<span class="son">${s.tur === 'gelir' ? 'Beklenen' : 'Son ödeme'} ${kisaTarih(s.sonTarih)}</span>` : '';
@@ -597,19 +599,23 @@ function satirAc(id, ay) {
     return;
   }
   const odYazi = s.tur === 'gelir' ? 'Alındı' : 'Ödendi';
+  const giris = borcGirisi(s);
   let b;
-  if (s.kart) b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>`;
+  if (s.kart || giris) b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>`;
   else if (!s.odendi || s.atlandi) b = `<button class="btn ana" data-act="satirKaydet" data-odendi="1">${odYazi} olarak kaydet</button>
       <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">Sadece tutarı kaydet</button>`;
   else b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>
       <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">${s.tur === 'gelir' ? 'Alınmadı' : 'Ödenmedi'} yap</button>`;
-  if (s.kalemId) b += s.atlandi ? `<button class="btn metin" data-act="geriAl">Bu ay için geri getir</button>`
+  if (giris) b += `<button class="btn metin tehlike" data-act="borcSil">${s.tip === 'borc' ? 'Borcu sil (yanlış girdiysen)' : 'Alacağı sil (yanlış girdiysen)'}</button>`;
+  else if (s.kalemId) b += s.atlandi ? `<button class="btn metin" data-act="geriAl">Bu ay için geri getir</button>`
     : `<button class="btn metin" data-act="atla">Bu ay yok</button>`;
   else b += `<button class="btn metin tehlike" data-act="sil">Sil</button>`;
-  const sadeGelir = s.tur === 'gelir' && !s.tip;
+  if (s.tip && s.bagli) b += `<button class="btn metin" data-act="borcKapat">${s.tip === 'borc' ? 'Borcu kapat' : 'Alacağı kapat'}</button>
+    <p class="ipucu" style="text-align:center;margin-top:0">Kapatınca ödenmemiş taksitler kalkar, ödenenler kayıtta kalır.</p>`;
+  const sadeGelir = (s.tur === 'gelir' && !s.tip) || giris;
   cekmeceAc(`
     <h3>${esc(s.ad)}</h3>
-    <p class="aciklama">${ayAdi(D.ay)}${s.kategori ? ', ' + esc(s.kategori) : ''}</p>
+    <p class="aciklama">${ayAdi(D.ay)}${s.tip ? ', ' + BORC_ETIKET(s) : s.kategori ? ', ' + esc(s.kategori) : ''}</p>
     <label class="tutar-giris"><input id="sTutar" inputmode="decimal" placeholder="0" value="${girisDegeri(s.tutar)}" aria-label="Tutar"><span>₺</span></label>
     ${s.kalemId && !s.atlandi ? `<label class="secim"><input type="checkbox" id="sSonraki" ${s.zam ? 'checked' : ''}> Sonraki aylarda da bu tutar olsun</label>` : ''}
     ${!s.kalemId && !s.tip ? `<label class="alan"><span>Ad</span><input id="sAd" value="${esc(s.ad)}"></label>` : ''}
@@ -636,32 +642,66 @@ function satirKaydet(odendi) {
     bildir(s.ad + ' kaydedildi', p.sonraki ? null : () => satiraDon(p.yeniId || s.id, once));
 }
 
-/* Hızlı ekleme */
+/* Hızlı ekleme: Gider | Gelir | Borç | Alacak */
+const alanDeger = id => $(id) ? $(id).value : '';
 function ekleAc() {
-  D.cek = { tip: 'ekle', tur: 'gider', kat: kategoriler()[0] || 'Diğer' };
+  D.cek = { tip: 'ekle', tur: 'gider', kat: kategoriler()[0] || 'Diğer', alt: 'yeni', sekil: 'tek', bagli: null };
   ekleCiz();
   setTimeout(() => $('eTutar') && $('eTutar').focus(), 250);
 }
-const aktifBorclar = () => kalemListesiHesapla_(D.raw).filter(k => k.tip);
+const borcKapandi = k => k.toplam > 0 && k.odenen >= k.toplam - 0.005;
+const acikBorclar = tip => kalemListesiHesapla_(D.raw).filter(k => k.tip === tip && !borcKapandi(k));
+function varsayilanTarih() {
+  if (D.ay === D.raw.buAy) { const d = new Date(D.raw.bugun + 'T12:00:00'); d.setDate(d.getDate() + 7); return d.toISOString().slice(0, 10); }
+  return D.ay + '-' + String(ayGunSayisi_(D.ay)).padStart(2, '0');
+}
 function ekleCiz(k) {
-  const c = D.cek, gider = c.tur === 'gider', borclar = aktifBorclar();
-  k = k || {};
-  const seg = `<div class="seg"><button data-act="eTur" data-v="gider" class="${c.tur === 'gider' ? 'on' : ''}">Gider</button><button data-act="eTur" data-v="gelir" class="${c.tur === 'gelir' ? 'on' : ''}">Gelir</button>${borclar.length ? `<button data-act="eTur" data-v="borc" class="${c.tur === 'borc' ? 'on' : ''}">Borç/Alacak</button>` : ''}</div>`;
-  if (c.tur === 'borc') {
-    if (!borclar.some(b => b.id === c.bagli)) c.bagli = borclar[0] && borclar[0].id;
-    const sec = borclar.find(b => b.id === c.bagli);
-    cekmeceAc(`${seg}
-      <label class="tutar-giris"><input id="eTutar" inputmode="decimal" placeholder="0" value="${esc(k.tutar || '')}" aria-label="Tutar"><span>₺</span></label>
-      <div class="cipler">${borclar.map(b => `<button class="cip ${b.id === c.bagli ? 'on' : ''}" data-act="eBagli" data-v="${esc(b.id)}">${esc(b.ad)} (${b.tip === 'borc' ? 'borç' : 'alacak'})</button>`).join('')}</div>
-      <p class="ipucu">${sec && sec.tip === 'alacak' ? 'Tahsilat olarak eklenir, kalan alacaktan düşer.' : 'Borç ödemesi olarak eklenir, kalan borçtan düşer.'} Düzenli taksitler zaten listede; bunu ara ödemeler için kullan.</p>
-      <button class="btn ana" data-act="ekleKaydet">${ayAdi(D.ay)} ayına ekle</button>`);
+  const c = D.cek; k = k || {};
+  const segBtn = (v, y) => `<button data-act="eTur" data-v="${v}" class="${c.tur === v ? 'on' : ''}">${y}</button>`;
+  const seg = `<div class="seg">${segBtn('gider', 'Gider')}${segBtn('gelir', 'Gelir')}${segBtn('borc', 'Borç')}${segBtn('alacak', 'Alacak')}</div>`;
+  const tutarAlan = `<label class="tutar-giris"><input id="eTutar" inputmode="decimal" placeholder="0" value="${esc(k.tutar || '')}" aria-label="Tutar"><span>₺</span></label>`;
+  const btn = `<button class="btn ana" data-act="ekleKaydet">${ayAdi(D.ay)} ayına ekle</button>`;
+
+  if (c.tur === 'borc' || c.tur === 'alacak') {
+    const borc = c.tur === 'borc', acik = acikBorclar(c.tur);
+    if (!acik.length) c.alt = 'yeni';
+    const altBtn = (v, y) => `<button data-act="eAlt" data-v="${v}" class="${c.alt === v ? 'on' : ''}">${y}</button>`;
+    const alt = acik.length ? `<div class="seg">${altBtn('yeni', borc ? 'Borç aldım' : 'Borç verdim')}${altBtn('odeme', borc ? 'Borç ödedim' : 'Tahsil ettim')}</div>` : '';
+    if (c.alt === 'odeme') {
+      if (!acik.some(b => b.id === c.bagli)) c.bagli = acik[0].id;
+      const sec = acik.find(b => b.id === c.bagli);
+      cekmeceAc(`${seg}${alt}${tutarAlan}
+        <div class="cipler">${acik.map(b => `<button class="cip ${b.id === c.bagli ? 'on' : ''}" data-act="eBagli" data-v="${esc(b.id)}">${esc(b.ad)}</button>`).join('')}</div>
+        <p class="ipucu">${sec.toplam ? 'Kalan ' + para(sec.toplam - sec.odenen) + '. ' : ''}${borc ? 'Ödediğin tutar kalan borçtan düşer.' : 'Aldığın tutar kalan alacaktan düşer.'}</p>
+        <label class="alan"><span>Açıklama</span><input id="eNot" value="${esc(k.not || '')}" placeholder="İsteğe bağlı"></label>
+        ${btn}`);
+      return;
+    }
+    const sb = (v, y) => `<button data-act="eSekil" data-v="${v}" class="${c.sekil === v ? 'on' : ''}">${y}</button>`;
+    let sekilAlan;
+    if (c.sekil === 'tek') sekilAlan = `<label class="alan"><span>${borc ? 'Geri ödeme tarihi' : 'Geri alınacak tarih'}</span><input id="eTarih" type="date" value="${esc(k.tarih || varsayilanTarih())}"></label>`;
+    else if (c.sekil === 'taksit') sekilAlan = `<div class="yan">
+        <label class="alan"><span>Aylık taksit</span><input id="eTaksitT" inputmode="decimal" value="${esc(k.taksitT || '')}" placeholder="0"></label>
+        <label class="alan"><span>Kaç ay</span><input id="eSayi" type="number" min="1" max="120" inputmode="numeric" value="${esc(k.sayi || '')}" placeholder="Örn. 8"></label>
+      </div>
+      <label class="alan"><span>İlk taksit ayı</span><input id="eIlkAy" type="month" value="${esc(k.ilkAy || ayEkle_(D.ay, 1))}"></label>`;
+    else sekilAlan = `<p class="ipucu">Otomatik ödeme satırı oluşmaz. ${borc ? 'Ödedikçe + → Borç → Borç ödedim' : 'Aldıkça + → Alacak → Tahsil ettim'} ile eklersin.</p>`;
+    cekmeceAc(`${seg}${alt}${tutarAlan}
+      <label class="alan"><span>${borc ? 'Kimden' : 'Kime'}</span><input id="eKisi" value="${esc(k.kisi || '')}" placeholder="${borc ? 'Örn. Abim' : 'Örn. Arkadaşım'}"></label>
+      <label class="alan"><span>Açıklama</span><input id="eNot" value="${esc(k.not || '')}" placeholder="${borc ? 'Örn. Araba tamiri için' : 'Örn. Kira desteği'}"></label>
+      <p class="ipucu" style="margin-bottom:6px">${borc ? 'Nasıl geri ödeyeceksin?' : 'Nasıl geri alacaksın?'}</p>
+      <div class="seg">${sb('tek', 'Tek seferde')}${sb('taksit', 'Taksitli')}${sb('belirsiz', 'Belli değil')}</div>
+      ${sekilAlan}
+      <p class="ipucu" id="eIpucu"></p>
+      ${btn}`);
+    ekleIpucu();
     return;
   }
+
+  const gider = c.tur === 'gider';
   const kats = gider ? kategoriler() : GELIR_KAT;
   if (!kats.includes(c.kat)) c.kat = kats[0] || 'Diğer';
-  cekmeceAc(`
-    ${seg}
-    <label class="tutar-giris"><input id="eTutar" inputmode="decimal" placeholder="0" value="${esc(k.tutar || '')}" aria-label="Tutar"><span>₺</span></label>
+  cekmeceAc(`${seg}${tutarAlan}
     <div class="cipler">${kats.map(x => `<button class="cip ${x === c.kat ? 'on' : ''}" data-act="eKat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     <label class="alan"><span>Açıklama</span><input id="eAd" placeholder="Boş bırakırsan ${esc(c.kat)} yazılır" value="${esc(k.ad || '')}"></label>
     ${gider ? `<div class="yan">
@@ -669,24 +709,33 @@ function ekleCiz(k) {
       <label class="alan"><span>Taksit</span><select id="eTaksit">${[1, 2, 3, 4, 5, 6, 8, 9, 10, 12].map(n => `<option value="${n}" ${String(k.taksit) === String(n) ? 'selected' : ''}>${n === 1 ? 'Tek çekim' : n + ' taksit'}</option>`).join('')}</select></label>
     </div>` : ''}
     <p class="ipucu" id="eIpucu"></p>
-    <button class="btn ana" data-act="ekleKaydet">${ayAdi(D.ay)} ayına ekle</button>`);
+    ${btn}`);
   ekleIpucu();
 }
-const ekleKoru = () => ({ tutar: $('eTutar').value, ad: $('eAd') ? $('eAd').value : '', kart: $('eKart') && $('eKart').checked, taksit: $('eTaksit') && $('eTaksit').value });
+const ekleKoru = () => ({
+  tutar: alanDeger('eTutar'), ad: alanDeger('eAd'), kart: $('eKart') && $('eKart').checked, taksit: alanDeger('eTaksit'),
+  kisi: alanDeger('eKisi'), not: alanDeger('eNot'), tarih: alanDeger('eTarih'), taksitT: alanDeger('eTaksitT'), sayi: alanDeger('eSayi'), ilkAy: alanDeger('eIlkAy')
+});
 function ekleIpucu() {
   const el = $('eIpucu'); if (!el) return;
-  const n = +($('eTaksit') ? $('eTaksit').value : 1), t = tutarOku($('eTutar').value);
   const m = [];
-  if (n > 1) m.push(`Yazdığın toplam tutar ${n} aya bölünür${t > 0 ? ', aylık ' + para(t / n) : ''}.`);
+  if ($('eSayi')) {
+    const tk = tutarOku(alanDeger('eTaksitT')), n = parseInt(alanDeger('eSayi'), 10);
+    if (tk > 0 && n > 0) m.push(`Toplam geri ${D.cek.tur === 'borc' ? 'ödenecek' : 'alınacak'}: ${para(tk * n)}, son taksit ${ayAdi(ayEkle_(alanDeger('eIlkAy') || ayEkle_(D.ay, 1), n - 1))}.`);
+  }
+  const n = +(alanDeger('eTaksit') || 1), t = tutarOku(alanDeger('eTutar'));
+  if ($('eTaksit') && n > 1) m.push(`Yazdığın toplam tutar ${n} aya bölünür${t > 0 ? ', aylık ' + para(t / n) : ''}.`);
   if ($('eKart') && $('eKart').checked) m.push('Kartla yapılanlar kayıtta durur ama toplamlara eklenmez. Ödemesi Kredi kartı satırından düşer.');
   el.textContent = m.join(' ');
 }
 function ekleKaydet() {
+  const c = D.cek;
   const t = tutarOku($('eTutar').value);
   if (!(t > 0)) { bildir('Tutar yaz.'); return $('eTutar').focus(); }
-  if (D.cek.tur === 'borc') {
-    const b = aktifBorclar().find(x => x.id === D.cek.bagli); if (!b) return;
-    const q = temizle({ ay: D.ay, tutar: t, bagli: b.id, idler: [yeniId_('h')], kilitAcik: kilitParam() });
+
+  if ((c.tur === 'borc' || c.tur === 'alacak') && c.alt === 'odeme') {
+    const b = acikBorclar(c.tur).find(x => x.id === c.bagli); if (!b) return;
+    const q = temizle({ ay: D.ay, tutar: t, bagli: b.id, not: alanDeger('eNot').trim(), idler: [yeniId_('h')], kilitAcik: kilitParam() });
     cekmeceKapat();
     if (islem(() => harcamaEkle_(D.raw, q), 'api_harcamaEkle', q))
       bildir(`Eklendi: ${b.ad} ${b.tip === 'borc' ? 'ödemesi' : 'tahsilatı'} ${para(t)}`, () => {
@@ -694,9 +743,30 @@ function ekleKaydet() {
       });
     return;
   }
+
+  if (c.tur === 'borc' || c.tur === 'alacak') {
+    const borc = c.tur === 'borc';
+    const p = temizle({
+      ay: D.ay, tip: c.tur, ad: alanDeger('eKisi').trim(), tutar: t, not: alanDeger('eNot').trim(), sekil: c.sekil,
+      tarih: alanDeger('eTarih') || undefined, taksit: tutarOku(alanDeger('eTaksitT')) || undefined,
+      taksitSayisi: alanDeger('eSayi') || undefined, ilkAy: alanDeger('eIlkAy') || undefined,
+      kalemId: yeniId_('k'), girisId: yeniId_('h'), kilitAcik: kilitParam()
+    });
+    if (!p.ad) { bildir(borc ? 'Kimden aldığını yaz.' : 'Kime verdiğini yaz.'); return $('eKisi').focus(); }
+    if (p.sekil === 'tek' && !p.tarih) return bildir('Tarihi seç.');
+    if (p.sekil === 'taksit' && !(p.taksit > 0 && +p.taksitSayisi > 0)) return bildir('Aylık taksiti ve kaç ay olduğunu yaz.');
+    try { borcEkle_(JSON.parse(JSON.stringify(D.raw)), p); } catch (e) { return hata(e); } // önce kontrol, pencere kapanmadan
+    cekmeceKapat();
+    if (islem(() => borcEkle_(D.raw, p), 'api_borcEkle', p))
+      bildir(`Eklendi: ${p.ad} ${para(t)}`, () => {
+        if (islem(() => borcSil_(D.raw, p.kalemId, p.kilitAcik), 'api_borcSil', p.kalemId, p.kilitAcik)) bildir('Geri alındı');
+      });
+    return;
+  }
+
   const n = $('eTaksit') ? +$('eTaksit').value : 1;
   const p = {
-    ay: D.ay, tur: D.cek.tur, kategori: D.cek.kat, ad: $('eAd').value.trim() || D.cek.kat, tutar: t,
+    ay: D.ay, tur: c.tur, kategori: c.kat, ad: $('eAd').value.trim() || c.kat, tutar: t,
     kart: $('eKart') ? $('eKart').checked : false, taksit: n, idler: Array.from({ length: n }, () => yeniId_('h')),
     kilitAcik: kilitParam()
   };
@@ -713,7 +783,9 @@ function sabitCiz() {
   $('ust').innerHTML = baslik('Sabitler', 'Her ay listeye kendiliğinden gelen kalemler');
   const liste = kalemListesiHesapla_(D.raw);
   const grup = tur => liste.filter(k => !k.tip && k.tur === tur);
-  const borc = liste.filter(k => k.tip === 'borc'), alacak = liste.filter(k => k.tip === 'alacak');
+  const borc = liste.filter(k => k.tip === 'borc' && !borcKapandi(k)), alacak = liste.filter(k => k.tip === 'alacak' && !borcKapandi(k));
+  const kapanan = liste.filter(k => k.tip && borcKapandi(k)).concat(D.raw.kalemler.filter(k => k.tip && !bool_(k.aktif))
+    .map(k => ({ id: String(k.id), ad: k.ad, tip: k.tip, toplam: num_(k.toplam) || 0, odenen: borcOdenen_(k, D.raw), kapali: true })));
   const kalanTop = l => l.reduce((t, k) => t + (k.toplam ? Math.max(0, k.toplam - k.odenen) : 0), 0);
   const yaz = l => l.length ? l.map(kalemHTML).join('') : '<div class="bos-mesaj">Henüz kalem yok.</div>';
   $('icerik').innerHTML = `
@@ -721,8 +793,10 @@ function sabitCiz() {
     <section class="bolum"><h2>Giderler</h2><div class="liste">${yaz(grup('gider'))}</div></section>
     ${borc.length ? `<section class="bolum"><h2>Borçlarım<span>kalan ${para(kalanTop(borc))}</span></h2><div class="liste">${yaz(borc)}</div></section>` : ''}
     ${alacak.length ? `<section class="bolum"><h2>Alacaklarım<span>kalan ${para(kalanTop(alacak))}</span></h2><div class="liste">${yaz(alacak)}</div></section>` : ''}
-    <button class="btn ana" style="margin-top:18px" data-act="kalemAc">Yeni kalem ekle</button>
-    <p class="ipucu" style="margin-top:10px">Bir kalemin tutarını değiştirirsen bu aydan itibaren geçerli olur, geçmiş aylar olduğu gibi kalır. Sırayı oklarla değiştirebilirsin.</p>`;
+    ${kapanan.length ? `<section class="bolum"><button class="btn metin" data-act="kapananAc">${D.kapananAcik ? 'Kapananları gizle' : 'Kapanan borç ve alacaklar (' + kapanan.length + ')'}</button>
+      ${D.kapananAcik ? `<div class="liste">${kapanan.map(k => `<div class="kalem"><button class="bilgi" data-act="${k.kapali ? 'kapananDetay' : 'kalemAc'}" data-id="${esc(k.id)}"><div class="ad">${esc(k.ad)}</div>
+        <div class="alt-yazi">${k.tip === 'borc' ? 'Borç' : 'Alacak'}, ${k.kapali ? 'kapatıldı' : 'tamamı ödendi'}, ${para(k.odenen)}${k.toplam ? ' / ' + para(k.toplam) : ''}</div></button></div>`).join('')}</div>` : ''}</section>` : ''}
+    <p class="ipucu" style="margin-top:14px">Yeni sabit kalem için sağ alttaki + düğmesini kullan. Borç ve alacaklar aylık listedeki + ile eklenir. Bir kalemin tutarını değiştirirsen bu aydan itibaren geçerli olur, geçmiş aylar olduğu gibi kalır. Sırayı oklarla değiştirebilirsin.</p>`;
 }
 function kalemOzet(k) {
   if (k.tip) {
@@ -766,10 +840,10 @@ function kalemCiz(k) {
   const katlar = [...new Set(D.raw.kalemler.map(x => x.kategori).filter(Boolean))];
   const turBtn = (v, y) => `<button data-act="kTur" data-v="${v}" class="${c.tur === v ? 'on' : ''}">${y}</button>`;
   cekmeceAc(`
-    <h3>${c.id ? 'Kalemi düzenle' : 'Yeni kalem'}</h3>
+    <h3>${c.id ? (tip ? (borcMu ? 'Borcu düzenle' : 'Alacağı düzenle') : 'Kalemi düzenle') : 'Yeni sabit kalem'}</h3>
     <p class="aciklama">${tip ? (borcMu ? 'Aldığın borç. Taksitler her ay listeye gelir, kalan borç takip edilir.' : 'Verdiğin borç. Beklenen tahsilatlar listeye gelir, kalan alacak takip edilir.') : 'Seçtiğin aylarda listeye kendiliğinden eklenir.'}</p>
-    <div class="seg">${turBtn('gelir', 'Gelir')}${turBtn('gider', 'Gider')}${turBtn('borc', 'Borç')}${turBtn('alacak', 'Alacak')}</div>
-    <label class="alan"><span>${tip ? (borcMu ? 'Kimden' : 'Kime') : 'Ad'}</span><input id="kAd" value="${esc(k.ad || '')}" placeholder="${tip ? 'Örn. Gökhan' : 'Örn. Kira'}"></label>
+    ${tip ? '' : `<div class="seg">${turBtn('gelir', 'Gelir')}${turBtn('gider', 'Gider')}</div>`}
+    <label class="alan"><span>${tip ? (borcMu ? 'Kimden' : 'Kime') : 'Ad'}</span><input id="kAd" value="${esc(k.ad || '')}" placeholder="${tip ? (borcMu ? 'Örn. Abim' : 'Örn. Arkadaşım') : 'Örn. Kira'}"></label>
     <div class="yan">
       <label class="alan"><span>${tip ? 'Aylık taksit' : 'Tutar'}</span><input id="kTutar" inputmode="decimal" value="${girisDegeri(k.tutar)}" placeholder="0"></label>
       ${tip ? `<label class="alan"><span>${borcMu ? 'Toplam geri ödenecek' : 'Toplam geri alınacak'}</span><input id="kToplam" inputmode="decimal" value="${girisDegeri(k.toplam)}" placeholder="Bilmiyorsan boş"></label>`
@@ -1017,6 +1091,8 @@ document.addEventListener('click', e => {
     case 'duzenle': satirAc(id, t.dataset.ay || undefined); break;
     case 'gecikenTumu': D.gecikenAcik = !D.gecikenAcik; ciz(); break;
     case 'eBagli': { const k = ekleKoru(); D.cek.bagli = v; ekleCiz(k); break; }
+    case 'eAlt': { const k = ekleKoru(); D.cek.alt = v; ekleCiz(k); break; }
+    case 'eSekil': { const k = ekleKoru(); D.cek.sekil = v; ekleCiz(k); break; }
     case 'kapat': cekmeceKapat(); break;
     case 'satirKaydet': satirKaydet(t.dataset.odendi); break;
     case 'atla': case 'geriAl': {
@@ -1027,6 +1103,30 @@ document.addEventListener('click', e => {
         bildir(a === 'atla' ? s.ad + ': bu ay yok' : s.ad + ' geri getirildi', () => satiraDon(p.yeniId || s.id, once));
       break;
     }
+    case 'borcSil': case 'borcKapat': {
+      if (!D.cek.onay) { D.cek.onay = a; t.textContent = 'Emin misin? Tekrar dokun'; break; }
+      if (D.cek.onay !== a) { D.cek.onay = a; t.textContent = 'Emin misin? Tekrar dokun'; break; }
+      const s = satirBul(D.cek.id, D.cek.gAy); cekmeceKapat(); if (!s) break;
+      const kid = s.bagli, ka = kilitParam(), ad = s.ad;
+      if (a === 'borcSil') { if (islem(() => borcSil_(D.raw, kid, ka), 'api_borcSil', kid, ka)) bildir(ad + ' silindi'); }
+      else if (islem(() => kalemSonlandir_(D.raw, kid), 'api_kalemSonlandir', kid)) bildir(ad + ' kapatıldı. Sabitler → Kapananlar bölümünden yeniden açabilirsin.');
+      break;
+    }
+    case 'kapananAc': D.kapananAcik = !D.kapananAcik; ciz(); break;
+    case 'kapananDetay': {
+      const k = D.raw.kalemler.find(x => String(x.id) === id); if (!k) break;
+      D.cek = { tip: 'kapanan', id };
+      cekmeceAc(`<h3>${esc(k.ad)}</h3>
+        <p class="aciklama">${k.tip === 'borc' ? 'Borç' : 'Alacak'}, kapatıldı</p>
+        <div class="bilgi-satirlari">
+          <div><span>${k.tip === 'borc' ? 'Ödenen' : 'Alınan'}</span><b>${para(borcOdenen_(k, D.raw))}</b></div>
+          ${num_(k.toplam) ? `<div><span>Toplam</span><b>${para(num_(k.toplam))}</b></div>` : ''}
+          ${k.not ? `<div><span>Açıklama</span><b>${esc(k.not)}</b></div>` : ''}
+        </div>
+        <button class="btn ikinci" data-act="yenidenAc" data-id="${esc(id)}">Yeniden aç</button>`);
+      break;
+    }
+    case 'yenidenAc': cekmeceKapat(); if (islem(() => kalemYenidenAc_(D.raw, id), 'api_kalemYenidenAc', id)) bildir('Yeniden açıldı'); break;
     case 'sil': {
       const s = satirBul(D.cek.id, D.cek.gAy); cekmeceKapat(); if (!s) break;
       const kopya = Object.assign({}, hamSatir(s.id)), ka = kilitParam();
@@ -1034,7 +1134,7 @@ document.addEventListener('click', e => {
         bildir(s.ad + ' silindi', () => { if (islem(() => satirGeriEkle_(D.raw, kopya, ka), 'api_satirGeriEkle', kopya, ka)) bildir('Geri alındı'); });
       break;
     }
-    case 'ekle': if (duzenlenebilir()) ekleAc(); else kilitUyari(); break;
+    case 'ekle': if (D.sekme === 'sabit') kalemAc(); else if (duzenlenebilir()) ekleAc(); else kilitUyari(); break;
     case 'eTur': { const k = ekleKoru(); D.cek.tur = v; D.cek.kat = null; ekleCiz(k); break; }
     case 'eKat': { const k = ekleKoru(); D.cek.kat = v; ekleCiz(k); break; }
     case 'ekleKaydet': ekleKaydet(); break;
@@ -1060,7 +1160,7 @@ document.addEventListener('click', e => {
     }
   }
 });
-document.addEventListener('input', e => { if (['eTutar', 'eTaksit', 'eKart'].includes(e.target.id)) ekleIpucu(); });
+document.addEventListener('input', e => { if (['eTutar', 'eTaksit', 'eKart', 'eTaksitT', 'eSayi', 'eIlkAy'].includes(e.target.id)) ekleIpucu(); });
 document.addEventListener('change', e => {
   if (['eTaksit', 'eKart'].includes(e.target.id)) ekleIpucu();
   if (e.target.id === 'kBaslamadi') $('kBas').disabled = e.target.checked;
