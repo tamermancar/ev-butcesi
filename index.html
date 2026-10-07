@@ -75,11 +75,14 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .kalan strong{display:block;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.1;overflow-wrap:anywhere}
 .kalan-satir{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .kalan-satir strong{font-size:34px}
-.devir{display:block;text-align:right;font-size:11.5px;opacity:.85;line-height:1.35;white-space:nowrap;padding-bottom:4px}
+.devir{display:block;text-align:right;margin-left:auto;font-size:11.5px;opacity:.85;line-height:1.35;white-space:nowrap;padding-bottom:4px}
 .devir b{display:block;font-size:14px;font-weight:700;opacity:1}
 .akis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:8px 0 6px}
 .akis > div{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 10px 7px;min-width:0}
-.akis-bas{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:3px}
+.akis-bas{margin-bottom:4px}
+.akis-bas span{display:block}
+.akis-bas b{display:block;line-height:1.25}
+.akis-bas b small,.akis-satir em small,.bolum h2 small{font-size:.78em;font-weight:500;opacity:.7;margin-left:2px}
 .akis-bas span{font-size:12px;font-weight:600;opacity:.85}
 .akis-bas b{font-size:17px;font-weight:800;white-space:nowrap}
 .akis-satir{display:flex;justify-content:space-between;gap:6px;font-size:12px;line-height:1.55;opacity:.88}
@@ -584,7 +587,7 @@ function ayCiz() {
       <button class="ok" data-act="sonraki" aria-label="Sonraki ay">›</button>
     </div>
     ${kilitCipi(v.ay)}
-    <div class="kalan"><small>Ay sonunda kalan</small><div class="kalan-satir"><strong>${para(o.kalan)}</strong>${devirHTML(v.ay)}</div></div>
+    <div class="kalan"><small>Ay sonunda kalan</small><div class="kalan-satir"><strong>${para(o.kalan)}</strong>${devirHTML(v.ay, v)}</div></div>
     ${akisHTML(v)}`;
 
   const hicKalemYok = !D.raw.kalemler.some(k => bool_(k.aktif));
@@ -593,7 +596,7 @@ function ayCiz() {
   const diger = v.satirlar.filter(s => !s.tip && s.tur === 'gider' && !s.kalemId);
   const borclar = v.satirlar.filter(s => s.tip);
   D.gecikenler = v.ay === v.buAy ? gecikenleriBul() : [];
-  const toplam = l => para(l.filter(s => !s.kart).reduce((t, s) => t + s.tutar, 0));
+  const toplam = l => { const k = l.filter(s => !s.kart); return ikiDeger(k.filter(s => s.odendi).reduce((t, s) => t + s.tutar, 0), k.reduce((t, s) => t + s.tutar, 0)); };
 
   let h = '';
   if (hicKalemYok) h += `<div class="karsilama"><h3>Hoş geldin</h3>
@@ -615,50 +618,64 @@ function ayCiz() {
   $('icerik').innerHTML = h;
 }
 /** Önceki ayların kalanlarının toplamı. Sadece bilgi: kayıt oluşturmaz, gelir sayılmaz. */
-/** Ayın para akışı: Giren (gelir, alınan borç, tahsilat) ve Çıkan (gider, borç ödemesi, verilen borç) */
-function akisHTML(v) {
+/** Ayın para akışı: Giren (gelir, alınan borç, tahsilat) ve Çıkan (gider, borç ödemesi, verilen borç).
+ *  Büyük rakam gerçekleşen (alınan/ödenen), yanındaki küçük rakam ay sonunda olacak toplam. */
+const yalin = n => (D.ayar.kurus === 'evet' ? NF2 : NF0).format(Math.round((n || 0) * 100) / 100);
+const ikiDeger = (g, p) => Math.abs(g - p) < 0.005 ? para(p) : `${para(g)} <small>/ ${yalin(p)}</small>`;
+function akisOzeti(v) {
   const o = v.ozet;
-  const t = { alinan: 0, tahsilat: 0, odeme: 0, verilen: 0, girenGercek: o.gelirAlinan, cikanGercek: o.giderOdenen };
+  const t = { gelir: [o.gelirAlinan, o.gelir], gider: [o.giderOdenen, o.gider], alinan: [0, 0], tahsilat: [0, 0], odeme: [0, 0], verilen: [0, 0] };
   v.satirlar.forEach(s => {
     if (!s.tip || s.kart) return;
     const giris = s.tur === 'gelir';
-    const anahtar = s.tip === 'borc' ? (giris ? 'alinan' : 'odeme') : (giris ? 'tahsilat' : 'verilen');
-    t[anahtar] += s.tutar;
-    if (s.odendi) t[giris ? 'girenGercek' : 'cikanGercek'] += s.tutar;
+    const a = s.tip === 'borc' ? (giris ? 'alinan' : 'odeme') : (giris ? 'tahsilat' : 'verilen');
+    t[a][1] += s.tutar; if (s.odendi) t[a][0] += s.tutar;
   });
-  const giren = o.gelir + t.alinan + t.tahsilat, cikan = o.gider + t.odeme + t.verilen;
-  const satir = (ad, n) => `<div class="akis-satir ${n ? '' : 'sifir'}"><span>${ad}</span><em>${para(n)}</em></div>`;
-  const oran = (g, top, yazi) => { const y = top > 0 ? Math.min(100, Math.round(g / top * 100)) : 0; return `<div class="akis-oran"><i><b style="width:${y}%"></b></i>%${y} ${yazi}</div>`; };
-  // Ayın durumunu tek cümleyle
-  const fark = o.gelir - o.gider, girisBorc = t.alinan + t.tahsilat;
+  const top = ks => [0, 1].map(i => ks.reduce((x, k) => x + t[k][i], 0));
+  t.giren = top(['gelir', 'alinan', 'tahsilat']); t.cikan = top(['gider', 'odeme', 'verilen']);
+  return t;
+}
+function akisHTML(v) {
+  const o = v.ozet, t = akisOzeti(v);
+  const satir = (ad, d) => `<div class="akis-satir ${d[1] ? '' : 'sifir'}"><span>${ad}</span><em>${para(d[0])}</em></div>`;
+  const durum = (d, bekliyor, hepsi) => {
+    const kalan = d[1] - d[0], y = d[1] > 0 ? Math.min(100, d[0] / d[1] * 100) : 0;
+    const yazi = d[1] <= 0 ? '' : kalan > 0.005 ? `${para(kalan)} ${bekliyor}` : hepsi;
+    return `<div class="akis-oran"><i><b style="width:${y}%"></b></i>${yazi}</div>`;
+  };
+  // Ayın durumunu tek cümleyle (planlanana göre)
+  const fark = o.gelir - o.gider, girisBorc = t.alinan[1] + t.tahsilat[1];
   let cumle = '';
-  if (fark > 0) cumle = `Gelirin giderini karşıladı, ${para(fark)} arttı.`;
+  if (fark > 0) cumle = `Gelirin giderini karşılıyor, ay sonunda ${para(fark)} artı.`;
   else if (fark < 0) {
-    const kaynak = t.alinan && t.tahsilat ? 'borç ve tahsilatla' : t.alinan ? 'borçla' : 'tahsilatla';
+    const kaynak = t.alinan[1] && t.tahsilat[1] ? 'borç ve tahsilatla' : t.alinan[1] ? 'borçla' : 'tahsilatla';
     cumle = girisBorc >= -fark ? `Giderin gelirinden ${para(-fark)} fazla, farkı ${kaynak} karşıladın.`
       : girisBorc > 0 ? `Giderin gelirinden ${para(-fark)} fazla, bir kısmını ${kaynak} karşıladın.`
       : `Giderin gelirinden ${para(-fark)} fazla.`;
   }
   return `<div class="akis">
-      <div><div class="akis-bas"><span>Giren</span><b>${para(giren)}</b></div>
-        ${satir('Gelir', o.gelir)}${satir('Alınan borç', t.alinan)}${satir('Tahsilat', t.tahsilat)}
-        ${oran(t.girenGercek, giren, 'alındı')}</div>
-      <div><div class="akis-bas"><span>Çıkan</span><b>${para(cikan)}</b></div>
-        ${satir('Gider', o.gider)}${satir('Borç ödemesi', t.odeme)}${satir('Verilen borç', t.verilen)}
-        ${oran(t.cikanGercek, cikan, 'ödendi')}</div>
+      <div><div class="akis-bas"><span>Giren</span><b>${ikiDeger(t.giren[0], t.giren[1])}</b></div>
+        ${satir('Gelir', t.gelir)}${satir('Alınan borç', t.alinan)}${satir('Tahsilat', t.tahsilat)}
+        ${durum(t.giren, 'bekliyor', 'Hepsi alındı')}</div>
+      <div><div class="akis-bas"><span>Çıkan</span><b>${ikiDeger(t.cikan[0], t.cikan[1])}</b></div>
+        ${satir('Gider', t.gider)}${satir('Borç ödemesi', t.odeme)}${satir('Verilen borç', t.verilen)}
+        ${durum(t.cikan, 'ödenecek', 'Hepsi ödendi')}</div>
     </div>
     ${cumle ? `<p class="ozet-cumle">${cumle}</p>` : ''}
     ${o.kart > 0 ? `<p class="ozet-cumle" style="opacity:.75">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}`;
 }
-function devirHTML(ay) {
+function devirHTML(ay, v) {
+  const t = v ? akisOzeti(v) : null;
+  const suAn = t ? t.giren[0] - t.cikan[0] : 0;
+  const suAnYazi = t && Math.abs(suAn - v.ozet.kalan) > 0.005 ? `şu an ${isaretli(suAn)}<br>` : '';
   let ilk = ay;
   D.raw.hareketler.forEach(h => { if (h.ay && h.ay < ilk) ilk = h.ay; });
   D.raw.kalemler.forEach(k => { if (bool_(k.aktif) && k.baslangic && k.baslangic < ilk) ilk = k.baslangic; });
-  if (ilk >= ay) return '';
+  if (ilk >= ay) return suAnYazi ? `<span class="devir">${suAnYazi}</span>` : '';
   let devir = 0;
   for (let a = ilk, n = 0; a < ay && n < 240; a = ayEkle_(a, 1), n++) devir += ayHesapla_(a, D.raw).ozet.kalan;
   const bu = ayHesapla_(ay, D.raw).ozet.kalan;
-  return `<span class="devir" title="Önceki aylardan devir ${isaretli(devir)}">devir ${isaretli(devir)}<b>toplam ${para(devir + bu)}</b></span>`;
+  return `<span class="devir">${suAnYazi}devir ${isaretli(devir)}<b>toplam ${para(devir + bu)}</b></span>`;
 }
 /** Bu aydan önceki aylarda vadesi geçmiş, ödenmemiş kayıtlar (borç taksitleri, faturalar, tahsilatlar) */
 function gecikenleriBul() {
