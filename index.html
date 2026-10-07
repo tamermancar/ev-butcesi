@@ -177,6 +177,28 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .ay-sutun.secili span{color:var(--murekkep);font-weight:800}
 .lejant{display:flex;gap:14px;font-size:12px;color:var(--soluk);margin-top:10px;flex-wrap:wrap}
 .lejant b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.tablo-kutu{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--cizgi);border-radius:14px;background:var(--yuzey)}
+.ytablo{border-collapse:separate;border-spacing:0;font-size:12.5px;white-space:nowrap}
+.ytablo th,.ytablo td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--cizgi)}
+.ytablo thead th{position:sticky;top:0;background:var(--yuzey2);font-weight:700;color:var(--soluk);z-index:1}
+.ytablo thead th.bu{color:var(--murekkep);box-shadow:inset 0 -3px 0 var(--vurgu)}
+.ytablo .ad{position:sticky;left:0;z-index:2;text-align:left;background:var(--yuzey);max-width:132px;min-width:110px;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--murekkep);box-shadow:1px 0 0 var(--cizgi)}
+.ytablo thead .ad{z-index:3;background:var(--yuzey2)}
+.ytablo tr.bas td{background:var(--vurgu);color:#fff;font-weight:800;text-align:left;font-size:12px;letter-spacing:.02em}
+.ytablo tr.bas td.ad{background:var(--vurgu);color:#fff}
+.ytablo tr.ara td{background:var(--yuzey2);color:var(--soluk);font-weight:700;text-align:left}
+.ytablo tr.ara td.ad{background:var(--yuzey2);color:var(--soluk)}
+.ytablo tr.top td{font-weight:800;background:var(--yuzey2)}
+.ytablo tr.top td.ad{background:var(--yuzey2)}
+.ytablo tr.kalan td{font-weight:800;background:var(--vurgu-acik)}
+.ytablo tr.kalan td.ad{background:var(--vurgu-acik)}
+.ytablo td.odendi{color:var(--yesil)}
+.ytablo td.gecikti{color:var(--kirmizi);background:var(--kirmizi-acik);font-weight:700}
+.ytablo td.bekliyor{color:var(--gri)}
+.ytablo td.tahmin{color:var(--soluk);font-style:italic;opacity:.75}
+.ytablo td.atla,.ytablo td.notr{color:var(--soluk)}
+.ytablo td.yil{font-weight:800;color:var(--murekkep);background:var(--yuzey2)}
+.ytablo td[data-act]{cursor:pointer}
 .dag{padding:9px 0;border-top:1px solid var(--cizgi)}
 .dag:first-child{border-top:0}
 .dag .ust-satir{display:flex;justify-content:space-between;gap:8px;font-size:14px}
@@ -249,6 +271,9 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 <section class="cekmece" id="cekmece" hidden><div class="cekmece-ic" id="cekmeceIc"></div></section>
 <div class="bildirim" id="bildirim" hidden></div>
 
+<!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
+<script src="ortak.js"></script>
+
 <script>
 /* ---------- Sabitler ---------- */
 const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
@@ -274,7 +299,7 @@ const DURUM_RENK = {
 const KOYU_SORGU = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const TIK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
-const D = { kilitAcikAy: null, sekme: 'ay', ay: null, ayElle: false, raw: null, yil: null, satirlar: [], cek: null, bekleyen: 0, ayarBekleyen: 0, ayar: Object.assign({}, VARS_AYAR), onceki: 'ay' };
+const D = { grafikGorunum: yerelOku('evb-grafik') || 'grafik', kilitAcikAy: null, sekme: 'ay', ay: null, ayElle: false, raw: null, yil: null, satirlar: [], cek: null, bekleyen: 0, ayarBekleyen: 0, ayar: Object.assign({}, VARS_AYAR), onceki: 'ay' };
 
 /* ---------- Telefonda çalışan yardımcılar (sunucudaki tablo işlemlerinin karşılığı) ---------- */
 const DIZI = { Kalemler: 'kalemler', Hareketler: 'hareketler', TutarDegisiklikleri: 'deg' };
@@ -313,7 +338,8 @@ const kategoriler = () => (D.raw && D.raw.ayarlar && D.raw.ayarlar.kategoriler) 
 let BAG = yerelOku('evb-baglanti');
 let kuyruk = Promise.resolve();
 function istek(bag, islemAdi, args) {
-  return fetch(bag.url, { method: 'POST', body: JSON.stringify({ anahtar: bag.anahtar, islem: islemAdi, args: args }) })
+  const kod = { url: new URL('ortak.js', location.href).href, surum: ORTAK_SURUM };
+  return fetch(bag.url, { method: 'POST', body: JSON.stringify({ anahtar: bag.anahtar, islem: islemAdi, args: args, kod: kod }) })
     .then(r => { if (!r.ok) throw new Error('Sunucu yanıt vermedi (' + r.status + ').'); return r.text(); },
       e => { const h = new Error(navigator.onLine === false ? 'İnternet bağlantısı yok.' : 'Sunucuya ulaşılamadı.'); h.ag = true; h.ayrinti = String(e && e.message || e); throw h; })
     .then(t => {
@@ -363,14 +389,8 @@ function senkGoster() {
 }
 
 /* ---------- Veri ---------- */
-let YUKLU_KOD = '';
-function kodYukle(kod) {
-  if (!kod || kod === YUKLU_KOD) return;
-  (0, eval)(kod); // hesaplama fonksiyonları (Kod.gs'ten gelir, tek kaynak)
-  YUKLU_KOD = kod;
-}
 function veriAyarla(p) {
-  kodYukle(p.kod);
+  delete p.kod; // eski sürümlerden kalan alan
   if (D.ayarBekleyen && D.raw && D.raw.ayarlar) p.ayarlar = D.raw.ayarlar; // kaydı süren ayar ezilmesin
   D.raw = p; D.raw.sanalHepsi = true;
   if (!D.ay || !D.ayElle) D.ay = p.buAy;
@@ -923,7 +943,14 @@ function grafikCiz() {
     <div class="dag"><div class="ust-satir"><span>${esc(k.ad)}</span><b>${para(k.tutar)} <small style="color:var(--soluk);font-weight:500">%${Math.round(k.tutar / katT * 100)}</small></b></div>
     <div class="cubuk"><i style="width:${k.tutar / v.kategoriler[0].tutar * 100}%"></i></div></div>`).join('')
     : '<div class="bos-mesaj">Bu yıl için henüz gider yok.</div>';
-  $('icerik').innerHTML = `
+  const secim = `<div class="seg" style="margin-top:14px"><button data-act="gGorunum" data-v="grafik" class="${D.grafikGorunum !== 'tablo' ? 'on' : ''}">Grafik</button><button data-act="gGorunum" data-v="tablo" class="${D.grafikGorunum === 'tablo' ? 'on' : ''}">Tablo</button></div>`;
+  if (D.grafikGorunum === 'tablo') {
+    $('icerik').innerHTML = secim + yillikTabloHTML(yil);
+    // Açılınca bu ayın sütunu görünsün
+    requestAnimationFrame(() => { const k = document.querySelector('.tablo-kutu'), th = k && k.querySelector('th.bu'); if (th) k.scrollLeft = Math.max(0, th.offsetLeft - 200); });
+    return;
+  }
+  $('icerik').innerHTML = secim + `
     <section class="bolum"><h2>Aylara göre gelir ve gider</h2>
       <div class="kart"><div class="grafik">${sutunlar}</div>
       <div class="lejant"><span><b style="background:var(--yesil)"></b>Gelir</span><span><b style="background:var(--kirmizi)"></b>Gider</span><span>Soluk sütunlar tahmini</span></div></div>
@@ -931,6 +958,33 @@ function grafikCiz() {
     <section class="bolum"><h2>Giderlerin dağılımı<span>${v.yil}</span></h2>
       <div class="kart">${dag}</div>
       <p class="ipucu" style="margin-top:8px">Kartla yapılan harcamalar ayrı sayılmaz, Kredi kartı satırı içinde görünür.</p></section>`;
+}
+
+/** Yıllık tablo (E-Tablo'daki özet sayfasının uygulama içi hâli) */
+function yillikTabloHTML(yil) {
+  const eski = D.raw.sanalHepsi; D.raw.sanalHepsi = true;
+  const m = yillikMatris_(D.raw, yil);
+  D.raw.sanalHepsi = eski;
+  const sayi = n => n === '' || n === undefined || n === 0 ? '' : (n < 0 ? '−' : '') + NF0.format(Math.round(Math.abs(n)));
+  const BAS = { gelirBas: 1, giderBas: 1, borcBas: 1 };
+  const satirlar = m.satirlar.map(r => {
+    if (r.tip === 'bosluk') return '';
+    if (BAS[r.tip]) return `<tr class="bas"><td class="ad">${esc(r.ad.replace(/\s*\(.*\)$/, ''))}</td><td colspan="13"></td></tr>`;
+    if (r.tip === 'ara') return `<tr class="ara"><td class="ad">${esc(r.ad)}</td><td colspan="13"></td></tr>`;
+    const sinif = r.tip === 'toplamGelir' || r.tip === 'toplamGider' ? 'top' : r.tip === 'kalan' ? 'kalan' : '';
+    let toplam = 0, var_ = false;
+    const hucre = r.hucreler.map((c, i) => {
+      if (c.v !== '' && c.durum !== 'tahmin' && r.tip !== 'kart') { toplam += c.v; var_ = true; }
+      return `<td class="${c.durum || ''}" data-act="grafikAy" data-v="${m.aylar[i]}">${sayi(c.v)}</td>`;
+    }).join('');
+    return `<tr class="${sinif}"><td class="ad" title="${esc(r.ad)}">${esc(r.ad)}</td>${hucre}<td class="yil">${var_ ? sayi(toplam) : ''}</td></tr>`;
+  }).join('');
+  return `<section class="bolum">
+    <div class="tablo-kutu"><table class="ytablo">
+      <thead><tr><th class="ad">${yil} (₺)</th>${m.aylar.map((a, i) => `<th class="${a === m.bu ? 'bu' : ''}">${KISA[i]}</th>`).join('')}<th>Yıl</th></tr></thead>
+      <tbody>${satirlar}</tbody></table></div>
+    <div class="lejant"><span><b style="background:var(--yesil)"></b>Ödendi</span><span><b style="background:var(--kirmizi)"></b>Ödenmedi</span><span><b style="background:var(--gri)"></b>Bekliyor</span><span><i>İtalik: tahmini</i></span></div>
+    <p class="ipucu" style="margin-top:8px">Tablo yana kayar. Bir hücreye dokunursan o ayın listesi açılır. Yıl sütunu tahminleri saymaz.</p></section>`;
 }
 
 /* ---------- AYARLAR ---------- */
@@ -1113,6 +1167,7 @@ document.addEventListener('click', e => {
       break;
     }
     case 'kapananAc': D.kapananAcik = !D.kapananAcik; ciz(); break;
+    case 'gGorunum': D.grafikGorunum = v; yerelYaz('evb-grafik', v); ciz(); break;
     case 'kapananDetay': {
       const k = D.raw.kalemler.find(x => String(x.id) === id); if (!k) break;
       D.cek = { tip: 'kapanan', id };
@@ -1189,7 +1244,7 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   if (eslesme) { acilisKapat(); ciz(); baglan(null, eslesme); return; }
   if (!BAG) acilisKapat();
   const kopya = BAG && yerelOku('evb-veri');
-  if (kopya && kopya.kalemler && kopya.kod) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
+  if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
   veriYukle().then(acilisKapat, acilisKapat);
 })();
