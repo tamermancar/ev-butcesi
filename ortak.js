@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.7';
+var ORTAK_SURUM = '3.8';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -15,6 +15,8 @@ function topluIslem_(veri, liste) {
     borcEkle: borcEkle_, borcSil: borcSil_, kalemKaydet: kalemKaydet_, kalemSonlandir: kalemSonlandir_,
     kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_
   };
+  var sunucuda = typeof veriOku_ === 'function';
+  if (sunucuda) veri = ciftKayitTemizle_(veri);
   liste.forEach(function (o, i) {
     var fn = islemler[o.ad];
     if (!fn) throw new Error('Bilinmeyen işlem: ' + o.ad);
@@ -22,6 +24,22 @@ function topluIslem_(veri, liste) {
     var v = (i > 0 && typeof veriOku_ === 'function') ? veriOku_() : veri;
     fn.apply(null, [v].concat(o.args || []));
   });
+  // Yazılanları kilit bırakılmadan tabloya kesin olarak işle. Bu yapılmazsa, cevabı telefona ulaşmayan
+  // bir kayıt tekrar gönderildiğinde sunucu tabloyu eski hâliyle okuyup aynı kaydı ikinci kez ekleyebiliyordu.
+  if (sunucuda && typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.flush) SpreadsheetApp.flush();
+}
+
+/** Aynı kimlikle iki kez yazılmış satırları siler (ilkini tutar). Sadece sunucuda çalışır. */
+function ciftKayitTemizle_(veri) {
+  var gorulen = {}, fazla = [];
+  veri.hareketler.forEach(function (h) {
+    var id = String(h.id);
+    if (gorulen[id]) fazla.push(h._satir); else gorulen[id] = true;
+  });
+  if (!fazla.length) return veri;
+  satirlariSil_('Hareketler', fazla);
+  if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.flush) SpreadsheetApp.flush();
+  return veriOku_();
 }
 
 /** Bir kategorideki tüm kayıtları başka kategoriye taşır (kategori silinirken) */
@@ -316,9 +334,11 @@ function ayHesapla_(ay, veri) {
   if (veri.bugun === undefined) veri.bugun = bugun_();
   const kMap = {};
   veri.kalemler.forEach(function (k) { kMap[String(k.id)] = k; });
-  const satirlar = [], olan = {};
+  const satirlar = [], olan = {}, gorulenId = {};
   veri.hareketler.forEach(function (h) {
     if (ay_(h.ay) !== ay) return;
+    if (gorulenId[String(h.id)]) return; // aynı kimlikli kopya bir kez sayılır
+    gorulenId[String(h.id)] = true;
     const k = h.kalemId ? kMap[String(h.kalemId)] : null;
     if (h.kalemId) olan[String(h.kalemId)] = true;
     satirlar.push(satirNesne_(h, k, ay, veri, bu, false));
