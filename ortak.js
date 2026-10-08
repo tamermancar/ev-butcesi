@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.8';
+var ORTAK_SURUM = '3.9';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -13,7 +13,7 @@ function topluIslem_(veri, liste) {
   var islemler = {
     satirKaydet: satirKaydet_, harcamaEkle: harcamaEkle_, satirSil: satirSil_, satirGeriEkle: satirGeriEkle_,
     borcEkle: borcEkle_, borcSil: borcSil_, kalemKaydet: kalemKaydet_, kalemSonlandir: kalemSonlandir_,
-    kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_
+    kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_, ikizOnay: ikizOnay_
   };
   var sunucuda = typeof veriOku_ === 'function';
   if (sunucuda) veri = ciftKayitTemizle_(veri);
@@ -40,6 +40,19 @@ function ciftKayitTemizle_(veri) {
   satirlariSil_('Hareketler', fazla);
   if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.flush) SpreadsheetApp.flush();
   return veriOku_();
+}
+
+/** Aynı ad ve tutarlı kayıtlar için "farklı kayıtlar" onayı. anahtar: kayıt kimliklerinin sıralı listesi.
+ *  Onaylar Ayarlar sayfasında "ikizOnay" satırında tutulur; böylece diğer cihazlar da bilir. kaldir: onayı geri al. */
+function ikizOnay_(veri, anahtar, kaldir) {
+  anahtar = String(anahtar || ''); if (!anahtar) return;
+  var mevcut = typeof ayarOku_ === 'function' ? ayarOku_('ikizOnay') : ((veri.ayarlar && veri.ayarlar.ikizOnay) || '');
+  var l = String(mevcut || '').split(';').filter(Boolean);
+  var i = l.indexOf(anahtar);
+  if (kaldir) { if (i >= 0) l.splice(i, 1); } else if (i < 0) l.push(anahtar);
+  var d = l.slice(-300).join(';');
+  if (typeof ayarYaz_ === 'function') ayarYaz_('ikizOnay', d);
+  if (veri.ayarlar) veri.ayarlar.ikizOnay = d;
 }
 
 /** Bir kategorideki tüm kayıtları başka kategoriye taşır (kategori silinirken) */

@@ -1,7 +1,7 @@
 /* Ev Bütçesi — çevrimdışı açılış için basit önbellek.
    Her açılışta önce internetteki güncel dosya denenir; bu yüzden güncellemeler hemen gelir. */
-const ONBELLEK = 'evb-v8';
-const DOSYALAR = ['./', 'index.html', 'ortak.js?v=3.8', 'manifest.webmanifest', 'ikon-192.png', 'ikon-512.png'];
+const ONBELLEK = 'evb-v9';
+const DOSYALAR = ['./', 'index.html', 'ortak.js?v=3.9', 'manifest.webmanifest', 'ikon-192.png', 'ikon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(ONBELLEK).then(c => c.addAll(DOSYALAR)).then(() => self.skipWaiting()));

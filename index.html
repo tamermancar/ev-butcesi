@@ -157,6 +157,11 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .bilgi{flex:1;min-width:0;text-align:left}
 .bilgi .ad{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .satir.atla .bilgi .ad{text-decoration:line-through;color:var(--soluk)}
+.ikiz-uyari{display:flex;align-items:flex-start;gap:7px;color:var(--turuncu-yazi);font-size:13px;line-height:1.45;margin:8px 4px 0}
+.ikiz-uyari svg{flex:none;width:16px;height:16px;margin-top:1px}
+.ikiz-uyari button{color:inherit;font-weight:800;text-decoration:underline;text-underline-offset:3px;margin-left:4px}
+.ikiz-isaret{display:inline-grid;place-items:center;vertical-align:-2px;margin-left:6px;padding:2px;color:var(--turuncu-yazi)}
+.ikiz-isaret svg{width:16px;height:16px}
 .not-satir{font-size:12.5px;color:var(--soluk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .acilis{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(160deg,var(--ust1),var(--ust2));color:#fff;transition:opacity .3s}
 .acilis img{width:96px;height:96px;border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -354,7 +359,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 <div class="bildirim" id="bildirim" hidden></div>
 
 <!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
-<script src="ortak.js?v=3.8"></script>
+<script src="ortak.js?v=3.9"></script>
 
 <script>
 /* ---------- Sabitler ---------- */
@@ -362,7 +367,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.9';
+const UYGULAMA_SURUM = '3.10';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -376,8 +381,8 @@ const PALET = {
                               koyu: { vurgu:'#8B4580', ust1:'#6E3665', ust2:'#50274A', 'vurgu-acik':'#3A2135', zemin:'#170F16', yuzey:'#22161F', yuzey2:'#2A1C27', cizgi:'#3B2936', soluk:'#AF97A9', murekkep:'#F2E6EF' } }
 };
 const DURUM_RENK = {
-  acik: { turuncu:'#F59E0B', yesil:'#1E8449', 'yesil-acik':'#DCF1E3', kirmizi:'#C62828', 'kirmizi-acik':'#FBE1E1', gri:'#4A5258', 'gri-acik':'#E3E7E9', sari:'#8A5D05', 'sari-acik':'#F6EACB' },
-  koyu: { turuncu:'#F5A524', yesil:'#5ACB86', 'yesil-acik':'#173827', kirmizi:'#F07B7B', 'kirmizi-acik':'#431D1F', gri:'#B3BDC2', 'gri-acik':'#2A3539', sari:'#E2B44F', 'sari-acik':'#3A2F14' }
+  acik: { turuncu:'#F59E0B', 'turuncu-yazi':'#B45309', yesil:'#1E8449', 'yesil-acik':'#DCF1E3', kirmizi:'#C62828', 'kirmizi-acik':'#FBE1E1', gri:'#4A5258', 'gri-acik':'#E3E7E9', sari:'#8A5D05', 'sari-acik':'#F6EACB' },
+  koyu: { turuncu:'#F5A524', 'turuncu-yazi':'#F5A524', yesil:'#5ACB86', 'yesil-acik':'#173827', kirmizi:'#F07B7B', 'kirmizi-acik':'#431D1F', gri:'#B3BDC2', 'gri-acik':'#2A3539', sari:'#E2B44F', 'sari-acik':'#3A2F14' }
 };
 const KOYU_SORGU = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const TIK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
@@ -452,9 +457,9 @@ function sunucu(fn, ...args) {
   kuyruk = p.catch(() => {});
   return p;
 }
-function bildir(m, geriAl) {
+function bildir(m, geriAl, etiket) {
   const b = $('bildirim');
-  b.innerHTML = `<span>${esc(m)}</span>` + (geriAl ? '<button class="geri-btn">Geri al</button>' : '');
+  b.innerHTML = `<span>${esc(m)}</span>` + (geriAl ? `<button class="geri-btn">${esc(etiket || 'Geri al')}</button>` : '');
   if (geriAl) b.querySelector('button').onclick = () => { b.hidden = true; geriAl(); };
   b.hidden = false;
   clearTimeout(bildir.t); bildir.t = setTimeout(() => b.hidden = true, geriAl ? 5000 : (m.length > 60 ? 4000 : 2400));
@@ -607,8 +612,8 @@ function islem(yerel, fn, ...args) {
 }
 /** Sadece ödendi işaretini değiştiren kayıt mı (tutar, not, taşıma vb. yok) */
 const sadeTik = p => p && !p.toplu && Object.keys(p).every(k => ['id', 'yeniId', 'ay', 'odendi', 'kilitAcik', 'gecikenOdeme'].indexOf(k) >= 0);
-/** Son değişiklikten 1,2 saniye sonra gönder: art arda dokunuşlar tek seferde gider */
-function gonderPlanla() { clearTimeout(G.plan); G.plan = setTimeout(gonder, 1200); }
+/** Son değişiklikten 1,4 saniye sonra gönder: art arda dokunuşlar tek seferde gider */
+function gonderPlanla() { clearTimeout(G.plan); G.plan = setTimeout(gonder, 1400); }
 const temizle = o => { Object.keys(o).forEach(k => o[k] === undefined && delete o[k]); return o; };
 
 /* ---------- Ayarlar ---------- */
@@ -668,6 +673,7 @@ function ayCiz() {
   const duzenli = v.satirlar.filter(s => !s.tip && s.tur === 'gider' && s.kalemId);
   const diger = v.satirlar.filter(s => !s.tip && s.tur === 'gider' && !s.kalemId);
   const borclar = v.satirlar.filter(s => s.tip);
+  ikizIsaretle(v.satirlar);
   D.gecikenler = v.ay === v.buAy ? gecikenleriBul() : [];
   const toplam = l => { const k = l.filter(s => !s.kart); return ikiDeger(k.filter(s => s.odendi).reduce((t, s) => t + s.tutar, 0), k.reduce((t, s) => t + s.tutar, 0)); };
 
@@ -738,7 +744,7 @@ function akisHTML(v) {
         ${satir('Önceki aydan', devir, true)}${satir('Bu ay gelen', t.gelir[0])}${satir('Alınan borç', t.alinan[0])}${satir('Tahsilat', t.tahsilat[0])}
         <div class="kasa-top"><span>Toplam</span><span>${para(girenTop)}</span></div></div>
       <div class="cikan">
-        ${satir('Giderler', t.gider[0])}${satir('Borç ödemesi', t.odeme[0])}${satir('Verilen borç', t.verilen[0])}${satir('Ek harcamalar', t.ek[0])}
+        ${satir('Giderler', t.gider[0])}${satir('Ek harcamalar', t.ek[0])}${satir('Borç ödemesi', t.odeme[0])}${satir('Verilen borç', t.verilen[0])}
         <div class="kasa-top"><span>Toplam</span><span>${para(cikanTop)}</span></div></div>
     </div>
     <div class="elde"><small>Şu an elde kalan<button class="goz" data-act="gizle" aria-label="${gizliMi() ? 'Tutarları göster' : 'Tutarları gizle'}">${gizliMi() ? GOZ_KAPALI : GOZ_ACIK}</button></small><strong>${para(elde)}</strong></div>
@@ -784,7 +790,37 @@ function kilitCipi(ay) {
 }
 function bolum(b, liste, toplam, bos) {
   return `<section class="bolum"><h2>${b}<span>${liste.length ? toplam : ''}</span></h2>
-    <div class="liste">${liste.length ? liste.map(satirHTML).join('') : `<div class="bos-mesaj">${bos}</div>`}</div></section>`;
+    <div class="liste">${liste.length ? liste.map(satirHTML).join('') : `<div class="bos-mesaj">${bos}</div>`}</div>${ikizUyariHTML(liste)}</section>`;
+}
+/* ---------- Aynı kayıt iki kez girilmiş olabilir ----------
+   Aynı ayda adı ve tutarı aynı olan tek seferlik kayıtlar işaretlenir. "Kapat" denince o kayıtlar için bir daha uyarılmaz. */
+const UNLEM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>';
+const adAnahtar = a => String(a || '').trim().toLocaleLowerCase('tr').replace(/\s+/g, ' ');
+function ikizIsaretle(satirlar) {
+  const onayli = String((D.raw.ayarlar && D.raw.ayarlar.ikizOnay) || '').split(';');
+  const gruplar = {};
+  satirlar.forEach(s => {
+    s.ikiz = '';
+    if (s.kalemId || s.tip || !(s.tutar > 0)) return;
+    const k = s.tur + '|' + adAnahtar(s.ad) + '|' + Math.round(s.tutar * 100);
+    (gruplar[k] = gruplar[k] || []).push(s);
+  });
+  Object.keys(gruplar).forEach(k => {
+    const g = gruplar[k]; if (g.length < 2) return;
+    const anahtar = g.map(s => s.id).sort().join(',');
+    if (onayli.indexOf(anahtar) >= 0) return;
+    g.forEach(s => { s.ikiz = anahtar; s.ikizSay = g.length; });
+  });
+}
+const ikizMesaji = s => `"${adG(s.ad)} ${para(s.tutar)}" bu ay ${s.ikizSay === 2 ? 'iki' : s.ikizSay} kez girilmiş. Aynı kayıtsa birini sil.`;
+function ikizUyariHTML(liste) {
+  const gorulen = {};
+  return liste.filter(s => s.ikiz && !s.geciken && !gorulen[s.ikiz] && (gorulen[s.ikiz] = true))
+    .map(s => `<p class="ikiz-uyari">${UNLEM}<span>${esc(ikizMesaji(s))}<button data-act="ikizKapat" data-v="${esc(s.ikiz)}">Kapat</button></span></p>`).join('');
+}
+function ikizKapat(anahtar) {
+  if (islem(() => ikizOnay_(D.raw, anahtar), 'api_ikizOnay', anahtar))
+    bildir('Farklı kayıt olarak işaretlendi', () => { islem(() => ikizOnay_(D.raw, anahtar, true), 'api_ikizOnay', anahtar, true); });
 }
 /* Durum: ödendi (yeşil), ödenmedi (kırmızı), bekliyor (koyu gri) */
 function durum(s) {
@@ -814,7 +850,7 @@ function satirHTML(s) {
   const bosTutar = !(s.tutar > 0) && !s.atlandi;
   const son = s.sonTarih && !s.odendi && !s.kart && !s.atlandi ? `<span class="son">${s.tur === 'gelir' ? 'Beklenen' : 'Son ödeme'} ${kisaTarih(s.sonTarih)}</span>` : '';
   return `<div class="satir ${s.tur} d-${d.k} ${s.atlandi ? 'atla' : ''}">${tik}
-    <button class="bilgi" data-act="duzenle" data-id="${esc(s.id)}" data-ay="${s.geciken ? s.ay : ''}"><div class="ad">${esc(adG(s.ad))}</div>${notSatiri}<div class="rozetler">${r.join('')}</div></button>
+    <button class="bilgi" data-act="duzenle" data-id="${esc(s.id)}" data-ay="${s.geciken ? s.ay : ''}"><div class="ad">${esc(adG(s.ad))}${s.ikiz && !s.geciken ? `<span class="ikiz-isaret" data-act="ikizBilgi" data-id="${esc(s.id)}" role="button" aria-label="Aynı kayıt uyarısı">${UNLEM}</span>` : ''}</div>${notSatiri}<div class="rozetler">${r.join('')}</div></button>
     <div class="sag">${son}<button class="tutar${bosTutar ? ' bos' : ''}" data-act="duzenle" data-id="${esc(s.id)}" data-ay="${s.geciken ? s.ay : ''}" aria-label="Tutarı düzenle">${bosTutar ? 'Tutar yaz' : s.tip ? isaretli(s.tur === 'gelir' ? s.tutar : -s.tutar) : para(s.tutar)}</button></div></div>`;
 }
 const satirBul = (id, ay) => ay ? (D.gecikenler || []).find(s => s.id === id && s.ay === ay) : D.satirlar.find(s => s.id === id);
@@ -1382,7 +1418,7 @@ function aySecCiz() {
 /* ---------- Diğer cihazlardaki değişiklikleri alma ----------
    Uygulamaya dönünce hemen, açıkken 30 saniyede bir tabloya bakar.
    Pencere açıkken, bekleyen kayıt varken ya da az önce işlem yapıldıysa bakmaz. Değişiklik yoksa hiçbir şey yapmaz. */
-const veriImzasi = p => JSON.stringify([p.kalemler, p.hareketler, p.deg, p.ayarlar && p.ayarlar.kategoriler]);
+const veriImzasi = p => JSON.stringify([p.kalemler, p.hareketler, p.deg, p.ayarlar && p.ayarlar.kategoriler, p.ayarlar && p.ayarlar.ikizOnay]);
 function tazele() {
   if (!BAG || !D.raw || D.cek || GIDEN.length || G.gonderiliyor || D.yukleniyor || tazele.suruyor) return;
   tazele.suruyor = true;
@@ -1474,6 +1510,8 @@ document.addEventListener('click', e => {
     case 'onceki': case 'sonraki': ayDegistir(ayEkle_(D.ay, a === 'onceki' ? -1 : 1), true); ciz(); break;
     case 'buay': ayDegistir(D.raw.buAy, false); ciz(); break;
     case 'ayAc': aySecAc(); break;
+    case 'ikizKapat': ikizKapat(v); break;
+    case 'ikizBilgi': { const s = satirBul(id); if (s && s.ikiz) bildir(ikizMesaji(s), () => ikizKapat(s.ikiz), 'Kapat'); break; }
     case 'gizle': ayarUygula({ gizli: gizliMi() ? 'hayir' : 'evet' }); ciz(); break;
     case 'aySecYil': D.cek.yil += +v; aySecCiz(); break;
     case 'aySec': cekmeceKapat(); ayDegistir(v, v !== D.raw.buAy); $('kaydir').scrollTop = 0; ciz(); break;
@@ -1622,7 +1660,7 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   const kopya = BAG && yerelOku('evb-veri');
   if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
-  if (ORTAK_SURUM !== '3.8') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
+  if (ORTAK_SURUM !== '3.9') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
   if (GIDEN.length) gonder(); // önceki oturumdan kalan kayıtlar
   veriYukle().then(acilisKapat, acilisKapat);
 })();
