@@ -1,6 +1,6 @@
 /* Ev Bütçesi — çevrimdışı açılış için basit önbellek.
    Her açılışta önce internetteki güncel dosya denenir; bu yüzden güncellemeler hemen gelir. */
-const ONBELLEK = 'evb-v6';
+const ONBELLEK = 'evb-v7';
 const DOSYALAR = ['./', 'index.html', 'ortak.js?v=3.7', 'manifest.webmanifest', 'ikon-192.png', 'ikon-512.png'];
 
 self.addEventListener('install', e => {
@@ -14,7 +14,7 @@ self.addEventListener('fetch', e => {
   const istek = e.request;
   if (istek.method !== 'GET' || new URL(istek.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(istek).then(cevap => {
+    fetch(istek, { cache: 'no-cache' }).then(cevap => { // tarayıcı önbelleğini atla, her açılışta güncel dosyayı iste
       const kopya = cevap.clone();
       caches.open(ONBELLEK).then(c => c.put(istek, kopya));
       return cevap;
