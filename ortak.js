@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.9';
+var ORTAK_SURUM = '3.10';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -13,20 +13,39 @@ function topluIslem_(veri, liste) {
   var islemler = {
     satirKaydet: satirKaydet_, harcamaEkle: harcamaEkle_, satirSil: satirSil_, satirGeriEkle: satirGeriEkle_,
     borcEkle: borcEkle_, borcSil: borcSil_, kalemKaydet: kalemKaydet_, kalemSonlandir: kalemSonlandir_,
-    kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_, ikizOnay: ikizOnay_
+    kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_, ikizOnay: ikizOnay_,
+    kategorilerKaydet: kategorilerKaydet_
   };
   var sunucuda = typeof veriOku_ === 'function';
+  // Kod.gs 3.6 ve sonrası: kaydedilemeyen bir işlem diğerlerini durdurmaz, hata listesiyle telefona bildirilir.
+  // Eski Kod.gs'te ilk hatada eskisi gibi durulur (hata listesini telefona iletemez).
+  var hataDoner = typeof TOPLU_HATA_DONER !== 'undefined' && TOPLU_HATA_DONER;
+  var hatalar = [];
   if (sunucuda) veri = ciftKayitTemizle_(veri);
   liste.forEach(function (o, i) {
     var fn = islemler[o.ad];
-    if (!fn) throw new Error('Bilinmeyen işlem: ' + o.ad);
     // Sunucuda her işlemden önce tablo yeniden okunur (silinen satırlar yüzünden satır numaraları kaymasın)
-    var v = (i > 0 && typeof veriOku_ === 'function') ? veriOku_() : veri;
-    fn.apply(null, [v].concat(o.args || []));
+    var v = (i > 0 && sunucuda) ? veriOku_() : veri;
+    try {
+      if (!fn) throw new Error('Bilinmeyen işlem: ' + o.ad);
+      fn.apply(null, [v].concat(o.args || []));
+    } catch (e) {
+      if (!hataDoner) throw e;
+      hatalar.push({ i: i, hata: String(e && e.message || e) });
+    }
   });
   // Yazılanları kilit bırakılmadan tabloya kesin olarak işle. Bu yapılmazsa, cevabı telefona ulaşmayan
   // bir kayıt tekrar gönderildiğinde sunucu tabloyu eski hâliyle okuyup aynı kaydı ikinci kez ekleyebiliyordu.
   if (sunucuda && typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.flush) SpreadsheetApp.flush();
+  return hatalar.length ? { hatalar: hatalar } : null;
+}
+
+/** Kategori listesini kaydeder (bekleyen kayıtlarla birlikte gider; internetsizken de kaybolmaz) */
+function kategorilerKaydet_(veri, liste) {
+  var l = [].concat(liste || []).map(function (x) { return String(x).replace(/,/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+  if (!l.length) throw new Error('En az bir kategori olmalı.');
+  if (typeof ayarYaz_ === 'function') ayarYaz_('kategoriler', l.join(', '));
+  if (veri.ayarlar) veri.ayarlar.kategoriler = l;
 }
 
 /** Aynı kimlikle iki kez yazılmış satırları siler (ilkini tutar). Sadece sunucuda çalışır. */
@@ -74,11 +93,28 @@ function ay_(v) {
   return m ? m[1] + '-' + m[2].padStart(2, '0') : '';
 }
 
+/** Yazılan tutarı sayıya çevirir; geçersizse NaN. Telefon ve tablo aynı kuralı kullanır.
+ *  Kabul: rakam, nokta, virgül, boşluk, ₺ ve "TL". Virgül ondalıktır (1.250,50).
+ *  Virgül yoksa: noktadan sonra 3 rakamlı gruplar binlik ayracıdır (1.250 = 1250), değilse nokta ondalıktır (1.25).
+ *  Harf, eksi işareti ya da birden fazla ondalık ayracı varsa geçersizdir (12a, -50, 10.000.5, 1,2,3). */
+function tutarCoz_(v) {
+  if (typeof v === 'number') return isFinite(v) && v >= 0 ? v : NaN;
+  let s = String(v === undefined || v === null ? '' : v).replace(/\s|₺/g, '').replace(/tl$/i, '');
+  if (!s || !/^[0-9.,]+$/.test(s)) return NaN;
+  const grup = /^\d{1,3}(\.\d{3})+$/; // 1.250 / 12.500.000
+  if (s.indexOf(',') >= 0) {
+    const p = s.split(',');
+    if (p.length !== 2 || !/^\d*$/.test(p[1]) || !(/^\d+$/.test(p[0]) || grup.test(p[0]) || p[0] === '')) return NaN;
+    s = (p[0].replace(/\./g, '') || '0') + '.' + (p[1] || '0');
+  } else if (grup.test(s)) s = s.replace(/\./g, '');
+  else if (!/^\d*\.?\d+$/.test(s) && !/^\d+\.$/.test(s)) return NaN;
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
 function num_(v) {
   if (typeof v === 'number') return v;
-  const s = String(v === undefined || v === null ? '' : v).replace(/\s|₺|TL/gi, '');
-  if (!s) return 0;
-  const n = s.indexOf(',') >= 0 ? parseFloat(s.replace(/\./g, '').replace(',', '.')) : parseFloat(s);
+  if (v === undefined || v === null || String(v).trim() === '') return 0;
+  const n = tutarCoz_(v);
   return isNaN(n) ? 0 : n;
 }
 

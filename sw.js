@@ -1,7 +1,7 @@
 /* Ev Bütçesi — çevrimdışı açılış için basit önbellek.
    Her açılışta önce internetteki güncel dosya denenir; bu yüzden güncellemeler hemen gelir. */
-const ONBELLEK = 'evb-v9';
-const DOSYALAR = ['./', 'index.html', 'ortak.js?v=3.9', 'manifest.webmanifest', 'ikon-192.png', 'ikon-512.png'];
+const ONBELLEK = 'evb-v10';
+const DOSYALAR = ['./', 'index.html', 'ortak.js?v=3.10', 'manifest.webmanifest', 'ikon-192.png', 'ikon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(ONBELLEK).then(c => c.addAll(DOSYALAR)).then(() => self.skipWaiting()));
@@ -15,9 +15,11 @@ self.addEventListener('fetch', e => {
   if (istek.method !== 'GET' || new URL(istek.url).origin !== location.origin) return;
   e.respondWith(
     fetch(istek, { cache: 'no-cache' }).then(cevap => { // tarayıcı önbelleğini atla, her açılışta güncel dosyayı iste
+      // Sadece sağlam cevaplar saklanır (GitHub geçici hata verirse eski sağlam kopya bozulmasın)
+      if (!cevap.ok) return caches.match(istek).then(r => r || cevap);
       const kopya = cevap.clone();
       caches.open(ONBELLEK).then(c => c.put(istek, kopya));
       return cevap;
-    }).catch(() => caches.match(istek).then(r => r || caches.match('index.html')))
+    }).catch(() => caches.match(istek).then(r => r || (istek.mode === 'navigate' ? caches.match('index.html') : Response.error())))
   );
 });

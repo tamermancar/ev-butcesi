@@ -1,1 +1,251 @@
-# ev-butcesi
+# Ev Bütçesi
+
+Evin aylık gelir ve giderlerini takip eden, telefona uygulama gibi kurulan bir defter. Maaş, kira ve fatura gibi her ay tekrar eden kalemler kendiliğinden listeye gelir. Sen sadece ödedikçe işaretlersin, arada yaptığın harcamaları da eklersin. Uygulama da şu an elinde ne kadar kaldığını ve ay sonunda ne kadar kalacağını hesaplar.
+
+Kayıtların senin Google E-Tablolar dosyanda durur. Telefon ve bilgisayar aynı tabloyu kullanır.
+
+- [Kullanım](#kullanım)
+- [Kurulum ve bakım (sadece yönetici için)](#kurulum-ve-bakım-sadece-yönetici-için)
+- [Neler değişti](#neler-değişti)
+
+---
+
+# Kullanım
+
+## Ekranın üst bölümü
+
+En üstte ayın adı yazar. Oklarla önceki ya da sonraki aya geçersin. Ayın adına dokunursan bir yılın 12 ayı açılır ve istediğin aya atlarsın. **Bu aya dön** seni bugünün ayına getirir.
+
+Altındaki iki kutu ayın para hareketini gösterir:
+
+| Sol kutu (giren) | Sağ kutu (çıkan) |
+|---|---|
+| **Önceki aydan:** geçen aylardan devreden para | **Giderler:** ödenen düzenli giderler |
+| **Bu ay gelen:** alınan gelirler | **Ek harcamalar:** ay içinde eklediğin harcamalar |
+| **Alınan borç:** birinden borç aldıysan | **Borç ödemesi:** borcuna yaptığın ödemeler |
+| **Tahsilat:** alacağından geri gelen | **Verilen borç:** birine borç verdiysen |
+
+Kutularda sadece **işaretlenmiş**, yani gerçekten gerçekleşmiş tutarlar sayılır.
+
+- **Şu an elde kalan:** giren toplamdan çıkan toplam düşülünce kalan para.
+- **Alınacak / Ödenecek:** bu ay henüz işaretlenmemiş gelirler ve giderler.
+- **Ay sonunda:** hepsi gerçekleşince elinde kalacak para.
+- En alttaki cümle ayın kısa özetidir, örneğin "Bu ay artan 6.350 ₺, gelirin gideri karşılıyor."
+
+### Göz simgesi (gizli mod)
+
+Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar `•••• ₺` olur, adların sadece ilk iki harfi görünür, açıklamalar gizlenir. Gizli moddayken değişiklik yapılamaz. Tekrar dokununca her şey görünür. Bu ayar sadece o cihazda geçerlidir.
+
+## Kayıtları işaretleme
+
+- Satırın solundaki yuvarlağa dokununca kayıt **ödendi** (gelirse **alındı**) olur ve yeşil tik çıkar. Tekrar dokunursan geri alınır.
+- Satırın kendisine dokununca düzenleme penceresi açılır. Burada tutarı, açıklamayı ve son ödeme tarihini değiştirebilirsin.
+  - Düzenli bir kalemde **Sonraki aylarda da bu tutar olsun** işaretlenirse, yeni tutar bu aydan itibaren geçerli olur (örneğin zam).
+  - Tek seferlik kayıtlarda adı, kategoriyi, ayı ve "Kartla ödedim"i de değiştirebilirsin.
+  - **Bu ay yok:** düzenli bir kalem bu ay olmayacaksa (örneğin o ay fatura gelmedi) bunu seç.
+- Değişiklikten sonra altta beliren balondaki **Geri al** ile son işlemi birkaç saniye içinde geri alabilirsin.
+
+### Renkler
+
+- **Yeşil tik:** ödendi ya da alındı.
+- **Kırmızı:** son ödeme günü geçti, hâlâ ödenmedi.
+- **Soluk:** henüz gelmemiş bir ayın tahmini tutarı.
+
+## Ekleme (sağ alttaki + düğmesi)
+
+**Tutar yazımı:** `1250`, `1.250`, `1.250,50` ya da `1250,50` yazabilirsin, ₺ ve TL de yazılabilir. Virgül kuruşu ayırır. Nokta binlik ayracıdır. Noktadan sonra 3'ten az rakam varsa, örneğin `12.50`, nokta da kuruş sayılır. Harf ya da eksi işareti olan bir tutar kabul edilmez.
+
+**Gider / Gelir:** Tek seferlik harcama ya da gelir ekler. Örnekler: market, benzin, bir defalık iş geliri.
+- Kategori seçilir. Kategorileri Ayarlar'dan düzenlersin.
+- **Taksit:** Toplam tutarı yazıp taksit sayısını seçersen tutar o kadar aya bölünür.
+- **Kartla ödedim:** Kredi kartıyla yapılan harcama kayıtta görünür ama toplamlara eklenmez. Para, kartın ekstresini ödediğinde "Kredi kartı" satırından çıkar. Böylece aynı harcama iki kez sayılmaz.
+
+**Borç / Alacak:**
+- **Borç aldım / Borç verdim:** kimden ya da kime, ne kadar. Geri ödeme şekli seçilir:
+  - **Tek seferde:** belli bir tarihte tamamı ödenecek.
+  - **Taksitli:** her ay belli bir taksit ödenecek.
+  - **Belli değil:** ödedikçe girilecek.
+- **Borç ödedim / Alacak tahsil ettim:** açık borçlardan birini seçip ödediğin tutarı yazarsın.
+  - O borcun bu ay ödenmemiş bir taksiti varsa, taksit ödendi olarak işaretlenir. Yazdığın tutar farklıysa taksitin tutarı da o olur.
+  - Bu ayın taksiti zaten ödendiyse ek bir ödeme olarak ayrı satıra yazılır.
+- Borç tamamen ödenince yeni taksit satırı oluşmaz. Bir borcu satırından **Borcu kapat** ile elle de kapatabilirsin.
+
+## Sabitler
+
+Her ay listeye kendiliğinden gelen düzenli kalemlerin listesi: maaş, kira, faturalar, aidat gibi. Yeni kalemi + ile eklersin.
+
+- **Her ay** ya da **Belirli aylar:** örneğin sadece Ocak ve Temmuz'da gelen bir ödeme.
+- **Ödeme günü:** bu gün geçip ödenmemişse kayıt kırmızı (gecikti) görünür.
+- **Zam ayı:** her yıl zam yapılan ay. O ay satırda "Zam ayı, tutarı kontrol et" hatırlatması çıkar.
+- Tutarı değiştirince yeni tutar bu aydan itibaren geçerli olur, geçmiş aylar olduğu gibi kalır.
+- Artık olmayan bir kalemi **kapat**. Geçmişte görünmeye devam eder, yeni aylara gelmez. Kapatılanlar alttaki **Kapananlar** bölümünde durur ve oradan yeniden açılabilir.
+- Sırayı oklarla değiştirebilirsin.
+
+## Gecikenler
+
+Önceki aylardan ödenmemiş kalan kayıtlar bu ayın listesinin üstünde **Gecikenler** başlığıyla görünür. Buradan doğrudan ödendi olarak işaretleyebilirsin. Ödeme, o kaydın ayı kilitli olsa bile yapılabilir.
+
+## Geçmiş ayların kilidi
+
+Eski aylar yanlışlıkla değişmesin diye kilitlenir:
+- **Bu ay ve gelecek aylar** her zaman açıktır.
+- **Önceki ay** her ayın 10'una kadar açıktır. Bu sayede ay başında geç gelen faturaları rahatça girersin.
+- **Son 3 ay** kilitlidir. Üstteki kilide dokunup onaylayınca o ayı düzenleyebilirsin.
+- **Daha eski aylar** arşivdir ve değiştirilemez.
+
+## Kopya kayıt uyarısı
+
+Aynı ay içinde aynı ad ve tutarla iki tek seferlik kayıt varsa, örneğin aynı bileti hem telefondan hem bilgisayardan girdiysen, satırların yanında turuncu bir ünlem ve listenin altında bir uyarı çıkar.
+- Gerçekten aynı kayıtsa birini sil, uyarı kendiliğinden kaybolur.
+- Farklı kayıtlarsa uyarıdaki **Kapat**'a dokun. Bu onay iki kayda bağlıdır ve diğer cihazlarda da görünmez.
+
+## Kaydetme ve sağ üstteki simge
+
+Yaptığın değişiklik önce telefonda görünür, ardından birkaç saniye içinde tabloya gönderilir. İnternet yoksa telefonda saklanır, bağlantı gelince kendiliğinden gönderilir. Uygulamayı kapatsan bile kaybolmaz.
+
+| Simge | Anlamı |
+|---|---|
+| Bulut, içinde yukarı kayan ok | Kaydediliyor |
+| Yeşil tikli bulut | Kaydedildi (1,5 saniye görünür) |
+| Turuncu üçgen | Gönderilemedi (internet yok ya da bağlantı sorunu). Telefonda saklanıyor, tekrar denenecek. |
+| "Güncelleniyor…" | Tablodaki son hâl alınıyor |
+
+Turuncu üçgene dokununca **Bekleyen kayıtlar** penceresi açılır. Orada kaç kaydın beklediğini görür, **Şimdi tekrar dene** ile gönderebilir ya da gerekirse **Bekleyenleri iptal et** ile vazgeçebilirsin.
+
+Tablo bir değişikliği kabul etmezse sebebi bir balonda yazılır. Örneğin "Elektrik kaydedilemedi: Bu ay kilitli". Diğer değişiklikler yine kaydedilir, ekran da tablodaki hâline döner.
+
+## İki cihazda kullanım
+
+Telefon ve bilgisayar aynı tabloyu kullanır. Uygulama açıkken 30 saniyede bir ve uygulamaya her dönüşünde tablodaki son hâli alır. Başka cihazda değişiklik olduysa "Diğer cihazdaki değişiklikler alındı" yazar.
+
+## Grafikler
+
+Yılın aylara göre gelir ve giderleri ile giderlerin kategorilere dağılımı burada görünür. **Grafik** ve **Tablo** görünümleri arasında geçebilirsin. Bir aya dokununca o ayın listesi açılır. Soluk sütunlar henüz gelmemiş ayların tahminleridir.
+
+## Ayarlar
+
+- **Tema:** 4 renk (Petrol, Orman, Lacivert, Erik) ve Açık, Koyu ya da Otomatik mod.
+- **Görünüm:** Sıkı (ekrana daha çok satır sığar), Normal ya da Büyük.
+- **Tutarlar:** kuruşları ve ₺ işaretini göster ya da gizle.
+  - Tema, görünüm ve tutar ayarları sadece o cihazda geçerlidir.
+- **Harcama kategorileri:** + ile eklerken çıkan kategoriler. İlk sıradaki varsayılan olarak seçili gelir. Kayıtları olan bir kategori silinirse kayıtları seçtiğin başka bir kategoriye taşınır. Kategoriler tabloda saklanır, tüm cihazlarda aynıdır.
+- **Yedekler:** (aşağıda)
+- **Başka cihaza bağla:** Karekodu diğer cihazın kamerasıyla okut ya da bağlantıyı kendine gönder, adres ve anahtar otomatik girilir. Bu kod şifre gibidir.
+- **Veriler:** Tabloyu açar ya da bu cihazdaki bağlantıyı kaldırır. Bağlantıyı kaldırmak tablodaki kayıtları silmez.
+
+En altta uygulamanın, hesaplama kodunun ve tablonun sürüm numaraları yazar.
+
+## Yedekler
+
+- Her gün, o günkü ilk değişiklikten önce otomatik yedek alınır. Yedekler Drive'da **Ev Bütçesi Yedekleri** klasöründe durur.
+- **Her yedek, o andaki tüm verinin eksiksiz bir kopyasıdır.** Yedekler birbirinin devamı değildir. "İçinde 148 kayıt", o yedekte toplam kaç kayıt olduğunu gösterir: sabit kalemler ve aylık kayıtlar.
+- Son 7 yedek saklanır. Ayrıca her ayın ilk otomatik yedeği **Ay başı yedeği** olarak son 3 ay boyunca tutulur. Böylece bir hatayı geç fark etsen de geri dönebileceğin bir yedek olur.
+- Yedekler sadece değişiklik yapılan günlerde alınır. Uygulamayı uzun süre kullanmasan da eldeki yedekler silinmez.
+- Listede en yeni yedek görünür. Diğerleri **Diğer yedekler**'e dokununca açılır.
+- **Geri yükle**'ye iki kez dokunursan tablo o yedekteki hâline döner. Geri yüklemeden önce o anki hâl de ayrıca yedeklenir, yani yanlışlıkla geri yüklesen bile kayıp olmaz.
+- Kayıt sayısında birden düşüş görürsen, örneğin 145'ten 12'ye, bir silme ya da bozulma olmuş demektir. Hemen öncesindeki yedeğe dönebilirsin.
+
+---
+
+# Kurulum ve bakım (sadece yönetici için)
+
+## Yapı
+
+Uygulama üç parçadan oluşur:
+
+| Parça | Nerede | Ne yapar |
+|---|---|---|
+| **Google E-Tablo** | Google Drive | Veriler burada durur. Gri sekmeler uygulamanın veri deposudur, elle doldurulmaz. "Özet 2026" sayfası otomatik oluşur. |
+| **Kod.gs** | Tabloda Uzantılar → Apps Komut Dosyası | Tabloya okuma ve yazma, yedekler ve özet sayfası. Nadiren değişir. |
+| **GitHub dosyaları** | github.com'daki `ev-butcesi` deposu | Telefondaki ekran (`index.html`) ve hesaplama kodu (`ortak.js`). Kod.gs de hesaplama kodunu buradan okur. |
+
+Depodaki dosyalar: `index.html`, `ortak.js`, `sw.js`, `manifest.webmanifest`, `README.md` ve 4 ikon (`ikon-192.png`, `ikon-512.png`, `ikon-maskable-512.png`, `apple-touch-icon.png`).
+
+## İlk kurulum
+
+Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
+
+### 1. Apps Script
+1. Tabloda **Uzantılar → Apps Komut Dosyası**'nı aç. **Kod.gs**'in içini tamamen sil, yeni Kod.gs'i yapıştır ve 💾 ile kaydet.
+2. Fonksiyon listesinden **kurulum**'u seç ve **▶ Çalıştır**'a bas. Google izin isteyecek: **İzinleri incele → hesabın → Gelişmiş → Ev Bütçesi'ne git → İzin ver**.
+3. **Dağıt → Yeni dağıtım** (ilk kez) ya da **Dağıt → Dağıtımları yönet → ✏️** ile şunları ayarla:
+   - Tür: **Web uygulaması**
+   - Çalıştıran: **Ben**
+   - Erişimi olanlar: **Herkes**
+   - Sürüm: **Yeni sürüm**
+
+   Sonra **Dağıt**'a bas. "Herkes" ayarı güvenlidir, çünkü kapıyı sadece senin bildiğin uzun bir anahtar açar.
+4. Tabloyu yenile. **Bütçe → Bağlantı bilgilerini göster** menüsünde **Bağlantı adresi** ve **Anahtar** görünür.
+
+### 2. GitHub
+1. github.com'da hesap aç. **+ → New repository** ile `ev-butcesi` adında **Public** bir depo oluştur.
+2. **Add file → Upload files** ile yukarıdaki dosyaları yükle ve **Commit changes**'e bas.
+3. **Settings → Pages** sayfasında Branch olarak `main` ve `/ (root)` seç, **Save**'e bas. 1-2 dakika sonra adres çıkar: `https://KULLANICIADIN.github.io/ev-butcesi/`
+
+### 3. Telefon
+1. Adresi Chrome'da aç, bağlantı adresini ve anahtarı yapıştırıp **Bağlan**'a bas.
+2. Chrome menüsünden **Uygulamayı yükle** ya da **Ana ekrana ekle**'yi seç.
+3. Başka cihazları **Ayarlar → Başka cihaza bağla**'daki karekodla bağlamak daha kolaydır.
+
+## Güncelleme
+
+**Sadece GitHub dosyaları değiştiyse (çoğu güncelleme):**
+1. Depoda **Add file → Upload files** ile yeni dosyaları yükle. Aynı adlı dosyalar üzerine yazılır.
+2. **Commit changes**'e bas.
+3. 1-2 dakika sonra uygulamayı kapatıp aç. Gerekirse bir kez daha kapatıp aç.
+
+**Kod.gs de değiştiyse (nadiren, bilgisayardan):**
+1. Apps Script'te Kod.gs'in içini sil, yenisini yapıştır ve kaydet.
+2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
+3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
+
+**Sürüm kontrolü:** Ayarlar'ın en altında `uygulama 3.11 · hesaplama 3.10 · tablo 3.6` gibi bir satır yazar.
+- **uygulama** ve **hesaplama** GitHub'daki dosyalardan gelir.
+- **tablo**, Kod.gs'in sürümüdür.
+
+Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez kapatıp aç.
+
+## Sorun çıkarsa
+
+- **Uygulama güncellenmedi:** Uygulamayı tamamen kapatıp tekrar aç. Olmazsa tarayıcıda sayfayı yenile.
+- **"Bağlantı anahtarı hatalı":** Anahtar yenilenmiş olabilir. Tabloda **Bütçe → Bağlantı bilgilerini göster** ile yeni anahtarı al.
+- **Bağlanılamadı / turuncu üçgen geçmiyor:** İnterneti kontrol et. Brave kullanıyorsan kalkanı (Shields) bu site için kapat. Apps Script dağıtımında Erişim'in **Herkes** olduğundan emin ol.
+- **Veriler bozuldu ya da yanlışlıkla silindi:** **Ayarlar → Yedekler**'den uygun yedeği geri yükle.
+- **Anahtarın başkasının eline geçtiğinden şüpheleniyorsan:** Tabloda **Bütçe → Bağlantı anahtarını yenile**'yi kullan, sonra her cihazda yeni anahtarla bağlan.
+- **Tüm verileri sıfırlamak:** Tabloda **Bütçe → Tüm verileri sıfırla**. Kalemler ve kayıtlar silinir, ayarlar ve kategoriler kalır. Silmeden önce otomatik yedek alınır.
+
+---
+
+# Neler değişti
+
+**3.11 (uygulama) · 3.10 (hesaplama) · 3.6 (tablo)**
+- Kaydetme simgesi hareketli: değişiklik yapılınca içinde yukarı kayan oklu bulut, kaydedilince yeşil tikli bulut görünür.
+- Bir kaydın adı değiştirilince balonda yeni adı yazıyor. Uzun adlar kısaltılıyor, "Geri al" hep aynı satırda kalıyor.
+- Yedekler:
+  - Son 7 yedek ve son 3 ayın ay başı yedeği saklanıyor.
+  - Yedekteki kayıt sayısı görünüyor.
+  - Tarihler "Bugün 09:15" ve "Dün 21:40" gibi yazılıyor, açıklamalar daha anlaşılır.
+  - Listede en yeni yedek görünüyor, diğerleri "Diğer yedekler" ile açılıyor.
+- Tablonun kabul etmediği tek bir değişiklik artık diğerlerini tıkamıyor. Sebebi gösteriliyor, diğer değişiklikler kaydediliyor.
+- "Borç ödedim" ile girilen ödeme, o ayın ödenmemiş taksitini işaretliyor. Ödeme artık iki kez sayılmıyor.
+- İnternetsizken art arda yapılan tik ve düzenlemelerin sırası korunuyor.
+- Gizli modda iki bildirimde görünen gerçek adlar gizlendi.
+- Kategori değişiklikleri de bekleyen kayıtlarla gidiyor, internetsizken kaybolmuyor.
+- Tablodaki ad, kategori ve not sütunları düz metin yapıldı, "15.10" gibi notlar tarihe dönüşmüyor.
+- Tutar kutuları sıkılaştı. `12a`, `-50`, `10.000.5` gibi hatalı yazımlar artık sessizce yanlış tutar olarak kaydedilmiyor, "Geçerli bir tutar yaz" uyarısı çıkıyor. Tabloya elle yazılan tutarlar da aynı kuralla okunuyor (`1.250` = 1250).
+- Tablodaki tutar sütunları `21.000,00` biçiminde görünüyor.
+- Özet sayfası yenilenirken telefondan gelen kayıtlarla çakışma önlendi.
+- Çevrimdışı önbellek sadece sağlam dosyaları saklıyor.
+- "Nasıl kullanılır?" bağlantısı eklendi (Ayarlar'ın en altında).
+
+**3.10 ve öncesi (özet)**
+- Uygulama Apps Script'ten GitHub'a taşındı: Google girişi olmadan, anahtarla bağlantı.
+- Değişiklikler önce telefonda görünüyor, arkadan gönderiliyor. İnternetsizken saklanıyor, tekrar deneniyor.
+- Borç ve alacak takibi: tek seferde, taksitli ya da belli değil.
+- Üst bölüm yeniden tasarlandı: giren ve çıkan kutuları, şu an elde kalan, ay sonu tahmini.
+- Geçmiş ay kilidi, Gecikenler bölümü, Geri al.
+- Gizli mod (göz simgesi), ay seçici, Android geri hareketi.
+- Diğer cihazdaki değişiklikler otomatik alınıyor.
+- Kopya kayıt uyarısı.
+- Aynı kaydın tabloya iki kez yazılması hatası giderildi.
+- Günlük otomatik yedek ve uygulamadan geri yükleme.
