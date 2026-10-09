@@ -134,7 +134,13 @@ Alttaki menünün dördüncü sekmesi. Dört hesaplama aracı var. Araçlar'a he
 
 **Kredi:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir.
 
-**Peşin mi, taksit mi?** Bir şeyi peşin mi, taksitle mi alsan daha kârlı? Peşin fiyatı, taksit sayısını ve taksitli toplamı (ya da aylık taksiti) yaz. Vade farkını ve bunun aylık kaç faize denk geldiğini gösterir. Paranın aylık getirisini de yazarsan (örneğin mevduat faizi) net bir sonuç söyler: "Taksitli al, yaklaşık 284 ₺ kârlı çıkarsın" ya da "Peşin al".
+**Bütçeme uyar mı?** Bir şey almadan önce, peşin ya da taksitli ödemenin bütçene sığıp sığmadığını gösterir.
+- Peşin fiyatını ve bir ya da birkaç taksit seçeneğini yaz: taksit sayısı ile aylık taksit ya da toplam. Hangisini biliyorsan onu yazman yeter, diğeri kendiliğinden hesaplanır. İlk taksit ayı varsayılan olarak gelecek aydır.
+- Her seçenek için toplam fiyat, en ucuz seçeneğe göre fark ve tek cümlelik bir sonuç çıkar: ✅ rahat sığıyor, 🟠 sıkışık (bir ayda gelirinin %10'undan az kalıyor), ⚠️ zorlanabilirsin (bir ayda eksiye düşüyor).
+- Bir seçeneğin kartına dokununca ay ay tablosu görünür: gelir, giderler ve kalan.
+- **Peşin** seçeneği bu ayın sonuna bakar: şu an elindeki para, bu ay daha gelecek ve ödenecek olanlar ve ayın kalan tahmini ek harcaması.
+- Gelecek aylar sabit kalemlerinden, borç ödemelerinden ve daha önce taksitle aldıklarının kalan taksitlerinden hesaplanır. Ek harcamalar için son 3 ayın ortalaması kullanılır, eski taksit parçaları bu ortalamaya katılmaz.
+- Tutarlar gizliyken bu araç çalışmaz.
 
 **Kira artışı:**
 1. Kira kalemini seç. Mevcut kira kendiliğinden gelir.
@@ -230,7 +236,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.21.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.22.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -255,6 +261,9 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.22.0 (uygulama)**
+- "Peşin mi, taksit mi?" aracının yerine **Bütçeme uyar mı?** geldi. Peşin ve taksit seçeneklerinin bütçene sığıp sığmadığını kendi verilerinle, ay ay gösteriyor. Getiri ve faiz karşılaştırması kaldırıldı.
 
 **3.21.0 (uygulama)**
 - Yeni araç: **Peşin mi, taksit mi?** Paranın getirisini yazınca hangisinin kârlı olduğunu söylüyor. Kredi aracı sadeleşti.

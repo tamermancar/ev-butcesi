@@ -367,6 +367,22 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 .kur-tablo > div b{text-align:right;font-weight:700;white-space:nowrap}
 .kur-tablo .bas{font-size:12px;color:var(--soluk);padding-top:0}
 .kur-tablo .bas b{font-weight:600}
+.bt-satir{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+.bt-kartlar{display:flex;flex-direction:column;gap:8px;margin:6px 0 12px}
+.bt-kart{display:block;width:100%;text-align:left;border:1px solid var(--cizgi);border-radius:12px;padding:10px 12px;background:var(--yuzey2)}
+.bt-kart.on{border-color:var(--vurgu);box-shadow:0 0 0 1px var(--vurgu) inset}
+.bt-ust{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.bt-kart small{display:block;color:var(--soluk);font-size:12px;margin-top:2px}
+.bt-cumle{display:block;font-size:13px;font-weight:600;margin-top:6px}
+.bt-kart.rahat .bt-cumle{color:var(--yesil)}
+.bt-kart.sikisik .bt-cumle,.bt-kart.zor .bt-cumle{color:var(--turuncu-yazi)}
+.bt-tablo > div{display:grid;grid-template-columns:minmax(0,.9fr) repeat(3,minmax(0,1fr));gap:6px;padding:7px 2px;border-top:1px solid var(--cizgi);font-size:13px}
+.bt-tablo > div:first-child{border-top:0}
+.bt-tablo > div b{text-align:right;font-weight:600;white-space:nowrap}
+.bt-tablo > div b:last-child{font-weight:800}
+.bt-tablo .bas{font-size:11.5px;color:var(--soluk)}
+.bt-tablo .bas b{font-weight:600!important}
+.bt-tablo .eksi b:last-child{color:var(--kirmizi)}
 .hakkinda a{color:var(--vurgu);font-weight:700;font-size:13px;display:inline-block;padding:10px 12px}
 
 .bildirim{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--murekkep);color:var(--zemin);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:20;width:max-content;max-width:90vw;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
@@ -427,7 +443,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.21.0';
+const UYGULAMA_SURUM = '3.22.0';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -1497,7 +1513,7 @@ const aracDeger = id => $(id) ? tutarOku($(id).value) : NaN;
 const ARAC_IKON = {
   kredi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>',
   kira: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>',
-  pesin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12l-1 4H7z"/><path d="M5 6h14l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"/><path d="M12 11v6M9.5 13.5h5"/></svg>',
+  butce: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12l-1 4H7z"/><path d="M5 6h14l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"/><path d="M12 11v6M9.5 13.5h5"/></svg>',
   kur: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6"/><path d="M15.5 9.5a6 6 0 1 1-6 6"/></svg>'
 };
 function aracCiz() {
@@ -1505,7 +1521,7 @@ function aracCiz() {
   const kart = (v, ad, ac) => `<button class="arac-kart" data-act="aracAc" data-v="${v}"><i>${ARAC_IKON[v]}</i><span><b>${ad}</b><small>${ac}</small></span><em>›</em></button>`;
   $('icerik').innerHTML = `<section class="bolum">
     ${kart('kredi', 'Kredi', 'Aylık taksit, toplam geri ödeme')}
-    ${kart('pesin', 'Peşin mi, taksit mi?', 'Peşin mi alayım, taksitli mi? Hangisi kârlı?')}
+    ${kart('butce', 'Bütçeme uyar mı?', 'Peşin mi, taksit mi? Hangi ay zorlanırım?')}
     ${kart('kira', 'Kira artışı', 'Yasal üst sınır, anlaşılan yeni kira, kira kalemine uygula')}
     ${kart('kur', 'Döviz / altın', 'Güncel fiyatlar ve çevirici')}</section>`;
   kurOnYukle(); // Araçlar'a girince fiyatlar arka planda hazırlansın (15 dakikada bir)
@@ -1513,7 +1529,7 @@ function aracCiz() {
 function aracAc(v) {
   D.cek = { tip: 'arac', arac: v };
   if (v === 'kredi') krediCiz();
-  else if (v === 'pesin') pesinCiz();
+  else if (v === 'butce') butceCiz();
   else if (v === 'kira') kiraCiz();
   else kurCiz();
 }
@@ -1540,46 +1556,104 @@ function krediHesapla() {
       <div><span>Toplam faiz${$('arKrVergi').checked ? ' ve vergi' : ''}</span><b>${TL(taksit * n - P)}</b></div></div>`;
   }
 }
-/* Peşin mi, taksit mi? */
-function pesinCiz() {
-  D.cek.kaynak = 'toplam';
-  cekmeceAc(`<h3>Peşin mi, taksit mi?</h3>
-    <p class="aciklama">Peşin fiyatı ve taksitli fiyatı yaz, taksitle almanın kaça mal olduğunu gör.</p>
-    <div class="yan"><label class="alan"><span>Peşin fiyatı</span><input id="arPsPesin" inputmode="decimal" placeholder="Örn. 10.000"></label>
-      <label class="alan"><span>Taksit sayısı</span><input id="arPsSay" type="number" min="1" max="120" inputmode="numeric" placeholder="Örn. 6"></label></div>
-    <div class="yan"><label class="alan"><span>Taksitli toplam</span><input id="arPsToplam" inputmode="decimal" placeholder="0"></label>
-      <label class="alan"><span>ya da aylık taksit</span><input id="arPsTaksit" inputmode="decimal" placeholder="0"></label></div>
-    <label class="alan"><span>Paran aylık yüzde kaç getiriyor? (isteğe bağlı)</span><input id="arPsGetiri" inputmode="decimal" placeholder="Örn. mevduat faizi 3,2"></label>
-    <div class="arac-sonuc" id="arPsSonuc"></div>
-    <p class="dipnot">İlk taksidin bir ay sonra ödendiği varsayılır. Getiri hesabında vergi ve kesintiler dikkate alınmaz, sonuç yaklaşıktır.</p>`);
-  pesinHesapla();
+/* Bütçeme uyar mı? Peşin ve taksit seçeneklerinin bütçeye sığıp sığmadığını ay ay hesaplar.
+   Gelecek aylar: sabit kalemler + önceden yapılmış taksitler + son 3 ayın ortalama ek harcaması. */
+function butceCiz() {
+  D.cek.n = 1; D.cek.sec = 0; D.cek.kaynak = {};
+  const ilkAy = D.raw ? ayEkle_(D.raw.buAy, 1) : '';
+  const satir = i => `<div class="bt-satir" id="arBtR${i}" ${i ? 'hidden' : ''}>
+      <label class="alan"><span>Taksit sayısı</span><input id="arBtS${i}" type="number" min="1" max="36" inputmode="numeric" placeholder="Örn. 6"></label>
+      <label class="alan"><span>Aylık taksit</span><input id="arBtT${i}" inputmode="decimal" placeholder="0"></label>
+      <label class="alan"><span>ya da toplam</span><input id="arBtY${i}" inputmode="decimal" placeholder="0"></label></div>`;
+  cekmeceAc(`<h3>Bütçeme uyar mı?</h3>
+    <p class="aciklama">Almak istediğin şeyin fiyatlarını yaz. Her seçeneğin bütçene sığıp sığmadığını ay ay göstereyim.</p>
+    <label class="alan"><span>Peşin fiyatı (isteğe bağlı)</span><input id="arBtPesin" inputmode="decimal" placeholder="Örn. 10.000"></label>
+    ${[0, 1, 2].map(satir).join('')}
+    <button class="btn metin" data-act="arBtEkle" id="arBtEkleBtn">+ Başka taksit seçeneği</button>
+    <label class="alan"><span>İlk taksit ayı</span><input id="arBtAy" type="month" value="${esc(ilkAy)}"></label>
+    <div id="arBtSonuc"></div>
+    <p class="dipnot" id="arBtDipnot"></p>`);
+  butceHesapla();
 }
-function pesinHesapla(kaynak) {
-  const ps = $('arPsSonuc'); if (!ps) return;
-  const k = parseInt($('arPsSay').value, 10);
-  // Taksitli toplam ile aylık taksitten biri yazılınca diğeri hesaplanır
-  if (kaynak === 'arPsToplam' || kaynak === 'arPsTaksit') D.cek.kaynak = kaynak === 'arPsToplam' ? 'toplam' : 'taksit';
-  if (k > 0) {
-    if (D.cek.kaynak === 'toplam' && kaynak !== 'arPsTaksit') { const t = aracDeger('arPsToplam'); $('arPsTaksit').value = t > 0 ? girisDegeri(Math.round(t / k * 100) / 100) : ''; }
-    if (D.cek.kaynak === 'taksit' && kaynak !== 'arPsToplam') { const t = aracDeger('arPsTaksit'); $('arPsToplam').value = t > 0 ? girisDegeri(Math.round(t * k * 100) / 100) : ''; }
+/** Son 3 tam ayın ortalama ek harcaması (eski taksit parçaları hariç; onlar gelecek aylarda ayrıca sayılıyor) */
+function ekOrtalama() {
+  let top = 0, say = 0;
+  for (let i = 1; i <= 3; i++) {
+    const v = ayHesapla_(ayEkle_(D.raw.buAy, -i), D.raw);
+    if (!v.satirlar.length) continue;
+    say++;
+    v.satirlar.forEach(s => { if (!s.tip && !s.kart && s.tur === 'gider' && !s.kalemId && !/\(\d+\/\d+\)$/.test(s.ad)) top += s.tutar; });
   }
-  const pe = aracDeger('arPsPesin'), to = aracDeger('arPsToplam'), g = aracDeger('arPsGetiri');
-  if (!(pe > 0) || !(to > 0) || !(k > 0)) { ps.innerHTML = '<p class="ipucu">Peşin fiyatı, taksit sayısını ve taksitli fiyatı yazınca sonuç burada görünür.</p>'; return; }
-  if (to <= pe + 0.005) { ps.innerHTML = `<p class="arac-not iyi">✅ Taksitli al. ${to < pe - 0.005 ? 'Taksitli fiyat peşinden bile ucuz' : 'Taksitli fiyat peşinle aynı'}: vade farkı yok. Parayı elinde tutup taksitle ödemek avantajlı.</p>`; return; }
-  // Taksitlerin bugünkü değeri peşin fiyata eşit olacak aylık oran (ilk taksit bir ay sonra)
-  const t = to / k, bd = r => r === 0 ? t * k : t * (1 - Math.pow(1 + r, -k)) / r;
-  let a = 0, b = 1; for (let i = 0; i < 60; i++) { const m = (a + b) / 2; if (bd(m) > pe) a = m; else b = m; }
-  let karar = '';
-  if (g >= 0) {
-    // Peşin para faizde tutulup taksitler oradan ödenirse vade sonunda ne kadar artar/eksilir
-    const r = g / 100, fark = (pe - bd(r)) * Math.pow(1 + r, k);
-    karar = Math.abs(fark) < 1 ? '<p class="arac-not">İkisi neredeyse aynı: hangisini seçsen fark etmez.</p>'
-      : fark > 0 ? `<p class="arac-not iyi">✅ Taksitli al. Peşin parayı faizde tutup taksitleri oradan ödersen, taksitler bittiğinde yaklaşık ${TL(fark)} kârlı çıkarsın.</p>`
-      : `<p class="arac-not iyi">✅ Peşin al. Taksitli almak sana yaklaşık ${TL(-fark)} daha pahalıya geliyor.</p>`;
+  return { tutar: say ? top / say : 0, ay: say };
+}
+/** Bir ayın tahmini durumu: gelir, giderler ve (yeni ödeme olmadan) kalan */
+function ayButcesi(ay, ort) {
+  const t = akisOzeti(ayHesapla_(ay, D.raw)), bu = ay === D.raw.buAy;
+  const ek = bu ? Math.max(ort, t.ek[1]) : ort + t.ek[1];
+  const gelir = t.giren[1], gider = t.gider[1] + t.odeme[1] + t.verilen[1] + ek;
+  return { ay: ay, gelir: gelir, gider: gider, kalan: gelir - gider, maas: t.gelir[1] };
+}
+function butceHesapla(kaynak) {
+  const el = $('arBtSonuc'), c = D.cek; if (!el) return;
+  if (!D.raw) { el.innerHTML = '<p class="ipucu">Veriler yüklenince hesaplanır.</p>'; return; }
+  if (gizliMi()) { el.innerHTML = '<p class="arac-not uyari">Bu araç senin bütçeni kullanır. Tutarlar gizliyken çalışmaz; göz simgesine dokunup tutarları göster.</p>'; return; }
+  // Taksit satırlarında aylık taksit ile toplamdan biri yazılınca diğeri hesaplanır
+  for (let i = 0; i < 3; i++) {
+    const n = parseInt($('arBtS' + i).value, 10);
+    if (kaynak === 'arBtT' + i) c.kaynak[i] = 'T'; else if (kaynak === 'arBtY' + i) c.kaynak[i] = 'Y';
+    if (!(n > 0)) continue;
+    if (c.kaynak[i] === 'T' && kaynak !== 'arBtY' + i) { const t = aracDeger('arBtT' + i); $('arBtY' + i).value = t > 0 ? girisDegeri(Math.round(t * n * 100) / 100) : ''; }
+    if (c.kaynak[i] === 'Y' && kaynak !== 'arBtT' + i) { const y = aracDeger('arBtY' + i); $('arBtT' + i).value = y > 0 ? girisDegeri(Math.round(y / n * 100) / 100) : ''; }
   }
-  ps.innerHTML = `<div class="bilgi-satirlari"><div><span>Vade farkı</span><b>${TL(to - pe)}</b></div>
-    <div><span>Aylık faize denk</span><b>${yuzde(a * 100)}</b></div></div>
-    ${karar || '<p class="arac-not">Taksitli almak, mağazadan bu faizle borç almak gibidir. Paran bundan daha yüksek aylık getiri sağlıyorsa taksitli, sağlamıyorsa peşin almak daha kârlı. Getirini yazarsan net sonucu gösteririm.</p>'}`;
+  const ort = ekOrtalama(), pesin = aracDeger('arBtPesin'), ilk = $('arBtAy').value || ayEkle_(D.raw.buAy, 1);
+  $('arBtDipnot').textContent = `Gelecek aylar sabit kalemlerinden ve daha önce yaptığın taksitlerden hesaplanır. Ek harcamalar için ${ort.ay ? 'son ' + ort.ay + ' ayın ortalaması (' + para(ort.tutar) + ')' : 'henüz geçmiş veri olmadığı için 0'} kullanılır. Değişken gelir ve giderler tahminidir.`;
+  const secenekler = [];
+  if (pesin > 0) secenekler.push({ ad: 'Peşin', pesin: true, toplam: pesin });
+  for (let i = 0; i < c.n; i++) {
+    const n = parseInt($('arBtS' + i).value, 10), t = aracDeger('arBtT' + i);
+    if (n > 0 && t > 0) secenekler.push({ ad: n + ' taksit', n: n, taksit: t, toplam: t * n });
+  }
+  if (!secenekler.length) { el.innerHTML = '<p class="ipucu">Peşin fiyatı ya da bir taksit seçeneği yazınca sonuç burada görünür.</p>'; return; }
+  const enUcuz = Math.min(...secenekler.map(s => s.toplam));
+  // Her seçeneğin ay ay durumu ve sonucu
+  secenekler.forEach(s => {
+    if (s.pesin) {
+      // Bu ay: şu an elde olan + bu ay daha gelecek − daha ödenecek − ayın kalan tahmini ek harcaması − peşin
+      const v = ayHesapla_(D.raw.buAy, D.raw), t = akisOzeti(v);
+      const elde = devirHesapla(D.raw.buAy) + t.giren[0] - t.cikan[0];
+      const kalanEk = Math.max(0, ort.tutar - t.ek[1]);
+      const aySonu = elde + (t.giren[1] - t.giren[0]) - (t.cikan[1] - t.cikan[0]) - kalanEk - s.toplam;
+      s.aylar = [{ ay: D.raw.buAy, gelir: elde + t.giren[1] - t.giren[0], gider: t.cikan[1] - t.cikan[0] + kalanEk + s.toplam, kalan: aySonu, maas: t.gelir[1] }];
+    } else {
+      s.aylar = [];
+      for (let k = 0; k < s.n; k++) { const b = ayButcesi(ayEkle_(ilk, k), ort.tutar); b.gider += s.taksit; b.kalan -= s.taksit; s.aylar.push(b); }
+    }
+    const enKotu = s.aylar.reduce((a, b) => b.kalan < a.kalan ? b : a);
+    const sinir = Math.max(0, enKotu.maas) * 0.1;
+    s.durum = enKotu.kalan < 0 ? 'zor' : enKotu.kalan < sinir ? 'sikisik' : 'rahat';
+    s.enKotu = enKotu;
+    const ayAd = AYLAR[+enKotu.ay.slice(5) - 1];
+    if (s.pesin) s.cumle = s.durum === 'rahat' ? `✅ Peşin ödeyebilirsin. Ay sonunda yaklaşık ${para(enKotu.kalan)} kalır.`
+      : s.durum === 'sikisik' ? `🟠 Ödeyebilirsin ama sıkışık: ay sonunda yaklaşık ${para(enKotu.kalan)} kalır.`
+      : `⚠️ Peşin ödersen ay sonunda yaklaşık ${para(-enKotu.kalan)} eksik kalırsın.`;
+    else {
+      const enAz = Math.min(...s.aylar.map(a => a.kalan));
+      s.cumle = s.durum === 'rahat' ? `✅ Bütçene rahat sığıyor. Her ay en az ${para(enAz)} artıyor.`
+        : s.durum === 'sikisik' ? `🟠 Sığıyor ama sıkışık: en zor ay ${ayAd}, elinde yaklaşık ${para(enKotu.kalan)} kalıyor.`
+        : `⚠️ ${ayAd} ayında zorlanabilirsin: yaklaşık ${para(-enKotu.kalan)} eksik kalıyor. Ek gelirin yoksa ek harcamaları kısman ya da daha uzun vade seçmen gerekebilir.`;
+    }
+    s.fark = s.toplam - enUcuz;
+  });
+  if (c.sec >= secenekler.length) c.sec = 0;
+  const kart = (s, i) => `<button class="bt-kart ${i === c.sec ? 'on' : ''} ${s.durum}" data-act="arBtSec" data-v="${i}">
+      <span class="bt-ust"><b>${s.ad}</b><b>${TL(s.toplam)}</b></span>
+      <small>${s.pesin ? 'Tek seferde' : s.n + ' × ' + TL(s.taksit, s.taksit % 1 > 0.004)}${s.fark > 0.5 ? ` · en ucuzdan ${TL(s.fark)} (%${NF0.format(s.fark / enUcuz * 100)}) pahalı` : secenekler.length > 1 ? ' · en ucuz' : ''}</small>
+      <span class="bt-cumle">${s.cumle}</span></button>`;
+  const s = secenekler[c.sec];
+  const tablo = `<div class="bt-tablo"><div class="bas"><span>${s.pesin ? 'Bu ay' : 'Ay'}</span><b>${s.pesin ? 'Elde + gelecek' : 'Gelir'}</b><b>Giderler*</b><b>Kalan</b></div>
+    ${s.aylar.slice(0, 24).map(a => `<div class="${a.kalan < 0 ? 'eksi' : ''}"><span>${KISA[+a.ay.slice(5) - 1]} ${a.ay.slice(2, 4)}</span><b>${NF0.format(Math.round(a.gelir))}</b><b>${NF0.format(Math.round(a.gider))}</b><b>${a.kalan < 0 ? '−' : ''}${NF0.format(Math.round(Math.abs(a.kalan)))}</b></div>`).join('')}</div>
+    <p class="ipucu" style="margin-top:6px">* ${s.pesin ? 'Bu ay daha ödenecekler, ayın kalan tahmini ek harcaması ve peşin ödeme' : 'Sabit giderler, borç ödemeleri, tahmini ek harcama ve bu taksit'} dahil.${secenekler.length > 1 ? ' Başka bir seçeneğin tablosu için kartına dokun.' : ''}</p>`;
+  el.innerHTML = `<div class="bt-kartlar">${secenekler.map(kart).join('')}</div>${tablo}`;
 }
 /* Kira artışı */
 function kiraKalemleri() {
@@ -1963,6 +2037,8 @@ document.addEventListener('click', e => {
       sunucu('api_yedekAl').then(l => { D.yedekler = l; bildir('Yedek alındı'); }).catch(hata).then(() => { if (D.sekme === 'ayar') ayarCiz(); });
       break;
     case 'aracAc': aracAc(v); break;
+    case 'arBtEkle': if (D.cek.n < 3) { $('arBtR' + D.cek.n).hidden = false; D.cek.n++; } if (D.cek.n >= 3) t.hidden = true; break;
+    case 'arBtSec': D.cek.sec = +v; butceHesapla(); break;
     case 'arKiraSec': $('arKiraYeni').value = girisDegeri(+v); D.cek.yeniElle = true; kiraBilgi(); break;
     case 'arKiraUygula': kiraUygula(); break;
     case 'surumDetay': D.surumDetay = !D.surumDetay; ayarCiz(); break;
@@ -2102,7 +2178,7 @@ document.addEventListener('input', e => {
   const id = e.target.id;
   if (['eTutar', 'eTaksit', 'eKart', 'eTaksitT', 'eSayi', 'eIlkAy'].includes(id)) ekleIpucu();
   if (/^arKr/.test(id)) krediHesapla();
-  if (/^arPs/.test(id)) pesinHesapla(id);
+  if (/^arBt/.test(id)) butceHesapla(id);
   if (id === 'arKiraMevcut' || id === 'arKiraOran') kiraHesapla(id);
   if (id === 'arKiraYeni') { D.cek.yeniElle = true; kiraBilgi(); }
   if (id === 'arKurMiktar') kurHesapla();
