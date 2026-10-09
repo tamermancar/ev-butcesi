@@ -1,10 +1,10 @@
 /**
- * EV BÜTÇESİ — Gelir Gider Defteri  (sürüm 3.5)
+ * EV BÜTÇESİ — Gelir Gider Defteri  (sürüm 3.7)
  * Veriler: Google E-Tablolar  |  Uygulama ekranı ve hesaplama kodu (ortak.js): GitHub Pages
  * Bu dosya sadece tabloya okuma/yazma, yedek ve özet sayfası işlerini yapar.
  * Hesaplama kuralları GitHub'daki ortak.js'tedir; Kod.gs onu oradan okur. Bu yüzden bu dosya nadiren değişir.
  *
- * İLK KURULUM / GÜNCELLEME SONRASI: "kurulum" fonksiyonunu bir kez çalıştırın.
+ * İLK KURULUM / GÜNCELLEME SONRASI: "kurulum" fonksiyonunu bir kez çalıştır.
  * Bağlantı anahtarı: tabloda Bütçe → Bağlantı bilgilerini göster.
  * Sayfalar (gri sekmeler uygulamanın veri deposudur, elle doldurmayın):
  *   Kalemler             → sabit/düzenli kalemler (şablon)
@@ -13,9 +13,12 @@
  *   Ayarlar              → kategoriler ve görünüm ayarları
  */
 
-const SURUM = '3.5';
+const SURUM = '3.8';
 const YEDEK_KLASORU = 'Ev Bütçesi Yedekleri';
-const YEDEK_SAYISI = 5;
+const YEDEK_SAYISI = 7;        // son 7 yedek (günlük, elle alınan, geri yükleme öncesi...)
+const AYLIK_YEDEK_SAYISI = 3;  // ayrıca her ayın ilk otomatik yedeği, son 3 ay
+// ortak.js'e: toplu gönderimde kaydedilemeyen işlem diğerlerini durdurmasın, hata listesi telefona dönsün
+const TOPLU_HATA_DONER = true;
 
 const SAYFA = { KALEM: 'Kalemler', HAREKET: 'Hareketler', TUTAR: 'TutarDegisiklikleri', AYAR: 'Ayarlar' };
 
@@ -26,13 +29,16 @@ const BASLIK = {
   Ayarlar: ['anahtar', 'deger']
 };
 
-// E-Tablolar bu sütunları tarihe/sayıya çevirmesin diye düz metin yapılır
+// E-Tablolar bu sütunları tarihe/sayıya çevirmesin diye düz metin yapılır (ad, kategori ve not dahil:
+// "15.10" gibi bir not tarihe dönüşmesin)
 const METIN_SUTUNLARI = {
-  Kalemler: ['A:A', 'H:J', 'O:O'],
-  Hareketler: ['A:C', 'J:J', 'L:N'],
+  Kalemler: ['A:A', 'C:C', 'E:E', 'H:J', 'N:O'],
+  Hareketler: ['A:D', 'F:F', 'J:N'],
   TutarDegisiklikleri: ['A:B'],
   Ayarlar: ['A:B']
 };
+// Tutar sütunları tabloda okunaklı görünsün (21.000,00)
+const SAYI_SUTUNLARI = { Kalemler: ['F:F', 'P:P'], Hareketler: ['G:G'], TutarDegisiklikleri: ['C:C'] };
 
 const VARSAYILAN_KATEGORILER = ['Market', 'Benzin', 'Giyim', 'Sağlık', 'Ev', 'Çocuklar', 'Eğitim', 'Ulaşım',
   'Yeme-İçme', 'Eğlence', 'Hediye', 'Vergi/Harç', 'Diğer'];
@@ -60,7 +66,8 @@ const ISLEMLER = {
   ayarKaydet: function (a, d) { return api_ayarKaydet(a, d); },
   yedekler: function () { return api_yedekler(); },
   yedekAl: function () { return api_yedekAl(); },
-  yedekGeriYukle: function (id) { return api_yedekGeriYukle(id); }
+  yedekGeriYukle: function (id) { return api_yedekGeriYukle(id); },
+  kurlar: function () { return api_kurlar(); }
 };
 
 function doPost(e) {
@@ -131,7 +138,8 @@ function onOpen() {
 /** Özet sayfası hesaplama koduna ihtiyaç duyar; uygulama hiç açılmadıysa sessizce atlanır */
 function ozetYenile_(yil) {
   try { ortakYukle_(); } catch (e) { console.warn('Özet atlandı: ' + e.message); return false; }
-  yillikTablo_(yil);
+  // Özet, geçmiş ayların eksik satırlarını tabloya yazar; telefonla aynı anda yazılmasın diye kilitle
+  kilitli_(function () { yillikTablo_(yil); });
   return true;
 }
 function menuYenile() {
@@ -170,7 +178,7 @@ function menuSifirla() {
     ui.ButtonSet.YES_NO);
   if (c !== ui.Button.YES) return;
   kilitli_(function () {
-    yedekAl_('Sıfırlamadan önce');
+    yedekAl_('Tüm kayıtlar silinmeden önceki hâl');
     [SAYFA.KALEM, SAYFA.HAREKET, SAYFA.TUTAR].forEach(function (ad) {
       const sh = sayfa_(ad), son = sh.getLastRow();
       if (son > 1) sh.deleteRows(2, son - 1);
@@ -195,7 +203,6 @@ function kurulum() {
     sh.setTabColor('#9AA5AB');
   });
   semaKontrol_();
-  gecTarihleriTemizle_();
   if (!ayarOku_('kategoriler')) ayarYaz_('kategoriler', VARSAYILAN_KATEGORILER.join(', '));
   anahtar_();
   yedekKlasoru_();
@@ -231,10 +238,12 @@ function yaz_(fn) {
     semaKontrol_();
     try {
       const pr = PropertiesService.getScriptProperties();
-      if (pr.getProperty('SON_YEDEK_GUN') !== bugun_()) yedekAl_('Günün ilk değişikliğinden önce');
+      if (pr.getProperty('SON_YEDEK_GUN') !== bugun_()) yedekAl_('Günlük otomatik yedek', true);
     } catch (e) { console.warn('Otomatik yedek alınamadı: ' + e); }
-    fn(veriOku_());
-    return veriPaketi_(veriOku_());
+    const sonuc = fn(veriOku_());
+    const paket = veriPaketi_(veriOku_());
+    if (sonuc && sonuc.hatalar) paket.hatalar = sonuc.hatalar; // kaydedilemeyen işlemler (toplu gönderim)
+    return paket;
   });
 }
 
@@ -261,14 +270,66 @@ function veriPaketi_(veri) {
   };
 }
 
-/* ───────────── Yedekler (Drive'da "Ev Bütçesi Yedekleri" klasörü, son 5 yedek) ───────────── */
+/* ───────────── Döviz ve altın fiyatları (Araçlar) ─────────────
+   Döviz: Merkez Bankası günlük kurları. Altın ve değerli metaller: Truncgil Finans (ücretsiz, resmi olmayan kaynak).
+   15 dakika ara bellekte tutulur. Bir kaynak çalışmazsa son başarılı fiyatlar tarihleriyle gönderilir. */
+function api_kurlar() {
+  const onbellek = CacheService.getScriptCache();
+  const c = onbellek.get('kurlar');
+  if (c) return JSON.parse(c);
+  const pr = PropertiesService.getScriptProperties();
+  let son = {};
+  try { son = JSON.parse(pr.getProperty('KURLAR_SON') || '{}'); } catch (e) {}
+  const sonuc = { doviz: son.doviz || null, altin: son.altin || null, hatalar: [] };
+  try { sonuc.doviz = tcmbKurlari_(); } catch (e) { sonuc.hatalar.push('doviz'); console.warn('Döviz alınamadı: ' + e); }
+  try { sonuc.altin = altinFiyatlari_(); } catch (e) { sonuc.hatalar.push('altin'); console.warn('Altın alınamadı: ' + e); }
+  pr.setProperty('KURLAR_SON', JSON.stringify({ doviz: sonuc.doviz, altin: sonuc.altin }));
+  onbellek.put('kurlar', JSON.stringify(sonuc), sonuc.hatalar.length ? 120 : 900);
+  return sonuc;
+}
+function tcmbKurlari_() {
+  const r = UrlFetchApp.fetch('https://www.tcmb.gov.tr/kurlar/today.xml', { muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) throw new Error('TCMB cevap kodu ' + r.getResponseCode());
+  const kok = XmlService.parse(r.getContentText()).getRootElement();
+  const t = String(kok.getAttribute('Tarih') ? kok.getAttribute('Tarih').getValue() : ''); // 09.10.2026
+  const liste = {};
+  kok.getChildren('Currency').forEach(function (c) {
+    const kod = c.getAttribute('CurrencyCode').getValue();
+    if (['USD', 'EUR', 'GBP', 'CHF'].indexOf(kod) < 0) return;
+    const birim = Number(c.getChildText('Unit')) || 1;
+    liste[kod] = { alis: Number(c.getChildText('ForexBuying')) / birim, satis: Number(c.getChildText('ForexSelling')) / birim };
+  });
+  if (!liste.USD || !(liste.USD.satis > 0)) throw new Error('TCMB verisi okunamadı');
+  return { tarih: t.split('.').reverse().join('-'), liste: liste };
+}
+function altinFiyatlari_() {
+  const r = UrlFetchApp.fetch('https://finans.truncgil.com/today.json', { muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) throw new Error('Truncgil cevap kodu ' + r.getResponseCode());
+  const j = JSON.parse(r.getContentText());
+  const liste = {};
+  ['gram-altin', 'ceyrek-altin', 'yarim-altin', 'tam-altin', 'cumhuriyet-altini', 'ata-altin', '22-ayar-bilezik', 'gumus'].forEach(function (k) {
+    const x = j[k];
+    if (x) liste[k] = { alis: num_(x['Alış']), satis: num_(x['Satış']) };
+  });
+  if (!liste['gram-altin'] || !(liste['gram-altin'].satis > 0)) throw new Error('Altın verisi okunamadı');
+  return { tarih: String(j.Update_Date || ''), liste: liste };
+}
+
+/* ───────────── Yedekler (Drive'da "Ev Bütçesi Yedekleri" klasörü) ─────────────
+   Son 7 yedek + her ayın ilk otomatik yedeği ("ay başı", son 3 ay). Her yedek o andaki verinin tamamıdır.
+   Dosya adı: "Ev Bütçesi yedek 2026-10-08 09.15 [ay başı] (148 kayıt).json" */
 
 function api_yedekler() {
   const tz = tz_();
   return yedekDosyalari_().map(function (f) {
-    return { id: f.getId(), tarih: Utilities.formatDate(f.getDateCreated(), tz, 'dd.MM.yyyy HH:mm'), not: f.getDescription() || '' };
+    const ad = f.getName(), m = ad.match(/\((\d+) kayıt\)/);
+    return {
+      id: f.getId(), tarih: Utilities.formatDate(f.getDateCreated(), tz, "yyyy-MM-dd'T'HH:mm"), not: f.getDescription() || '',
+      sayi: m ? Number(m[1]) : null, aylik: yedekAylikMi_(f)
+    };
   });
 }
+function yedekAylikMi_(f) { return f.getName().indexOf(' ay başı') > 0; }
 function api_yedekAl() {
   kilitli_(function () { yedekAl_('Elle alınan yedek'); });
   return api_yedekler();
@@ -278,7 +339,7 @@ function api_yedekGeriYukle(id) {
     const dosya = yedekDosyalari_().find(function (f) { return f.getId() === id; });
     if (!dosya) throw new Error('Yedek bulunamadı.');
     const yedek = JSON.parse(dosya.getBlob().getDataAsString());
-    yedekAl_('Geri yüklemeden önceki hâl');
+    yedekAl_('Yedek geri yüklenmeden önceki hâl');
     [SAYFA.KALEM, SAYFA.HAREKET, SAYFA.TUTAR].forEach(function (ad) {
       const sh = sayfa_(ad), son = sh.getLastRow();
       if (son > 1) sh.deleteRows(2, son - 1);
@@ -305,29 +366,27 @@ function yedekDosyalari_() {
   while (it.hasNext()) liste.push(it.next());
   return liste.sort(function (a, b) { return b.getDateCreated() - a.getDateCreated(); });
 }
-function yedekAl_(not) {
-  const tz = tz_(), veri = {};
+/** otomatik: günlük yedek. Ayın ilk otomatik yedeği "ay başı" olarak ayrıca saklanır. */
+function yedekAl_(not, otomatik) {
+  const tz = tz_(), veri = {}, simdi = new Date();
   [SAYFA.KALEM, SAYFA.HAREKET, SAYFA.TUTAR].forEach(function (ad) {
     veri[ad] = sayfa_(ad).getDataRange().getValues().map(function (r) {
       return r.map(function (v) { return Object.prototype.toString.call(v) === '[object Date]' ? Utilities.formatDate(v, tz, 'yyyy-MM-dd') : v; });
     });
   });
-  const ad = 'Ev Bütçesi yedek ' + Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd HH.mm') + '.json';
+  // Kayıt sayısı: uygulamada görülenler (sabit kalemler + aylık kayıtlar). Tutar değişiklikleri sayılmaz.
+  const sayi = [SAYFA.KALEM, SAYFA.HAREKET].reduce(function (t, ad) {
+    return t + veri[ad].slice(1).filter(function (r) { return r[0] !== '' && r[0] !== null; }).length;
+  }, 0);
+  const ay = Utilities.formatDate(simdi, tz, 'yyyy-MM');
+  const aylik = !!otomatik && !yedekDosyalari_().some(function (f) { return yedekAylikMi_(f) && f.getName().indexOf('yedek ' + ay) >= 0; });
+  const ad = 'Ev Bütçesi yedek ' + Utilities.formatDate(simdi, tz, 'yyyy-MM-dd HH.mm') + (aylik ? ' ay başı' : '') + ' (' + sayi + ' kayıt).json';
   const f = yedekKlasoru_().createFile(ad, JSON.stringify({ surum: SURUM, veri: veri }), MimeType.PLAIN_TEXT);
   f.setDescription(not || '');
   PropertiesService.getScriptProperties().setProperty('SON_YEDEK_GUN', bugun_());
-  yedekDosyalari_().slice(YEDEK_SAYISI).forEach(function (x) { x.setTrashed(true); });
-}
-
-/** Sürüm 3.3'e geçişte bir kez: geçmiş aylara sonradan girilen kayıtlardaki ödeme gününü siler */
-function gecTarihleriTemizle_() {
-  const pr = PropertiesService.getScriptProperties();
-  if (pr.getProperty('GEC_TARIH_TEMIZ')) return;
-  veriOku_().hareketler.forEach(function (h) {
-    const t = tarihStr_(h.tarih);
-    if (bool_(h.odendi) && t && t.slice(0, 7) > ay_(h.ay)) { h.tarih = ''; satirYaz_(SAYFA.HAREKET, h); }
-  });
-  pr.setProperty('GEC_TARIH_TEMIZ', '1');
+  const liste = yedekDosyalari_();
+  liste.filter(function (x) { return !yedekAylikMi_(x); }).slice(YEDEK_SAYISI).forEach(function (x) { x.setTrashed(true); });
+  liste.filter(yedekAylikMi_).slice(AYLIK_YEDEK_SAYISI).forEach(function (x) { x.setTrashed(true); });
 }
 
 /** Yeni sürümde eklenen sütun başlıklarını eski tablolara ekler */
@@ -342,6 +401,19 @@ function semaKontrol_() {
       METIN_SUTUNLARI[ad].forEach(function (a) { sh.getRange(a).setNumberFormat('@'); });
     }
   });
+  // Sürüm 3.6: ad, kategori ve not sütunları da düz metin, tutar sütunları sayı biçiminde olsun (bir kez yapılır)
+  const pr = PropertiesService.getScriptProperties();
+  if (pr.getProperty('METIN_SUTUN_SURUM') !== '3.6') {
+    Object.keys(METIN_SUTUNLARI).forEach(function (ad) {
+      const sh = ss_().getSheetByName(ad);
+      if (sh) METIN_SUTUNLARI[ad].forEach(function (a) { sh.getRange(a).setNumberFormat('@'); });
+    });
+    Object.keys(SAYI_SUTUNLARI).forEach(function (ad) {
+      const sh = ss_().getSheetByName(ad);
+      if (sh) SAYI_SUTUNLARI[ad].forEach(function (a) { sh.getRange(a).setNumberFormat('#,##0.00'); });
+    });
+    pr.setProperty('METIN_SUTUN_SURUM', '3.6');
+  }
 }
 
 function ayarlarOku_() {
@@ -390,7 +462,7 @@ function ayiHazirla_(ay, veri) {
 function ss_() { return SpreadsheetApp.getActive(); }
 function sayfa_(ad) {
   const sh = ss_().getSheetByName(ad);
-  if (!sh) throw new Error('"' + ad + '" sayfası yok. Önce kurulum fonksiyonunu çalıştırın.');
+  if (!sh) throw new Error('"' + ad + '" sayfası yok. Önce kurulum fonksiyonunu çalıştır.');
   return sh;
 }
 function veriOku_() {
