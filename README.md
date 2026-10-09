@@ -108,7 +108,7 @@ Yaptığın değişiklik önce telefonda görünür, ardından birkaç saniye i�
 | Bulut, içinde yukarı kayan ok | Kaydediliyor |
 | Yeşil tikli bulut | Kaydedildi (1,5 saniye görünür) |
 | Turuncu üçgen | Gönderilemedi (internet yok ya da bağlantı sorunu). Telefonda saklanıyor, tekrar denenecek. |
-| "Güncelleniyor…" | Tablodaki son hâl alınıyor |
+| Dönen iki ok | Tablodaki son hâl alınıyor (dokununca balonla da yazar) |
 
 Turuncu üçgene dokununca **Bekleyen kayıtlar** penceresi açılır. Orada kaç kaydın beklediğini görür, **Şimdi tekrar dene** ile gönderebilir ya da gerekirse **Bekleyenleri iptal et** ile vazgeçebilirsin.
 
@@ -205,7 +205,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.15` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.11 · tablo 3.6`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.16` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.11 · tablo 3.6`.
 - **Hesaplama**, GitHub'daki `ortak.js` dosyasının sürümüdür.
 - **Tablo**, Kod.gs'in sürümüdür.
 
@@ -223,6 +223,9 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.16 (uygulama)**
+- Veri yenilenirken sağ üstte "Güncelleniyor…" yazısı yerine dönen oklu küçük bir simge çıkıyor. Simgeye dokununca "Tablodaki son hâl alınıyor…" balonu görünüyor.
 
 **3.15 (uygulama)**
 - Bilgisayarda + düğmesi listenin sağ kenarına taşıyordu (tarayıcının kaydırma çubuğu içeriği biraz sola itiyordu). Artık her ekranda ve her görünümde telefondaki gibi kartın biraz içinde duruyor.
