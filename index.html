@@ -135,7 +135,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .ilerleme{height:6px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;margin-bottom:0}
 .ilerleme i{display:block;height:100%;background:#fff;border-radius:3px;transition:width .3s}
 .ust-not{font-size:12px;opacity:.85;margin:-6px 0 14px}
-.senk{position:absolute;top:calc(17px + env(safe-area-inset-top,0px));right:58px;z-index:30;display:grid;place-items:center;width:30px;height:30px;padding:0;background:none;color:rgba(255,255,255,.72)}
+.senk{position:absolute;top:calc(17px + env(safe-area-inset-top,0px));right:max(58px,calc(50% - 236px));z-index:30;display:grid;place-items:center;width:30px;height:30px;padding:0;background:none;color:rgba(255,255,255,.72)}
 .senk svg{width:20px;height:20px}
 .senk.uyari{color:#F59E0B}
 .senk.tamam{color:#4ADE80}
@@ -204,7 +204,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .alt button svg{width:22px;height:22px}
 .alt button.aktif{color:var(--murekkep)}
 .alt button.aktif::after{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--vurgu)}
-.fab{position:absolute;right:18px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:18px;background:var(--vurgu);color:#fff;font-size:30px;font-weight:500;box-shadow:0 6px 18px rgba(21,37,43,.3);z-index:6}
+.fab{position:absolute;right:max(18px,calc(50% - 262px));bottom:calc(76px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:18px;background:var(--vurgu);color:#fff;font-size:30px;font-weight:500;box-shadow:0 6px 18px rgba(21,37,43,.3);z-index:6}
 .fab:active{transform:scale(.95)}
 
 /* ---------- Çekmece ---------- */
@@ -264,7 +264,10 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .cift i.g{background:var(--yesil);min-height:2px}
 .cift i.x{background:var(--kirmizi);min-height:2px}
 .cift i.b{background:var(--turuncu)}
-.kalan .borclu{display:block;font-size:12px;opacity:.85;margin-top:2px}
+.yil-iki{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:6px 2px 4px}
+.yil-iki small{display:block;font-size:13px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yil-iki strong{display:block;font-size:clamp(20px,6.4vw,28px);font-weight:800;letter-spacing:-.02em;line-height:1.15;white-space:nowrap}
+.yil-iki div:last-child{text-align:right}
 .ay-sutun.gelecek .cift i{opacity:.3}
 .ay-sutun span{font-size:11px;color:var(--soluk);margin-top:5px}
 .ay-sutun.secili span{color:var(--murekkep);font-weight:800}
@@ -384,7 +387,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.13';
+const UYGULAMA_SURUM = '3.14';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -1337,8 +1340,10 @@ function grafikCiz() {
       <span class="ad">${yil} yılı</span>
       <button class="ok" data-act="yil" data-v="1" ${yil >= son ? 'disabled' : ''} aria-label="Sonraki yıl">›</button>
     </div>
-    <div class="kalan"><small>Yıl içinde artan</small><strong>${para(v.toplam.fark)}</strong>
-      ${v.toplam.borcGiren || v.toplam.borcCikan ? `<span class="borclu">Borç ve alacaklar dahil: ${para(v.toplam.borcluFark)}</span>` : ''}</div>
+    ${v.toplam.borcGiren || v.toplam.borcCikan
+      ? `<div class="yil-iki"><div><small>Gelir − gider farkı</small><strong>${para(v.toplam.fark)}</strong></div>
+          <div><small>Borç ve alacakla birlikte</small><strong>${para(v.toplam.borcluFark)}</strong></div></div>`
+      : `<div class="kalan"><small>Gelir − gider farkı</small><strong>${para(v.toplam.fark)}</strong></div>`}
     <div class="ikili">
       <div><small>Toplam gelir</small><b>${para(v.toplam.gelir)}</b></div>
       <div><small>Toplam gider</small><b>${para(v.toplam.gider)}</b><em>Aylık ortalama ${para(v.toplam.ortalamaGider)}</em></div>
