@@ -62,7 +62,9 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
 - **Kartla ödedim:** Kredi kartıyla yapılan harcama kayıtta görünür ama toplamlara eklenmez. Para, kartın ekstresini ödediğinde "Kredi kartı" satırından çıkar. Böylece aynı harcama iki kez sayılmaz.
 
 **Borç / Alacak:**
-- **Borç aldım / Borç verdim:** kimden ya da kime, ne kadar. Geri ödeme şekli seçilir:
+- **Borç aldım / Borç verdim:** kimden ya da kime, ne kadar.
+  - **Para eline geçti mi?** (alacakta **Bu ayın bütçesinden mi verdin?**) Varsayılan **Evet**: tutar o ayın gelirine (alacakta giderine) yazılır. **Hayır** seçersen, örneğin birinin kredi kartını kullandıysan ya da altın verdiysen, bu aya bir şey yazılmaz; sadece borç ve ödemeleri takip edilir.
+  - Geri ödeme şekli seçilir:
   - **Tek seferde:** belli bir tarihte tamamı ödenecek.
   - **Taksitli:** her ay belli bir taksit ödenecek.
   - **Belli değil:** ödedikçe girilecek.
@@ -70,6 +72,8 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
   - O borcun bu ay ödenmemiş bir taksiti varsa, taksit ödendi olarak işaretlenir. Yazdığın tutar farklıysa taksitin tutarı da o olur.
   - Bu ayın taksiti zaten ödendiyse ek bir ödeme olarak ayrı satıra yazılır.
 - Borç tamamen ödenince yeni taksit satırı oluşmaz. Bir borcu satırından **Borcu kapat** ile elle de kapatabilirsin.
+- Yanlış girilen bir borcu Sabitler'de borcun penceresinden **Borcu sil** ile silebilirsin (ödemesi yapılmamışsa).
+- Birikimden bozdurup harcadığın parayı gelir olarak **Birikimden** kategorisiyle ekleyebilirsin.
 
 ## Sabitler
 
@@ -127,26 +131,21 @@ Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde 
 - Gelir çubuğunun üstünde alınan borç ve tahsilat.
 - Gider çubuğunun üstünde borç ödemesi ve verilen borç.
 
-Örneğin borç alıp o parayla büyük bir ödeme yaptığın ayda gider çubuğu uzun olur, gelir çubuğunun üstünde de alınan borç görünür. Üstte iki rakam yan yana durur: **Gelir − gider farkı** sadece gelir ile giderin farkıdır. **Borç ve alacakla birlikte** ise borç ve alacak hareketleri de eklenince elindeki paranın yıl içinde gerçekte ne kadar değiştiğini gösterir.
+Alınan borçla yapılan ek harcama da gider sayılmaz: borç alıp o parayla büyük bir ödeme yaptığın ayda bu ödeme gider çubuğunda değil, üstündeki turuncu kısımda görünür. Giderlerin dağılımına da katılmaz.
 
 ## Araçlar
 
 Alttaki menünün üçüncü sekmesi. Dört hesaplama aracı var. Araçlar'a her girişte döviz ve altın fiyatları arka planda yenilenir (en fazla 15 dakikada bir), böylece Döviz ve altın'ı açınca hazır olur.
 
-**Kredi hesabı:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir.
+**Kredi hesabı:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir. Altında **Bütçene etkisi** yazar: bu ayın gelir ve giderlerine göre taksitten sonra her ay ne kadar arttığı ya da bütçenin ne kadar açık verdiği (Bütçeme uyar mı? ile aynı hesap).
 
-**Bütçeme uyar mı?** Bir şey almadan önce, peşin ya da taksitli ödemenin bütçene sığıp sığmadığını gösterir.
-- **Ürünün peşin fiyatı** kutusuna fiyatı yaz. Taksitle alacaksan taksit sayısını ve aylık taksit tutarını yaz, toplam ve peşine göre fark altında görünür. Aynı ürünün başka bir taksit seçeneğini karşılaştırmak için **+ Diğer taksit seçeneğini hesapla**'ya dokun (en fazla 3 seçenek). İlk taksit ayı varsayılan olarak gelecek aydır.
-- **Bütçenin durumu** bölümü, alışveriş olmadan önceki hâli gösterir: bu ay sonunda ne kaldığı ve sonraki aylarda her ay en az ne kadar arttığı.
-- **Bu ay** için ana ekrandaki **Ay sonunda** rakamı kullanılır. Ayın geri kalanında yapacağın market, benzin gibi harcamalar bu rakama dahil değildir.
-- **Aylık ek harcama tahmini** sadece gelecek aylar (taksitler) için kullanılır: kaydı olan son 6 ayın ek harcama ortalaması. Bir ayda alınan borç kadar ek harcama o ayın hesabından düşülür, yani borçla yapılan ödemeler gelirden harcanmış sayılmaz. Eski taksit parçaları da katılmaz. Kutudaki tutarı değiştirebilirsin; boşaltırsan tahmin geri gelir.
-- Sonuçlar, fiyat ya da bir taksit seçeneği tamamlanınca görünür. Her seçenek için toplam fiyat, en ucuz seçeneğe göre fark ve tek cümlelik bir sonuç çıkar:
-  - ✅ Rahat sığıyor.
-  - 🟠 Sıkışık: bir ayda gelirinin %10'undan az kalıyor ya da bazı aylarda bütçen açık veriyor ama bu ay sonunda kalacak birikimin bu açığı karşılıyor.
-  - ⚠️ Zor: açık, birikimle de kapanmıyor.
-- Bir seçeneğin kartına dokununca ay ay tablosu görünür: gelir, giderler ve kalan.
-- **Peşin** seçeneği bu ayın sonuna bakar: ana ekrandaki Ay sonunda rakamı eksi peşin fiyat.
-- Gelecek aylar sabit kalemlerinden, borç ödemelerinden ve daha önce taksitle aldıklarının kalan taksitlerinden hesaplanır.
+**Bütçeme uyar mı?** Bir şey almadan önce, peşin ya da taksitli ödemenin bütçene sığıp sığmadığını **bu ayın gelir ve giderlerine göre** gösterir.
+- **Ürünün peşin fiyatı** kutusuna fiyatı yaz. Taksitle alacaksan taksit sayısını ve aylık taksit tutarını yaz, toplam ve peşine göre fark altında görünür. Aynı ürünün başka bir taksit seçeneğini karşılaştırmak için **+ Diğer taksit seçeneğini hesapla**'ya dokun (en fazla 3 seçenek).
+- **Bütçenin durumu:** bu ay sonunda ne kaldığı (ana ekrandaki Ay sonunda rakamı) ve bu ayın gelirinin giderlerinden ne kadar fazla olduğu. Ayın geri kalanında yapacağın market, benzin gibi harcamalar bu rakama dahil değildir. Alınan borçla yapılan harcamalar gider sayılmaz.
+- **Peşin:** ay sonunda kalacak paradan peşin fiyat düşülür.
+- **Taksit:** bu ayın geliri − giderleri − aylık taksit = her ay kalan. Taksit ayları açık veriyorsa, açığın bu ay sonunda kalacak parayla karşılanıp karşılanmadığı yazar.
+- Sonuç: ✅ rahat sığıyor, 🟠 sıkışık (gelirinin %10'undan az kalıyor ya da açığı bu ayki paran karşılıyor), ⚠️ zor (açığı karşılamıyor).
+- Bir seçeneğin kartına dokununca hesabı altında görünür.
 - Tutarlar gizliyken bu araç çalışmaz.
 
 **Kira artışı:**
@@ -162,7 +161,7 @@ Hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.
 - Üstte **Elindeki** ve **Neye çevrilsin?** kutuları var. Her açılışta Türk lirası → Dolar gelir. Aradaki ok ikisinin yerini değiştirir.
 - Miktarı yazınca sonuç büyük kutuda cümleyle görünür: "5.000 ₺ ile alabileceğin 119,25 dolar" ya da "100 dolar bozdurursan 4.185,00 ₺".
 - Alırken satış fiyatı, bozdururken alış fiyatı kullanılır. Örneğin dolardan altına çevirirken dolar alış fiyatından bozulup altın satış fiyatından alınmış gibi hesaplanır. Hangi fiyatın kullanıldığı sonucun altında yazar.
-- Türk lirası ile alırken altında bütçe yorumu çıkar: ana ekrandaki Ay sonunda rakamına göre alımdan sonra ne kaldığı ya da alım bütçeni aşıyorsa o parayla en fazla ne kadar alınabileceği. Tutarlar gizliyken bu yorum görünmez.
+- Türk lirası ile alırken altında bütçe yorumu çıkar: ana ekrandaki Ay sonunda rakamına göre alımdan sonra ne kaldığı ya da alım bütçeni aşıyorsa o parayla en fazla ne kadar alınabileceği. Türk lirasına bozdururken ay sonunda kalacak paranın ne olacağı yazar. Tutarlar gizliyken bu yorum görünmez.
 - Altında dolar, euro, sterlin, gram, çeyrek, yarım, tam ve Cumhuriyet altını, 22 ayar bilezik ve gümüşün güncel alış ve satış fiyatları listelenir.
 - Döviz kurları Merkez Bankası'ndan, altın ve diğer değerli metal fiyatları Truncgil Finans'tan alınır. Kaynaklar ve güncelleme zamanları en alttaki dipnotta yazar.
 - Truncgil Finans resmi bir kaynak değildir, kuyumcu fiyatlarıyla birebir aynı olmayabilir. Altın fiyatları bir günden eskiyse dipnot bunu turuncu yazıyla belirtir.
@@ -249,7 +248,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.23.1` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.13 · tablo 3.8`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.24.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.14 · tablo 3.8`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -274,6 +273,16 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.24.0 (uygulama, hesaplama 3.14)**
+- Bütçeme uyar mı? sadece bu ayın gelir ve giderlerine bakıyor; gelecek ay tahmini ve ek harcama ortalaması kaldırıldı. Seçili seçeneğin hesabı kısa bir döküm olarak görünüyor.
+- Kredi hesabı'na **Bütçene etkisi** eklendi (aynı hesap).
+- Döviz ve altın: hangi fiyatla hesaplandığı iki satırda ("Dolar alırken / bozdururken geçerli olan fiyatla hesaplandı" ve altında fiyat). Türk lirasına bozdururken de bütçe yorumu çıkıyor.
+- Grafikler: üstteki yıllık özet kutuları kaldırıldı. Borçla yapılan harcamalar gider çubuğunda ve giderlerin dağılımında sayılmıyor, turuncu kısımda görünüyor.
+- Borç / alacak eklerken **Para eline geçti mi? / Bu ayın bütçesinden mi verdin?** sorusu. "Hayır" ise bu aya bir şey yazılmaz, sadece takip edilir.
+- Gelir kategorilerine **Birikimden** eklendi. Sabitler'den yanlış girilen borç silinebiliyor.
+- Ana ekrandaki cümle başka aylara bakarken ay adını söylüyor; tutarlar gizliyken Detaylı bilgi görünmüyor.
+- Düzeltmeler: pencere içindeki bir seçimle yeniden çizilince en üste kaymıyor; Bütçeme uyar mı?'da fiyat silinince seçili kart değişmiyor; kira hesabındaki formül "×" ile yazılıyor.
 
 **3.23.1 (uygulama)**
 - Ana ekrandaki cümle devreden para ve borç dahil ayın durumunu söylüyor: "Bu ay giderlerin karşılanıyor." ya da "bütçen X ₺ açık veriyor". Devreden para ya da borç olmasaydı ne olacağı **Detaylı bilgi**'de.

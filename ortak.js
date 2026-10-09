@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.13';
+var ORTAK_SURUM = '3.14';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -235,6 +235,8 @@ function borcEkle_(veri, p) {
     Object.assign(k, { baslangic: '', tutar: 0, toplam: tutar });
   }
   satirYaz_('Kalemler', k);
+  // Para bütçeye girmediyse (kartla, altınla, birikimden) giriş satırı yazılmaz; sadece borç takip edilir
+  if (p.girisYok) return;
   topluEkle_('Hareketler', [{
     id: p.girisId || yeniId_('h'), ay: ay, kalemId: '', ad: ad, tur: tip === 'borc' ? 'gelir' : 'gider',
     kategori: k.kategori, tutar: tutar, odendi: true, kart: false, tarih: ay >= buAy_() ? bugun_() : '',
