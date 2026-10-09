@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.10';
+var ORTAK_SURUM = '3.11';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -597,13 +597,17 @@ function istatistikHesapla_(veri, yil) {
   const eski = veri.sanalHepsi;
   veri.sanalHepsi = true;
   const kat = {};
-  let gelirT = 0, giderT = 0, doluAy = 0;
+  let gelirT = 0, giderT = 0, doluAy = 0, borcGirenT = 0, borcCikanT = 0;
   const aylar = [];
   for (let m = 1; m <= 12; m++) aylar.push(yil + '-' + String(m).padStart(2, '0'));
   const sonuc = aylar.map(function (a) {
     const d = ayHesapla_(a, veri);
+    // Borç ve alacak hareketleri gelir/gider sayılmaz; grafikte ayrı gösterilsin diye ayrıca toplanır
+    // borcGiren: alınan borç + tahsilat, borcCikan: borç ödemesi + verilen borç
+    let bg = 0, bc = 0;
+    d.satirlar.forEach(function (s) { if (s.tip && !s.kart) { if (s.tur === 'gelir') bg += s.tutar; else bc += s.tutar; } });
     if (a <= bu) {
-      gelirT += d.ozet.gelir; giderT += d.ozet.gider;
+      gelirT += d.ozet.gelir; giderT += d.ozet.gider; borcGirenT += bg; borcCikanT += bc;
       if (d.satirlar.length) doluAy++;
       d.satirlar.forEach(function (s) {
         if (s.tur === 'gider' && !s.kart && !s.tip && s.tutar > 0) {
@@ -612,7 +616,7 @@ function istatistikHesapla_(veri, yil) {
         }
       });
     }
-    return { ay: a, gelir: d.ozet.gelir, gider: d.ozet.gider, gelecek: a > bu };
+    return { ay: a, gelir: d.ozet.gelir, gider: d.ozet.gider, borcGiren: bg, borcCikan: bc, gelecek: a > bu };
   });
   veri.sanalHepsi = eski;
   let ilkAy = bu;
@@ -622,7 +626,8 @@ function istatistikHesapla_(veri, yil) {
     yil: yil, aylar: sonuc,
     kategoriler: Object.keys(kat).map(function (k) { return { ad: k, tutar: kat[k] }; })
       .sort(function (a, b) { return b.tutar - a.tutar; }),
-    toplam: { gelir: gelirT, gider: giderT, fark: gelirT - giderT, ortalamaGider: doluAy ? Math.round(giderT / doluAy) : 0 },
+    toplam: { gelir: gelirT, gider: giderT, fark: gelirT - giderT, ortalamaGider: doluAy ? Math.round(giderT / doluAy) : 0,
+      borcGiren: borcGirenT, borcCikan: borcCikanT, borcluFark: gelirT - giderT + borcGirenT - borcCikanT },
     ilkYil: Number(ilkAy.slice(0, 4)), buYil: Number(bu.slice(0, 4))
   };
 }

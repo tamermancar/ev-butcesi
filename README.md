@@ -122,6 +122,12 @@ Telefon ve bilgisayar aynı tabloyu kullanır. Uygulama açıkken 30 saniyede bi
 
 Yılın aylara göre gelir ve giderleri ile giderlerin kategorilere dağılımı burada görünür. **Grafik** ve **Tablo** görünümleri arasında geçebilirsin. Bir aya dokununca o ayın listesi açılır. Soluk sütunlar henüz gelmemiş ayların tahminleridir.
 
+Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde **turuncu** olarak görünür:
+- Gelir çubuğunun üstünde alınan borç ve tahsilat.
+- Gider çubuğunun üstünde borç ödemesi ve verilen borç.
+
+Örneğin borç alıp o parayla büyük bir ödeme yaptığın ayda gider çubuğu uzun olur, gelir çubuğunun üstünde de alınan borç görünür. **Yıl içinde artan** sadece gelir ile giderin farkıdır. Altındaki **Borç ve alacaklar dahil** satırı ise gerçekte cebinden ne kadar eksildiğini ya da arttığını gösterir.
+
 ## Ayarlar
 
 - **Tema:** 4 renk (Petrol, Orman, Lacivert, Erik) ve Açık, Koyu ya da Otomatik mod.
@@ -199,9 +205,9 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `uygulama 3.11 · hesaplama 3.10 · tablo 3.6` gibi bir satır yazar.
-- **uygulama** ve **hesaplama** GitHub'daki dosyalardan gelir.
-- **tablo**, Kod.gs'in sürümüdür.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.12` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.11 · tablo 3.6`.
+- **Hesaplama**, GitHub'daki `ortak.js` dosyasının sürümüdür.
+- **Tablo**, Kod.gs'in sürümüdür.
 
 Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez kapatıp aç.
 
@@ -217,6 +223,13 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.12 (uygulama) · 3.11 (hesaplama) · 3.6 (tablo)**
+- Uygulamanın kendi açılış ekranı kaldırıldı, sadece Chrome'unki çıkıyor. Uygulama telefondaki son veriyle hemen açılıyor, en az 1 saniye daha hızlı.
+- Ayarlar'da sadece uygulama sürümü yazıyor (Ev Bütçesi · Sürüm 3.12). Teknik sürümler bu satıra dokununca görünüyor.
+- Alttaki balon parmakla sağa, sola ya da aşağı itilince kapanıyor.
+- Yazı kutularında yazım denetimi kapatıldı. Kırmızı alt çizgi ve "Sözlüğe ekle" menüsü artık çıkmıyor.
+- Grafiklerde borç ve alacak hareketleri çubukların üstünde turuncu görünüyor. "Yıl içinde artan"ın altında "Borç ve alacaklar dahil" satırı eklendi.
 
 **3.11 (uygulama) · 3.10 (hesaplama) · 3.6 (tablo)**
 - Kaydetme simgesi hareketli: değişiklik yapılınca içinde yukarı kayan oklu bulut, kaydedilince yeşil tikli bulut görünür.

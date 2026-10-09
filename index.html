@@ -173,6 +173,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .acilis b{font-size:22px;font-weight:800;letter-spacing:-.01em}
 .acilis small{opacity:.75;font-size:11px;font-weight:700;letter-spacing:.12em}
 .acilis.kapan{opacity:0;pointer-events:none}
+.acilis[hidden]{display:none}
 .rozetler{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;font-size:12px;color:var(--soluk)}
 .rozet{background:var(--yuzey2);border-radius:6px;padding:1px 7px}
 .rozet.zam{background:var(--sari-acik);color:var(--sari);font-weight:600}
@@ -257,9 +258,13 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .grafik{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;align-items:end;height:170px;margin-top:4px}
 .ay-sutun{display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;min-width:0}
 .cift{display:flex;align-items:flex-end;gap:2px;height:140px}
-.cift i{display:block;width:8px;border-radius:3px 3px 0 0;min-height:2px}
-.cift i.g{background:var(--yesil)}
-.cift i.x{background:var(--kirmizi)}
+.cift .y{display:flex;flex-direction:column;justify-content:flex-end;width:8px;height:100%}
+.cift i{display:block;width:8px;flex:none}
+.cift .y i:first-child{border-radius:3px 3px 0 0}
+.cift i.g{background:var(--yesil);min-height:2px}
+.cift i.x{background:var(--kirmizi);min-height:2px}
+.cift i.b{background:var(--turuncu)}
+.kalan .borclu{display:block;font-size:12px;opacity:.85;margin-top:2px}
 .ay-sutun.gelecek .cift i{opacity:.3}
 .ay-sutun span{font-size:11px;color:var(--soluk);margin-top:5px}
 .ay-sutun.secili span{color:var(--murekkep);font-weight:800}
@@ -321,9 +326,13 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .yedek button.onay{background:var(--kirmizi);border-color:var(--kirmizi);color:#fff}
 .giris-kutu{width:100%;height:46px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey2);padding:0 12px;font-size:15px;margin-bottom:12px}
 .hakkinda{text-align:center;color:var(--soluk);font-size:12px;margin:18px 0 0}
+.hakkinda .surum{color:inherit;font-size:12px;padding:8px 10px}
+.surum-detay{display:block;font-size:11px;opacity:.8}
 .hakkinda a{color:var(--vurgu);font-weight:700;font-size:13px;display:inline-block;padding:10px 12px}
 
 .bildirim{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--murekkep);color:var(--zemin);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:20;width:max-content;max-width:90vw;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.bildirim{touch-action:none}
+.bildirim.cek{transition:transform .2s ease-out,opacity .2s}
 .bildirim span.tek{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .geri-btn{color:inherit;font-weight:800;text-decoration:underline;text-underline-offset:3px;padding:6px 2px;flex:none}
 .kilit-cip{display:table;margin:0 auto 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.16);color:#fff;border-radius:20px;padding:5px 12px}
@@ -338,7 +347,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 </style>
 </head>
 <body>
-<div class="acilis" id="acilis"><img src="ikon-192.png" alt=""><b>Ev Bütçesi</b><small id="acilisDurum">YÜKLENİYOR…</small></div>
+<div class="acilis" id="acilis" hidden><img src="ikon-192.png" alt=""><b>Ev Bütçesi</b></div>
 <div class="kaydir" id="kaydir">
 <header class="ust"><div class="ust-ic" id="ust"></div></header>
 <main id="icerik"><div class="yukleniyor">Yükleniyor…</div></main>
@@ -367,7 +376,7 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 <div class="bildirim" id="bildirim" hidden></div>
 
 <!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
-<script src="ortak.js?v=3.10"></script>
+<script src="ortak.js?v=3.11"></script>
 
 <script>
 /* ---------- Sabitler ---------- */
@@ -375,7 +384,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.11';
+const UYGULAMA_SURUM = '3.12';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -461,11 +470,49 @@ function sunucu(fn, ...args) {
 }
 function bildir(m, geriAl, etiket) {
   const b = $('bildirim');
+  b.style.transform = ''; b.style.opacity = ''; b.classList.remove('cek');
   b.innerHTML = `<span${geriAl ? ' class="tek"' : ''}>${esc(m)}</span>` + (geriAl ? `<button class="geri-btn">${esc(etiket || 'Geri al')}</button>` : '');
   if (geriAl) b.querySelector('button').onclick = () => { b.hidden = true; geriAl(); };
   b.hidden = false;
   clearTimeout(bildir.t); bildir.t = setTimeout(() => b.hidden = true, geriAl ? 5000 : (m.length > 60 ? 4000 : 2400));
 }
+/* Balon parmakla sağa, sola ya da aşağı itilince kapanır (Android'deki gibi). Kısa dokunuş "Geri al"ı çalıştırır. */
+(function () {
+  const b = $('bildirim'); let x0 = 0, y0 = 0, dx = 0, dy = 0, aktif = false, kaydi = false;
+  b.addEventListener('pointerdown', e => { aktif = true; kaydi = false; x0 = e.clientX; y0 = e.clientY; dx = dy = 0; b.classList.remove('cek'); });
+  b.addEventListener('pointermove', e => {
+    if (!aktif) return;
+    dx = e.clientX - x0; dy = Math.max(0, e.clientY - y0);
+    if (!kaydi && Math.abs(dx) < 8 && dy < 8) return;
+    if (!kaydi) { kaydi = true; try { b.setPointerCapture(e.pointerId); } catch (_) {} clearTimeout(bildir.t); }
+    b.style.transform = `translateX(calc(-50% + ${dx}px)) translateY(${dy}px)`;
+    b.style.opacity = String(Math.max(0.2, 1 - Math.max(Math.abs(dx) / 220, dy / 120)));
+  });
+  const birak = () => {
+    if (!aktif) return; aktif = false;
+    if (!kaydi) return;
+    b.classList.add('cek');
+    if (Math.abs(dx) > 70 || dy > 40) { // yeterince itildi: kayarak gitsin
+      b.style.transform = dy > 40 && Math.abs(dx) <= 70 ? 'translateX(-50%) translateY(140px)' : `translateX(calc(-50% + ${dx > 0 ? 1 : -1} * 110vw))`;
+      b.style.opacity = '0';
+      setTimeout(() => { b.hidden = true; b.classList.remove('cek'); b.style.transform = ''; b.style.opacity = ''; }, 200);
+    } else { // geri yerine otursun, süre yeniden başlasın
+      b.style.transform = ''; b.style.opacity = '';
+      clearTimeout(bildir.t); bildir.t = setTimeout(() => b.hidden = true, 3000);
+    }
+  };
+  b.addEventListener('pointerup', birak); b.addEventListener('pointercancel', birak);
+  // Kaydırma bittiğinde parmağın altındaki "Geri al" yanlışlıkla çalışmasın
+  b.addEventListener('click', e => { if (kaydi) { e.stopPropagation(); e.preventDefault(); kaydi = false; } }, true);
+})();
+/* Yazım denetimi kapalı: Chrome hatalı kelimelerin altını kırmızı çizip "Sözlüğe ekle" menüsü açıyor,
+   bu da imleçle düzeltmeyi zorlaştırıyordu. Yeni eklenen her yazı kutusunda kapatılır. */
+(function () {
+  const kapat = k => (k.matches && k.matches('input,textarea') ? [k] : []).concat(k.querySelectorAll ? [...k.querySelectorAll('input,textarea')] : [])
+    .forEach(i => { if (i.spellcheck !== false) { i.spellcheck = false; i.setAttribute('autocorrect', 'off'); } });
+  kapat(document.body);
+  new MutationObserver(l => l.forEach(m => m.addedNodes.forEach(kapat))).observe(document.body, { childList: true, subtree: true });
+})();
 
 /* ---------- Bekleyen kayıtlar (giden kutusu) ----------
    Her değişiklik önce telefonda uygulanır ve buraya not edilir, sonra tabloya gönderilir.
@@ -1290,15 +1337,19 @@ function grafikCiz() {
       <span class="ad">${yil} yılı</span>
       <button class="ok" data-act="yil" data-v="1" ${yil >= son ? 'disabled' : ''} aria-label="Sonraki yıl">›</button>
     </div>
-    <div class="kalan"><small>Yıl içinde artan</small><strong>${para(v.toplam.fark)}</strong></div>
+    <div class="kalan"><small>Yıl içinde artan</small><strong>${para(v.toplam.fark)}</strong>
+      ${v.toplam.borcGiren || v.toplam.borcCikan ? `<span class="borclu">Borç ve alacaklar dahil: ${para(v.toplam.borcluFark)}</span>` : ''}</div>
     <div class="ikili">
       <div><small>Toplam gelir</small><b>${para(v.toplam.gelir)}</b></div>
       <div><small>Toplam gider</small><b>${para(v.toplam.gider)}</b><em>Aylık ortalama ${para(v.toplam.ortalamaGider)}</em></div>
     </div>`;
-  const max = Math.max(1, ...v.aylar.map(a => Math.max(a.gelir, a.gider)));
+  // Gelir çubuğunun üstünde alınan borç ve tahsilat, gider çubuğunun üstünde borç ödemesi ve verilen borç (turuncu)
+  const max = Math.max(1, ...v.aylar.map(a => Math.max(a.gelir + a.borcGiren, a.gider + a.borcCikan)));
+  const yuz = n => n / max * 100 + '%';
+  const borcVar = v.aylar.some(a => a.borcGiren || a.borcCikan);
   const sutunlar = v.aylar.map((a, i) => `
-    <button class="ay-sutun ${a.gelecek ? 'gelecek' : ''} ${a.ay === D.ay ? 'secili' : ''}" data-act="grafikAy" data-v="${a.ay}" aria-label="${AYLAR[i]}: gelir ${para(a.gelir)}, gider ${para(a.gider)}">
-      <div class="cift"><i class="g" style="height:${a.gelir / max * 100}%"></i><i class="x" style="height:${a.gider / max * 100}%"></i></div>
+    <button class="ay-sutun ${a.gelecek ? 'gelecek' : ''} ${a.ay === D.ay ? 'secili' : ''}" data-act="grafikAy" data-v="${a.ay}" aria-label="${AYLAR[i]}: gelir ${para(a.gelir)}, gider ${para(a.gider)}${a.borcGiren || a.borcCikan ? `, borç girişi ${para(a.borcGiren)}, borç çıkışı ${para(a.borcCikan)}` : ''}">
+      <div class="cift"><span class="y">${a.borcGiren ? `<i class="b" style="height:${yuz(a.borcGiren)}"></i>` : ''}<i class="g" style="height:${yuz(a.gelir)}"></i></span><span class="y">${a.borcCikan ? `<i class="b" style="height:${yuz(a.borcCikan)}"></i>` : ''}<i class="x" style="height:${yuz(a.gider)}"></i></span></div>
       <span>${KISA[i]}</span></button>`).join('');
   const katT = v.kategoriler.reduce((t, k) => t + k.tutar, 0) || 1;
   const dag = v.kategoriler.length ? v.kategoriler.map(k => `
@@ -1315,8 +1366,8 @@ function grafikCiz() {
   $('icerik').innerHTML = secim + `
     <section class="bolum"><h2>Aylara göre gelir ve gider</h2>
       <div class="kart"><div class="grafik">${sutunlar}</div>
-      <div class="lejant"><span><b style="background:var(--yesil)"></b>Gelir</span><span><b style="background:var(--kirmizi)"></b>Gider</span><span>Soluk sütunlar tahmini</span></div></div>
-      <p class="ipucu" style="margin-top:8px">Bir aya dokunursan o ayın listesi açılır.</p></section>
+      <div class="lejant"><span><b style="background:var(--yesil)"></b>Gelir</span><span><b style="background:var(--kirmizi)"></b>Gider</span>${borcVar ? '<span><b style="background:var(--turuncu)"></b>Borç / alacak</span>' : ''}<span>Soluk sütunlar tahmini</span></div></div>
+      <p class="ipucu" style="margin-top:8px">Bir aya dokunursan o ayın listesi açılır.${borcVar ? ' Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde turuncu olarak görünür.' : ''}</p></section>
     <section class="bolum"><h2>Giderlerin dağılımı<span>${v.yil}</span></h2>
       <div class="kart">${dag}</div>
       <p class="ipucu" style="margin-top:8px">Kartla yapılan harcamalar ayrı sayılmaz, Kredi kartı satırı içinde görünür.</p></section>`;
@@ -1421,7 +1472,8 @@ function ayarCiz() {
       ${D.raw && D.raw.tabloUrl ? `<a class="btn ikinci" href="${esc(D.raw.tabloUrl)}" target="_blank" rel="noopener">Tabloyu aç</a>` : ''}
       <button class="btn metin tehlike" data-act="baglantiKaldir">${D.bagSil ? 'Emin misin? Tekrar dokun' : 'Bu cihazdaki bağlantıyı kaldır'}</button></section>
     ${yardimAdresi() ? `<p class="hakkinda"><a href="${esc(yardimAdresi())}" target="_blank" rel="noopener">Nasıl kullanılır?</a></p>` : ''}
-    <p class="hakkinda" style="margin-top:6px">Ev Bütçesi · uygulama ${UYGULAMA_SURUM} · hesaplama ${typeof ORTAK_SURUM !== 'undefined' ? ORTAK_SURUM : '-'}${D.raw && D.raw.surum ? ' · tablo ' + esc(D.raw.surum) : ''}</p>`;
+    <p class="hakkinda" style="margin-top:6px"><button class="surum" data-act="surumDetay">Ev Bütçesi · Sürüm ${UYGULAMA_SURUM}</button>
+      ${D.surumDetay ? `<small class="surum-detay">hesaplama ${typeof ORTAK_SURUM !== 'undefined' ? ORTAK_SURUM : '-'}${D.raw && D.raw.surum ? ' · tablo ' + esc(D.raw.surum) : ''}</small>` : ''}</p>`;
 }
 
 function katTasiCiz() {
@@ -1593,6 +1645,7 @@ document.addEventListener('click', e => {
       t.disabled = true; t.textContent = 'Yedek alınıyor…';
       sunucu('api_yedekAl').then(l => { D.yedekler = l; bildir('Yedek alındı'); }).catch(hata).then(() => { if (D.sekme === 'ayar') ayarCiz(); });
       break;
+    case 'surumDetay': D.surumDetay = !D.surumDetay; ayarCiz(); break;
     case 'yedekDiger': D.yedekAcik = !D.yedekAcik; D.geriOnay = null; $('yedekListe').innerHTML = yedekHTML(); break;
     case 'geriYukle':
       if (D.geriOnay !== id) { D.geriOnay = id; $('yedekListe').innerHTML = yedekHTML(); break; }
@@ -1741,6 +1794,10 @@ document.addEventListener('keydown', e => {
 
 /* ---------- Başlangıç: önce telefondaki son kopyayı göster, sonra tabloyla eşitle ---------- */
 ayarUygula(yerelOku('evb-ayar') || {});
+/* Kendi açılış ekranımız şimdilik kapalı: Chrome zaten kendi açılış ekranını gösteriyor, ikincisi açılışı uzatıyordu.
+   Uygulama telefonda saklanan son veriyle hemen açılır. İleride kendi uygulamamızı yaparsak true yapmak yeterli. */
+const ACILIS_EKRANI = false;
+if (ACILIS_EKRANI) { const a = $('acilis'); if (a) a.hidden = false; } else { const a = $('acilis'); if (a) a.remove(); }
 const ACILIS_T0 = Date.now();
 function acilisKapat() {
   const a = $('acilis'); if (!a || a.classList.contains('kapan')) return;
@@ -1755,7 +1812,7 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   const kopya = BAG && yerelOku('evb-veri');
   if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
-  if (typeof ORTAK_SURUM === 'undefined' || ORTAK_SURUM !== '3.10') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
+  if (typeof ORTAK_SURUM === 'undefined' || ORTAK_SURUM !== '3.11') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
   if (GIDEN.length) gonder(); // önceki oturumdan kalan kayıtlar
   veriYukle().then(acilisKapat, acilisKapat);
 })();
