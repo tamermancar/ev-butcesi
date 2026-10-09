@@ -345,7 +345,8 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 .hakkinda{text-align:center;color:var(--soluk);font-size:12px;margin:18px 0 0}
 .hakkinda .surum{color:inherit;font-size:12px;padding:8px 10px}
 .surum-detay{display:block;font-size:11px;opacity:.8}
-.arac-kart{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--yuzey);border:1px solid var(--cizgi);border-radius:14px;padding:14px;margin-bottom:10px}
+.arac-liste{display:grid;grid-auto-rows:1fr;gap:10px} /* bütün kartlar en uzun olanla aynı boyda */
+.arac-kart{display:flex;align-items:center;min-height:92px;gap:14px;width:100%;text-align:left;background:var(--yuzey);border:1px solid var(--cizgi);border-radius:14px;padding:14px}
 .arac-kart i{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--vurgu-acik);color:var(--vurgu);flex:none}
 .arac-kart i svg{width:24px;height:24px}
 .arac-kart span{flex:1;min-width:0}
@@ -443,7 +444,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.22.0';
+const UYGULAMA_SURUM = '3.22.1';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -1513,17 +1514,17 @@ const aracDeger = id => $(id) ? tutarOku($(id).value) : NaN;
 const ARAC_IKON = {
   kredi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>',
   kira: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>',
-  butce: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12l-1 4H7z"/><path d="M5 6h14l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z"/><path d="M12 11v6M9.5 13.5h5"/></svg>',
-  kur: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6"/><path d="M15.5 9.5a6 6 0 1 1-6 6"/></svg>'
+  butce: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v3"/><path d="M3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M22 12h-4a2 2 0 0 0 0 4h4z"/><path d="M8.6 11.3a2.1 2.1 0 0 1 4.1.7c0 1.4-2.1 2-2.1 2"/><path d="M10.6 17.2h.01"/></svg>',
+  kur: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12a9.5 9.5 0 0 1 16.2-6.7"/><path d="M19.2 1.8v4h-4"/><path d="M21.5 12a9.5 9.5 0 0 1-16.2 6.7"/><path d="M4.8 22.2v-4h4"/><g stroke-width="1.8"><path d="M14 9.2h-2.7a1.2 1.2 0 0 0 0 2.4h1.4a1.2 1.2 0 0 1 0 2.4H10"/><path d="M12 7.8v8.4"/></g></svg>'
 };
 function aracCiz() {
   $('ust').innerHTML = baslik('Araçlar', 'Hesaplama araçları');
   const kart = (v, ad, ac) => `<button class="arac-kart" data-act="aracAc" data-v="${v}"><i>${ARAC_IKON[v]}</i><span><b>${ad}</b><small>${ac}</small></span><em>›</em></button>`;
-  $('icerik').innerHTML = `<section class="bolum">
-    ${kart('kredi', 'Kredi', 'Aylık taksit, toplam geri ödeme')}
-    ${kart('butce', 'Bütçeme uyar mı?', 'Peşin mi, taksit mi? Hangi ay zorlanırım?')}
-    ${kart('kira', 'Kira artışı', 'Yasal üst sınır, anlaşılan yeni kira, kira kalemine uygula')}
-    ${kart('kur', 'Döviz / altın', 'Güncel fiyatlar ve çevirici')}</section>`;
+  $('icerik').innerHTML = `<section class="bolum arac-liste">
+    ${kart('kredi', 'Kredi', 'Çekeceğin kredinin aylık taksidini ve toplam geri ödeme miktarını hesapla.')}
+    ${kart('butce', 'Bütçeme uyar mı?', 'Peşin mi, taksitli mi? Alışverişinin bütçene getireceği yükü hesapla.')}
+    ${kart('kira', 'Kira artışı', 'Yasal kira artış sınırını gör, anlaştığın yeni miktarı kira kalemine işle.')}
+    ${kart('kur', 'Döviz / altın', 'Güncel döviz ve altın fiyatlarını gör, TL karşılığını hesapla.')}</section>`;
   kurOnYukle(); // Araçlar'a girince fiyatlar arka planda hazırlansın (15 dakikada bir)
 }
 function aracAc(v) {

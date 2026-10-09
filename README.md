@@ -236,7 +236,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.22.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.22.1` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -261,6 +261,9 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.22.1 (uygulama)**
+- Araçlar'daki kartların açıklamaları yenilendi, ikonlar değişti: Bütçeme uyar mı? için soru işaretli cüzdan, Döviz / altın için oklu dolar. Kartlar artık hep aynı boyda.
 
 **3.22.0 (uygulama)**
 - "Peşin mi, taksit mi?" aracının yerine **Bütçeme uyar mı?** geldi. Peşin ve taksit seçeneklerinin bütçene sığıp sığmadığını kendi verilerinle, ay ay gösteriyor. Getiri ve faiz karşılaştırması kaldırıldı.
