@@ -30,7 +30,8 @@ Kutularda sadece **işaretlenmiş**, yani gerçekten gerçekleşmiş tutarlar sa
 - **Şu an elde kalan:** giren toplamdan çıkan toplam düşülünce kalan para.
 - **Alınacak / Ödenecek:** bu ay henüz işaretlenmemiş gelirler ve giderler.
 - **Ay sonunda:** hepsi gerçekleşince elinde kalacak para.
-- En alttaki cümle ayın kısa özetidir, örneğin "Bu ay artan 6.350 ₺, gelirin gideri karşılıyor."
+- En alttaki cümle ayın kısa özetidir: "Bu ay giderlerin karşılanıyor." ya da "Bu ay giderlerin karşılanmıyor, bütçen 3.000 ₺ açık veriyor." Devreden para ve alınan borç da hesaba katılır.
+- Geçen aydan devreden para, alınan borç ya da tahsilat varsa cümlenin yanında **Detaylı bilgi** çıkar. Dokununca bunlar olmasaydı ne olacağı yazar, örneğin "Geçen aydan devreden para olmasaydı da gelirin giderlerini karşılayacak, 16.749 ₺ artacaktı."
 
 ### Göz simgesi (gizli mod)
 
@@ -137,21 +138,23 @@ Alttaki menünün üçüncü sekmesi. Dört hesaplama aracı var. Araçlar'a her
 **Bütçeme uyar mı?** Bir şey almadan önce, peşin ya da taksitli ödemenin bütçene sığıp sığmadığını gösterir.
 - **Ürünün peşin fiyatı** kutusuna fiyatı yaz. Taksitle alacaksan taksit sayısını ve aylık taksit tutarını yaz, toplam ve peşine göre fark altında görünür. Aynı ürünün başka bir taksit seçeneğini karşılaştırmak için **+ Diğer taksit seçeneğini hesapla**'ya dokun (en fazla 3 seçenek). İlk taksit ayı varsayılan olarak gelecek aydır.
 - **Bütçenin durumu** bölümü, alışveriş olmadan önceki hâli gösterir: bu ay sonunda ne kaldığı ve sonraki aylarda her ay en az ne kadar arttığı.
-- **Aylık ek harcama tahmini:** Market, benzin gibi harcamalar için son 3 ayın ortanca değeri kullanılır. Tek seferlik büyük bir harcama (örneğin bir ayda yapılan büyük tamir) tahmini bozmaz. Kutudaki tutarı değiştirebilirsin; boşaltırsan tahmin geri gelir. Eski taksit parçaları bu hesaba katılmaz.
+- **Bu ay** için ana ekrandaki **Ay sonunda** rakamı kullanılır. Ayın geri kalanında yapacağın market, benzin gibi harcamalar bu rakama dahil değildir.
+- **Aylık ek harcama tahmini** sadece gelecek aylar (taksitler) için kullanılır: kaydı olan son 6 ayın ek harcama ortalaması. Bir ayda alınan borç kadar ek harcama o ayın hesabından düşülür, yani borçla yapılan ödemeler gelirden harcanmış sayılmaz. Eski taksit parçaları da katılmaz. Kutudaki tutarı değiştirebilirsin; boşaltırsan tahmin geri gelir.
 - Sonuçlar, fiyat ya da bir taksit seçeneği tamamlanınca görünür. Her seçenek için toplam fiyat, en ucuz seçeneğe göre fark ve tek cümlelik bir sonuç çıkar:
   - ✅ Rahat sığıyor.
-  - 🟠 Sıkışık: bir ayda gelirinin %10'undan az kalıyor ya da bazı aylarda gelir gideri karşılamıyor ama bu ay sonunda kalacak birikimin bu açığı karşılıyor.
+  - 🟠 Sıkışık: bir ayda gelirinin %10'undan az kalıyor ya da bazı aylarda bütçen açık veriyor ama bu ay sonunda kalacak birikimin bu açığı karşılıyor.
   - ⚠️ Zor: açık, birikimle de kapanmıyor.
 - Bir seçeneğin kartına dokununca ay ay tablosu görünür: gelir, giderler ve kalan.
-- **Peşin** seçeneği bu ayın sonuna bakar: şu an elindeki para, bu ay daha gelecek ve ödenecek olanlar ve ayın kalan tahmini ek harcaması.
+- **Peşin** seçeneği bu ayın sonuna bakar: ana ekrandaki Ay sonunda rakamı eksi peşin fiyat.
 - Gelecek aylar sabit kalemlerinden, borç ödemelerinden ve daha önce taksitle aldıklarının kalan taksitlerinden hesaplanır.
 - Tutarlar gizliyken bu araç çalışmaz.
 
 **Kira artışı:**
 1. Kira kalemini seç. Mevcut kira kendiliğinden gelir.
 2. Artış oranını yaz. Bu oran TÜFE'nin 12 aylık ortalama değişim oranıdır, TÜİK her ay açıklar.
-3. Araç yasal üst sınırı gösterir ve **anlaşılan yeni kira** kutusuna yuvarlak bir öneri yazar. Öneri, tam ya da buçuklu bir rakama aşağı yuvarlanmıştır, örneğin 25.487 yerine 25.000. 10.000 ₺'nin altındaki kiralarda öneri 100'lük rakama yuvarlanır. Üstteki düğmelerle diğer seçenekleri seçebilir ya da ev sahibiyle anlaştığın tutarı doğrudan yazabilirsin. Altındaki satır artış yüzdesini ve yasal sınıra göre farkı gösterir.
-4. **Kira kalemine uygula**, kutudaki tutarı seçtiğin aydan itibaren kira kalemine işler. Geçmiş aylar değişmez.
+3. Araç yasal üst sınırı gösterir.
+4. **Kira kalemine işle** bölümünde ev sahibiyle anlaştığın yeni kirayı yaz. Altındaki satır artış yüzdesini ve yasal sınıra göre farkı gösterir.
+5. **Kira kalemine uygula**, kutudaki tutarı seçtiğin aydan itibaren kira kalemine işler. Geçmiş aylar değişmez.
 
 Hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.
 
@@ -159,7 +162,7 @@ Hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.
 - Üstte **Elindeki** ve **Neye çevrilsin?** kutuları var. Her açılışta Türk lirası → Dolar gelir. Aradaki ok ikisinin yerini değiştirir.
 - Miktarı yazınca sonuç büyük kutuda cümleyle görünür: "5.000 ₺ ile alabileceğin 119,25 dolar" ya da "100 dolar bozdurursan 4.185,00 ₺".
 - Alırken satış fiyatı, bozdururken alış fiyatı kullanılır. Örneğin dolardan altına çevirirken dolar alış fiyatından bozulup altın satış fiyatından alınmış gibi hesaplanır. Hangi fiyatın kullanıldığı sonucun altında yazar.
-- Türk lirası ile alırken altında bütçe yorumu çıkar: bu ay sonunda kalacak paraya göre alımın sığıp sığmadığı, sığmıyorsa o parayla en fazla ne kadar alınabileceği. Hesap Bütçeme uyar mı? ile aynıdır. Tutarlar gizliyken bu yorum görünmez.
+- Türk lirası ile alırken altında bütçe yorumu çıkar: ana ekrandaki Ay sonunda rakamına göre alımdan sonra ne kaldığı ya da alım bütçeni aşıyorsa o parayla en fazla ne kadar alınabileceği. Tutarlar gizliyken bu yorum görünmez.
 - Altında dolar, euro, sterlin, gram, çeyrek, yarım, tam ve Cumhuriyet altını, 22 ayar bilezik ve gümüşün güncel alış ve satış fiyatları listelenir.
 - Döviz kurları Merkez Bankası'ndan, altın ve diğer değerli metal fiyatları Truncgil Finans'tan alınır. Kaynaklar ve güncelleme zamanları en alttaki dipnotta yazar.
 - Truncgil Finans resmi bir kaynak değildir, kuyumcu fiyatlarıyla birebir aynı olmayabilir. Altın fiyatları bir günden eskiyse dipnot bunu turuncu yazıyla belirtir.
@@ -246,7 +249,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.23.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.13 · tablo 3.8`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.23.1` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.13 · tablo 3.8`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -271,6 +274,14 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.23.1 (uygulama)**
+- Ana ekrandaki cümle devreden para ve borç dahil ayın durumunu söylüyor: "Bu ay giderlerin karşılanıyor." ya da "bütçen X ₺ açık veriyor". Devreden para ya da borç olmasaydı ne olacağı **Detaylı bilgi**'de.
+- Bütçeme uyar mı? ve Döviz ve altın bu ay için ana ekrandaki Ay sonunda rakamını kullanıyor; tahmini ek harcama artık bu ayın hesabına girmiyor.
+- Ek harcama tahmini (sadece taksitler için): son 6 ayın ortalaması, borçla yapılan harcamalar düşülüyor.
+- Açık uyarıları "bütçen X ₺ açık veriyor", döviz uyarısı "bu alım bütçeni aşıyor" diye yazıyor.
+- Döviz ve altın: yer değiştirme oku sade, kutularla aynı hizada.
+- Kira artışı: öneri düğmeleri kaldırıldı, yeni kira "Kira kalemine işle" bölümünde yazılıyor. Tutarlar noktalı görünüyor (21.000).
 
 **3.23.0 (uygulama, hesaplama 3.13, tablo 3.8)**
 - Klavye: Alttan açılan bütün pencereler klavye açılınca klavyenin üstüne çıkıyor, yazılan kutu görünür kalıyor.
