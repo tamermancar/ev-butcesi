@@ -130,9 +130,9 @@ Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde 
 
 ## Araçlar
 
-Alttaki menünün dördüncü sekmesi. Dört hesaplama aracı var. Araçlar'a her girişte döviz ve altın fiyatları arka planda yenilenir (en fazla 15 dakikada bir), böylece Döviz / altın'ı açınca hazır olur.
+Alttaki menünün üçüncü sekmesi. Dört hesaplama aracı var. Araçlar'a her girişte döviz ve altın fiyatları arka planda yenilenir (en fazla 15 dakikada bir), böylece Döviz ve altın'ı açınca hazır olur.
 
-**Kredi:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir.
+**Kredi hesabı:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir.
 
 **Bütçeme uyar mı?** Bir şey almadan önce, peşin ya da taksitli ödemenin bütçene sığıp sığmadığını gösterir.
 - Peşin fiyatını ve bir ya da birkaç taksit seçeneğini yaz: taksit sayısı ile aylık taksit ya da toplam. Hangisini biliyorsan onu yazman yeter, diğeri kendiliğinden hesaplanır. İlk taksit ayı varsayılan olarak gelecek aydır.
@@ -150,7 +150,7 @@ Alttaki menünün dördüncü sekmesi. Dört hesaplama aracı var. Araçlar'a he
 
 Hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.
 
-**Döviz / altın:** Dolar, euro, sterlin, gram, çeyrek, yarım, tam ve Cumhuriyet altını, 22 ayar bilezik ve gümüşün alış ve satış fiyatları. Altındaki çeviriciye miktar ve birim yazınca, örneğin 8 çeyrek, alırken ve bozdururken kaç TL ettiğini gösterir.
+**Döviz ve altın:** En üstteki çeviriciye miktar ve birim yazınca, örneğin 100 dolar ya da 8 çeyrek, alırken ve bozdururken kaç TL ettiğini gösterir. Birim her açılışta dolar gelir. Altında dolar, euro, sterlin, gram, çeyrek, yarım, tam ve Cumhuriyet altını, 22 ayar bilezik ve gümüşün güncel alış ve satış fiyatları listelenir.
 - Döviz kurları Merkez Bankası'ndan, altın ve diğer değerli metal fiyatları Truncgil Finans'tan alınır. Kaynaklar ve güncelleme zamanları en alttaki dipnotta yazar.
 - Truncgil Finans resmi bir kaynak değildir, kuyumcu fiyatlarıyla birebir aynı olmayabilir. Altın fiyatları bir günden eskiyse dipnot bunu turuncu yazıyla belirtir.
 - Fiyatlar alınamazsa son kayıtlı fiyatlar gösterilir.
@@ -236,7 +236,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.22.1` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.22.2` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -261,6 +261,12 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.22.2 (uygulama)**
+- Alttaki menünün sırası: Aylık liste · Grafikler · Araçlar · Sabitler · Ayarlar.
+- Araç adları: Kredi hesabı, Bütçeme uyar mı?, Kira artışı, Döviz ve altın. Araç pencerelerinin başlığında ikon var.
+- Döviz ve altın: çevirici en üstte (yazarken sonuç klavyenin üstünde kalıyor), birim her açılışta dolar, fiyat listesi "Güncel fiyatlar" etiketiyle altta.
+- Pencere başlıkları daha belirgin. Açılır kutuların oku biraz daha içeride ve her cihazda aynı görünüyor.
 
 **3.22.1 (uygulama)**
 - Araçlar'daki kartların açıklamaları yenilendi, ikonlar değişti: Bütçeme uyar mı? için soru işaretli cüzdan, Döviz / altın için oklu dolar. Kartlar artık hep aynı boyda.
