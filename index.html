@@ -387,7 +387,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.14';
+const UYGULAMA_SURUM = '3.15';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -741,12 +741,28 @@ function ciz() {
   if (!BAG) { document.querySelectorAll('.alt button').forEach(b => b.classList.remove('aktif')); return kurulumCiz(); }
   document.querySelectorAll('.alt button').forEach(b => b.classList.toggle('aktif', b.dataset.v === D.sekme));
   $('fab').hidden = !D.raw || !((D.sekme === 'ay' && duzenlenebilir()) || D.sekme === 'sabit');
+  requestAnimationFrame(fabYerlestir);
   if (D.sekme === 'ayar') return ayarCiz();
   if (!D.raw) return;
   if (D.sekme === 'ay') ayCiz();
   else if (D.sekme === 'grafik') grafikCiz();
   else sabitCiz();
 }
+/** + düğmesi listenin sağ kenarına göre yerleşir (telefondaki gibi kartın 4 px içinde).
+ *  Bilgisayarda kaydırma çubuğu ve "Büyük" görünüm içeriği kaydırdığı için CSS tek başına yetmiyor; konum ölçülerek ayarlanır. */
+function fabYerlestir() {
+  const f = $('fab'), m = document.querySelector('main');
+  if (!f || f.hidden || !m) return;
+  f.style.right = '';
+  const mr = m.getBoundingClientRect(), fr = f.getBoundingClientRect();
+  if (!mr.width || !fr.width) return;
+  const zum = fr.width / (f.offsetWidth || fr.width) || 1;          // "Büyük" görünümde düğme de büyütülüyor
+  const pad = parseFloat(getComputedStyle(m).paddingRight) * (mr.width / (m.offsetWidth || mr.width) || 1);
+  const hedef = mr.right - pad - 4;                                  // kartın sağ kenarının 4 px içi
+  const simdiki = parseFloat(getComputedStyle(f).right) || 0;
+  f.style.right = Math.max(0, simdiki + (fr.right - hedef) / zum) + 'px';
+}
+window.addEventListener('resize', () => { clearTimeout(fabYerlestir.t); fabYerlestir.t = setTimeout(fabYerlestir, 100); });
 const baslik = (yazi, alt) => `<div class="nav"><span></span><span class="ad">${yazi}</span><span></span></div>${alt ? `<p class="ust-alt">${alt}</p>` : '<div style="height:12px"></div>'}`;
 
 /* ---------- AYLIK LİSTE ---------- */
