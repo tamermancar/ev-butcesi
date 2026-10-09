@@ -130,9 +130,11 @@ Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde 
 
 ## Araçlar
 
-Alttaki menünün dördüncü sekmesi. Üç hesaplama aracı var:
+Alttaki menünün dördüncü sekmesi. Dört hesaplama aracı var. Araçlar'a her girişte döviz ve altın fiyatları arka planda yenilenir (en fazla 15 dakikada bir), böylece Döviz / altın'ı açınca hazır olur.
 
-**Kredi / taksit:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir. Altındaki **Peşin mi, taksitli mi?** bölümüne peşin fiyatı, taksitli toplamı ve taksit sayısını yazınca vade farkının aylık kaç faize denk geldiği görünür. Paran bundan daha yüksek aylık faiz getiriyorsa taksitli almak kârlıdır.
+**Kredi:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir.
+
+**Peşin mi, taksit mi?** Bir şeyi peşin mi, taksitle mi alsan daha kârlı? Peşin fiyatı, taksit sayısını ve taksitli toplamı (ya da aylık taksiti) yaz. Vade farkını ve bunun aylık kaç faize denk geldiğini gösterir. Paranın aylık getirisini de yazarsan (örneğin mevduat faizi) net bir sonuç söyler: "Taksitli al, yaklaşık 284 ₺ kârlı çıkarsın" ya da "Peşin al".
 
 **Kira artışı:**
 1. Kira kalemini seç. Mevcut kira kendiliğinden gelir.
@@ -228,7 +230,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.20.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.21.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -253,6 +255,13 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.21.0 (uygulama)**
+- Yeni araç: **Peşin mi, taksit mi?** Paranın getirisini yazınca hangisinin kârlı olduğunu söylüyor. Kredi aracı sadeleşti.
+- Pencerelerdeki kapatma çarpısı, pencere kaydırılınca da üstte görünür kalıyor.
+- Döviz ve altın fiyatları Araçlar'a girince arka planda hazırlanıyor (15 dakikada bir).
+- Bilgisayarda alttaki menü, 5. sekme eklenince içerikten taşıyordu; yine içerikle aynı hizada.
+- Araçlar'daki kuruşlu tutarlar hep iki haneli yazılıyor (25.487,70 ₺).
 
 **3.20.0 (uygulama) · 3.12 (hesaplama) · 3.7 (tablo)**
 - Yeni **Araçlar** sekmesi: kredi/taksit, kira artışı ve döviz/altın.
