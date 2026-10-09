@@ -2,7 +2,7 @@
 <html lang="tr" data-gorunum="normal">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Ev Bütçesi</title>
 <meta name="theme-color" content="#1D5870">
 <meta name="mobile-web-app-capable" content="yes">
@@ -223,7 +223,7 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 
 /* ---------- Çekmece ---------- */
 .perde{position:fixed;inset:0;background:rgba(10,20,24,.45);z-index:10}
-.cekmece{position:fixed;left:0;right:0;bottom:0;max-height:90vh;overflow:auto;background:var(--yuzey);border-radius:20px 20px 0 0;z-index:11;padding:8px 18px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .22s ease-out}
+.cekmece{position:fixed;left:0;right:0;bottom:var(--klavye,0px);max-height:90vh;max-height:calc(90dvh - var(--klavye,0px));overflow:auto;background:var(--yuzey);border-radius:20px 20px 0 0;z-index:11;padding:8px 18px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .22s ease-out}
 .cekmece.acik{transform:none}
 .cekmece-ic{max-width:520px;margin:0 auto}
 .cekmece-ust{position:sticky;top:-8px;z-index:3;background:var(--yuzey);height:36px;padding-top:8px;margin:-8px 0 7px} /* pencere kaydırılınca da çarpı görünür kalır */
@@ -363,6 +363,9 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 .arac-kart em{font-style:normal;font-size:24px;color:var(--soluk)}
 .arac-ara{font-size:15px;margin:18px 0 10px;padding-top:14px;border-top:1px solid var(--cizgi)}
 .arac-sonuc{margin:4px 0 6px}
+.kur-b{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);gap:6px;align-items:end}
+.kur-b .kur-takas{margin-bottom:15px}
+.kur-takas{width:40px;height:40px;border-radius:50%;border:0;background:var(--vurgu);color:#fff;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.25);padding:0}
 .arac-buyuk{background:var(--vurgu-acik);border-radius:12px;padding:10px 14px;margin-bottom:8px}
 .arac-buyuk small{display:block;font-size:12px;color:var(--soluk);font-weight:600}
 .arac-buyuk b{font-size:26px;font-weight:800;letter-spacing:-.02em}
@@ -376,7 +379,15 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 .kur-tablo > div b{text-align:right;font-weight:700;white-space:nowrap}
 .kur-tablo .bas{font-size:12px;color:var(--soluk);padding-top:0}
 .kur-tablo .bas b{font-weight:600}
-.bt-satir{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+.bt-toplam{font-size:12.5px;color:var(--soluk);margin:-4px 2px 8px;min-height:0}
+.bt-toplam:empty{display:none}
+.bt-temel{font-size:14px;font-weight:600;margin:0 0 10px;color:var(--yesil)}.bt-temel span{display:block}.bt-temel span+span{margin-top:4px}
+.bt-temel .eksi{color:var(--turuncu-yazi)}
+.bt-ek{display:flex;align-items:center;gap:8px;font-size:14px}
+.bt-ek span{flex:1;color:var(--soluk);font-weight:600;font-size:13px}
+.bt-ek input{width:120px;height:40px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey2);padding:0 10px;font-size:16px;text-align:right}
+.bt-ek em{font-style:normal;color:var(--soluk)}
+.bolum-etiket small{font-weight:600;letter-spacing:0;text-transform:none;font-size:11px}
 .bt-kartlar{display:flex;flex-direction:column;gap:8px;margin:6px 0 12px}
 .bt-kart{display:block;width:100%;text-align:left;border:1px solid var(--cizgi);border-radius:12px;padding:10px 12px;background:var(--yuzey2)}
 .bt-kart.on{border-color:var(--vurgu);box-shadow:0 0 0 1px var(--vurgu) inset}
@@ -444,7 +455,7 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 <div class="bildirim" id="bildirim" hidden></div>
 
 <!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
-<script src="ortak.js?v=3.12"></script>
+<script src="ortak.js?v=3.13"></script>
 
 <script>
 /* ---------- Sabitler ---------- */
@@ -452,7 +463,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.22.2';
+const UYGULAMA_SURUM = '3.23.0';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -717,7 +728,7 @@ function satiraDon(id, once) {
     sonTarih: once.gecikenOdeme ? undefined : once.sonTarih, kilitAcik: once.kilitAcik, gecikenOdeme: once.gecikenOdeme });
   if (islem(() => satirKaydet_(D.raw, q), 'api_satirKaydet', q)) bildir('Geri alındı');
 }
-function hata(e) { bildir((e && e.message) || 'Bir hata oluştu, tekrar deneyin.'); }
+function hata(e) { bildir((e && e.message) || 'Bir hata oluştu, tekrar dene.'); }
 
 /* ---------- Veri ---------- */
 function veriAyarla(p) {
@@ -883,7 +894,7 @@ function ayCiz() {
   if (D.gecikenler.length) {
     const goster = D.gecikenAcik ? D.gecikenler : D.gecikenler.slice(0, 5);
     h += `<section class="bolum"><h2 style="color:var(--kirmizi)">Gecikenler<span>${D.gecikenler.length} kayıt</span></h2>
-      <p class="ipucu" style="margin:-2px 4px 8px">Geçmiş aylarda ödenmemiş görünenler. Ödediysen buradan tikle, o ayın kaydına işlenir.</p>
+      <p class="ipucu" style="margin:-2px 4px 8px">Geçmiş aylarda ödenmemiş ya da alınmamış görünenler. Ödediysen ya da aldıysan buradan tikle, o ayın kaydına işlenir.</p>
       <div class="liste">${goster.map(satirHTML).join('')}</div>
       ${D.gecikenler.length > 5 ? `<button class="btn metin" data-act="gecikenTumu">${D.gecikenAcik ? 'Daha az göster' : 'Tümünü göster (' + D.gecikenler.length + ')'}</button>` : ''}</section>`;
   }
@@ -935,7 +946,7 @@ function akisHTML(v) {
   if (fark > 0) cumle = `Bu ay artan ${para(fark)}, gelirin gideri karşılıyor.`;
   else if (fark < 0) {
     const kaynak = t.alinan[1] && t.tahsilat[1] ? 'borç ve tahsilatla' : t.alinan[1] ? 'borçla' : 'tahsilatla';
-    cumle = `Bu ay açık ${para(-fark)}, ` + (girisBorc >= -fark ? `farkı ${kaynak} karşıladın.` : girisBorc > 0 ? `bir kısmını ${kaynak} karşıladın.` : (devir > 0 ? 'önceki aylardan kalanla karşılanıyor.' : 'giderin gelirinden fazla.'));
+    cumle = `Bu ay açık ${para(-fark)}, ` + (girisBorc >= -fark ? `farkı ${kaynak} karşıladın.` : girisBorc > 0 ? `bir kısmını ${kaynak} karşıladın.` : (devir >= -fark ? 'önceki aydan kalanla karşılanıyor.' : devir > 0 ? 'bir kısmı önceki aydan kalanla karşılanıyor.' : 'giderin gelirinden fazla.'));
   }
   return `<div class="kasa">
       <div class="giren">
@@ -1037,7 +1048,7 @@ function satirHTML(s) {
   if (s.geciken) r.push(`<span class="rozet">${ayAdi(s.ay)}</span>`);
   if (s.tip) r.push(`<span class="rozet">${BORC_ETIKET(s)}</span>`);
   if (s.odendi && !s.atlandi && s.odemeTarihi && ((s.sonTarih && s.odemeTarihi > s.sonTarih) || s.odemeTarihi.slice(0, 7) > ay))
-    r.push(`<span class="rozet">Geç ödendi, ${kisaTarih(s.odemeTarihi)}</span>`);
+    r.push(`<span class="rozet">${s.tur === 'gelir' ? 'Geç alındı' : 'Geç ödendi'}, ${kisaTarih(s.odemeTarihi)}</span>`);
   if (s.zam) r.push('<span class="rozet zam">Zam ayı, tutarı kontrol et</span>');
   s.rozetler.forEach(x => r.push(`<span class="rozet">${esc(x)}</span>`));
   const notSatiri = s.not && !s.atlandi ? `<div class="not-satir">${esc(gizliMi() ? '•••' : s.not)}</div>` : '';
@@ -1092,9 +1103,9 @@ function satirAc(id, ay) {
   if (s.geciken) {
     cekmeceAc(`
       <h3>${esc(s.ad)}</h3>
-      <p class="aciklama">${ayAdi(s.ay)} kaydı, gecikmiş${s.tip ? ', ' + BORC_ETIKET(s) : ''}</p>
+      <p class="aciklama">${ayAdi(s.ay)} kaydı, gecikmiş${s.tip ? ', ' + BORC_ETIKET(s).toLocaleLowerCase('tr') : ''}</p>
       <label class="tutar-giris"><input id="sTutar" inputmode="decimal" placeholder="0" value="${girisDegeri(s.tutar)}" aria-label="Tutar"><span>₺</span></label>
-      <label class="alan"><span>Açıklama</span><input id="sNot" value="${esc(s.not)}" placeholder="İsteğe bağlı"></label>
+      <label class="alan"><span>Not</span><input id="sNot" value="${esc(s.not)}" placeholder="İsteğe bağlı"></label>
       <button class="btn ana" data-act="satirKaydet" data-odendi="1">${s.tur === 'gelir' ? 'Alındı' : 'Ödendi'} olarak kaydet</button>
       <p class="ipucu" style="margin-top:10px">Başka bir değişiklik gerekiyorsa ${ayAdi(s.ay)} ayına gidip kilidi açabilirsin.</p>`);
     if (!(s.tutar > 0)) setTimeout(() => $('sTutar') && $('sTutar').focus(), 250);
@@ -1108,7 +1119,7 @@ function satirAc(id, ay) {
   else if (!s.odendi || s.atlandi) b = `<button class="btn ana" data-act="satirKaydet" data-odendi="1">${odYazi} olarak kaydet</button>
       <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">Sadece tutarı kaydet</button>`;
   else b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>
-      <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">${s.tur === 'gelir' ? 'Alınmadı' : 'Ödenmedi'} yap</button>`;
+      <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">${s.tur === 'gelir' ? 'Alınmadı' : 'Ödenmedi'} olarak kaydet</button>`;
   if (giris) b += `<button class="btn metin tehlike" data-act="borcSil">${s.tip === 'borc' ? 'Borcu sil (yanlış girdiysen)' : 'Alacağı sil (yanlış girdiysen)'}</button>`;
   else if (s.kalemId) b += s.atlandi ? `<button class="btn metin" data-act="geriAl">Bu ay için geri getir</button>`
     : `<button class="btn metin" data-act="atla">Bu ay yok</button>`;
@@ -1118,7 +1129,7 @@ function satirAc(id, ay) {
   const sadeGelir = (s.tur === 'gelir' && !s.tip) || giris;
   cekmeceAc(`
     <h3>${esc(s.ad)}</h3>
-    <p class="aciklama">${ayAdi(D.ay)}${s.tip ? ', ' + BORC_ETIKET(s) : s.kategori ? ', ' + esc(s.kategori) : ''}</p>
+    <p class="aciklama">${ayAdi(D.ay)}${s.tip ? ', ' + BORC_ETIKET(s).toLocaleLowerCase('tr') : s.kategori ? ', ' + esc(s.kategori) : ''}</p>
     <label class="tutar-giris"><input id="sTutar" inputmode="decimal" placeholder="0" value="${girisDegeri(s.tutar)}" aria-label="Tutar"><span>₺</span></label>
     ${s.kalemId && !s.atlandi ? `<label class="secim"><input type="checkbox" id="sSonraki" ${s.zam ? 'checked' : ''}> Sonraki aylarda da bu tutar olsun</label>` : ''}
     ${!s.kalemId && !s.tip ? `<label class="alan"><span>Ad</span><input id="sAd" value="${esc(s.ad)}"></label>
@@ -1129,7 +1140,7 @@ function satirAc(id, ay) {
       </div>` : ''}
     <div class="${sadeGelir ? '' : 'yan'}">
       ${sadeGelir ? '' : `<label class="alan"><span>${s.tur === 'gelir' ? 'Beklenen tarih' : 'Son ödeme tarihi'}</span><input id="sSon" type="date" value="${esc(s.sonTarih || '')}"></label>`}
-      <label class="alan"><span>Açıklama</span><input id="sNot" value="${esc(s.atlandi ? '' : s.not)}" placeholder="İsteğe bağlı"></label>
+      <label class="alan"><span>Not</span><input id="sNot" value="${esc(s.atlandi ? '' : s.not)}" placeholder="İsteğe bağlı"></label>
     </div>
     ${b}`);
   if (!(s.tutar > 0)) setTimeout(() => $('sTutar') && $('sTutar').focus(), 250);
@@ -1137,7 +1148,7 @@ function satirAc(id, ay) {
 function satirKaydet(odendi) {
   const s = satirBul(D.cek.id, D.cek.gAy); if (!s) return cekmeceKapat();
   const t = tutarOku($('sTutar').value);
-  if (isNaN(t) || t < 0) return bildir('Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50');
+  if (isNaN(t) || t < 0) return bildir('Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50.');
   if (odendi === '1' && !(t > 0)) return bildir('Tutar yaz, sonra işaretle.');
   const p = satirParam(s, { tutar: t, not: $('sNot').value.trim() });
   if ($('sSon') && $('sSon').value !== (s.sonTarih || '')) p.sonTarih = $('sSon').value;
@@ -1188,7 +1199,7 @@ function ekleCiz(k) {
       cekmeceAc(`${seg}${alt}${tutarAlan}
         <div class="cipler">${acik.map(b => `<button class="cip ${b.id === c.bagli ? 'on' : ''}" data-act="eBagli" data-v="${esc(b.id)}">${esc(adG(b.ad))}</button>`).join('')}</div>
         <p class="ipucu">${sec.toplam ? 'Kalan ' + para(sec.toplam - sec.odenen) + '. ' : ''}${borc ? 'Ödediğin tutar kalan borçtan düşer.' : 'Aldığın tutar kalan alacaktan düşer.'}</p>
-        <label class="alan"><span>Açıklama</span><input id="eNot" value="${esc(k.not || '')}" placeholder="İsteğe bağlı"></label>
+        <label class="alan"><span>Not</span><input id="eNot" value="${esc(k.not || '')}" placeholder="İsteğe bağlı"></label>
         ${btn}`);
       return;
     }
@@ -1200,10 +1211,10 @@ function ekleCiz(k) {
         <label class="alan"><span>Kaç ay</span><input id="eSayi" type="number" min="1" max="120" inputmode="numeric" value="${esc(k.sayi || '')}" placeholder="Örn. 8"></label>
       </div>
       <label class="alan"><span>İlk taksit ayı</span><input id="eIlkAy" type="month" value="${esc(k.ilkAy || ayEkle_(D.ay, 1))}"></label>`;
-    else sekilAlan = `<p class="ipucu">Otomatik ödeme satırı oluşmaz. ${borc ? 'Ödedikçe + → Borç → Borç ödedim' : 'Aldıkça + → Alacak → Tahsil ettim'} ile eklersin.</p>`;
+    else sekilAlan = `<p class="ipucu">Her ay otomatik satır oluşmaz. ${borc ? 'Ödedikçe her ödemeyi + → Borç → Borç ödedim' : 'Aldıkça her tahsilatı + → Alacak → Tahsil ettim'} ile eklersin.</p>`;
     cekmeceAc(`${seg}${alt}${tutarAlan}
       <label class="alan"><span>${borc ? 'Kimden' : 'Kime'}</span><input id="eKisi" value="${esc(k.kisi || '')}" placeholder="${borc ? 'Örn. Abim' : 'Örn. Arkadaşım'}"></label>
-      <label class="alan"><span>Açıklama</span><input id="eNot" value="${esc(k.not || '')}" placeholder="${borc ? 'Örn. Araba tamiri için' : 'Örn. Kira desteği'}"></label>
+      <label class="alan"><span>Not</span><input id="eNot" value="${esc(k.not || '')}" placeholder="${borc ? 'Örn. Araba tamiri için' : 'Örn. Kira desteği'}"></label>
       <p class="ipucu" style="margin-bottom:6px">${borc ? 'Nasıl geri ödeyeceksin?' : 'Nasıl geri alacaksın?'}</p>
       <div class="seg">${sb('tek', 'Tek seferde')}${sb('taksit', 'Taksitli')}${sb('belirsiz', 'Belli değil')}</div>
       ${sekilAlan}
@@ -1218,7 +1229,7 @@ function ekleCiz(k) {
   if (!kats.includes(c.kat)) c.kat = kats[0] || 'Diğer';
   cekmeceAc(`${seg}${tutarAlan}
     <div class="cipler">${kats.map(x => `<button class="cip ${x === c.kat ? 'on' : ''}" data-act="eKat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>
-    <label class="alan"><span>Açıklama</span><input id="eAd" placeholder="Boş bırakırsan ${esc(c.kat)} yazılır" value="${esc(k.ad || '')}"></label>
+    <label class="alan"><span>Ad</span><input id="eAd" placeholder="Boş bırakırsan ${esc(c.kat)} yazılır" value="${esc(k.ad || '')}"></label>
     ${gider ? `<div class="yan">
       <label class="secim"><input type="checkbox" id="eKart" ${k.kart ? 'checked' : ''}> Kartla ödedim</label>
       <label class="alan"><span>Taksit</span><select id="eTaksit">${[1, 2, 3, 4, 5, 6, 8, 9, 10, 12].map(n => `<option value="${n}" ${String(k.taksit) === String(n) ? 'selected' : ''}>${n === 1 ? 'Tek çekim' : n + ' taksit'}</option>`).join('')}</select></label>
@@ -1240,13 +1251,13 @@ function ekleIpucu() {
   }
   const n = +(alanDeger('eTaksit') || 1), t = tutarOku(alanDeger('eTutar'));
   if ($('eTaksit') && n > 1) m.push(`Yazdığın toplam tutar ${n} aya bölünür${t > 0 ? ', aylık ' + para(t / n) : ''}.`);
-  if ($('eKart') && $('eKart').checked) m.push('Kartla yapılanlar kayıtta durur ama toplamlara eklenmez. Ödemesi Kredi kartı satırından düşer.');
+  if ($('eKart') && $('eKart').checked) m.push('Kartla yapılanlar kayıtta durur ama toplamlara eklenmez. Toplama, kart ekstresini ödediğinde girer.');
   el.textContent = m.join(' ');
 }
 function ekleKaydet() {
   const c = D.cek;
   const t = tutarOku($('eTutar').value);
-  if (!(t > 0)) { bildir($('eTutar').value.trim() ? 'Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50' : 'Tutar yaz.'); return $('eTutar').focus(); }
+  if (!(t > 0)) { bildir($('eTutar').value.trim() ? 'Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50.' : 'Tutarı gir.'); return $('eTutar').focus(); }
   if ($('eTaksitT') && $('eTaksitT').value.trim() && isNaN(tutarOku($('eTaksitT').value))) { bildir('Geçerli bir taksit tutarı yaz.'); return $('eTaksitT').focus(); }
 
   if ((c.tur === 'borc' || c.tur === 'alacak') && c.alt === 'odeme') {
@@ -1289,7 +1300,7 @@ function ekleKaydet() {
     D.raw = asil;
     cekmeceKapat();
     if (islem(() => borcEkle_(D.raw, p), 'api_borcEkle', p))
-      bildir(`Eklendi: ${p.ad} ${para(t)}`, () => {
+      bildir(`${borc ? 'Borç' : 'Alacak'} eklendi: ${adG(p.ad)} ${para(t)}`, () => {
         if (islem(() => borcSil_(D.raw, p.kalemId, p.kilitAcik), 'api_borcSil', p.kalemId, p.kilitAcik)) bildir('Geri alındı');
       });
     return;
@@ -1326,7 +1337,7 @@ function sabitCiz() {
     ${alacak.length ? `<section class="bolum"><h2>Alacaklarım<span>kalan ${para(kalanTop(alacak))}</span></h2><div class="liste">${yaz(alacak)}</div></section>` : ''}
     ${kapanan.length ? `<section class="bolum"><button class="btn metin" data-act="kapananAc">${D.kapananAcik ? 'Kapananları gizle' : 'Kapanan borç ve alacaklar (' + kapanan.length + ')'}</button>
       ${D.kapananAcik ? `<div class="liste">${kapanan.map(k => `<div class="kalem"><button class="bilgi" data-act="${k.kapali ? 'kapananDetay' : 'kalemAc'}" data-id="${esc(k.id)}"><div class="ad">${esc(adG(k.ad))}</div>
-        <div class="alt-yazi">${k.tip === 'borc' ? 'Borç' : 'Alacak'}, ${k.kapali ? 'kapatıldı' : 'tamamı ödendi'}, ${para(k.odenen)}${k.toplam ? ' / ' + para(k.toplam) : ''}</div></button></div>`).join('')}</div>` : ''}</section>` : ''}
+        <div class="alt-yazi">${k.tip === 'borc' ? 'Borç' : 'Alacak'}, ${k.kapali ? 'kapatıldı' : k.tip === 'borc' ? 'tamamı ödendi' : 'tamamı alındı'}, ${para(k.odenen)}${k.toplam ? ' / ' + para(k.toplam) : ''}</div></button></div>`).join('')}</div>` : ''}</section>` : ''}
     <p class="ipucu" style="margin-top:14px">Yeni sabit kalem için sağ alttaki + düğmesini kullan. Borç ve alacaklar aylık listedeki + ile eklenir. Bir kalemin tutarını değiştirirsen bu aydan itibaren geçerli olur, geçmiş aylar olduğu gibi kalır. Sırayı oklarla değiştirebilirsin.</p>`;
 }
 function kalemOzet(k) {
@@ -1378,11 +1389,11 @@ function kalemCiz(k) {
     <label class="alan"><span>${tip ? (borcMu ? 'Kimden' : 'Kime') : 'Ad'}</span><input id="kAd" value="${esc(k.ad || '')}" placeholder="${tip ? (borcMu ? 'Örn. Abim' : 'Örn. Arkadaşım') : 'Örn. Kira'}"></label>
     <div class="yan">
       <label class="alan"><span>${tip ? 'Aylık taksit' : 'Tutar'}</span><input id="kTutar" inputmode="decimal" value="${girisDegeri(k.tutar)}" placeholder="0"></label>
-      ${tip ? `<label class="alan"><span>${borcMu ? 'Toplam geri ödenecek' : 'Toplam geri alınacak'}</span><input id="kToplam" inputmode="decimal" value="${girisDegeri(k.toplam)}" placeholder="Bilmiyorsan boş"></label>`
+      ${tip ? `<label class="alan"><span>${borcMu ? 'Toplam geri ödenecek' : 'Toplam geri alınacak'}</span><input id="kToplam" inputmode="decimal" value="${girisDegeri(k.toplam)}" placeholder="Bilmiyorsan boş bırak"></label>`
         : `<label class="alan"><span>Kategori</span><input id="kKat" list="katListe" value="${esc(k.kategori || '')}" placeholder="Örn. Fatura"></label>`}
     </div>
     ${tip && !c.id ? `<div class="yan">
-      <label class="alan"><span>${borcMu ? 'Eline geçen para' : 'Verdiğin para'}</span><input id="kGiris" inputmode="decimal" value="${girisDegeri(k.girisTutar)}" placeholder="Eskiyse boş bırak"></label>
+      <label class="alan"><span>${borcMu ? 'Eline geçen para' : 'Verdiğin para'}</span><input id="kGiris" inputmode="decimal" value="${girisDegeri(k.girisTutar)}" placeholder="${borcMu ? 'Önceden aldıysan' : 'Önceden verdiysen'} boş bırak"></label>
       <label class="alan"><span>Hangi ay</span><input id="kGirisAy" type="month" value="${esc(k.girisAy || D.raw.buAy)}"></label>
     </div>` : ''}
     <datalist id="katListe">${katlar.map(x => `<option value="${esc(x)}">`).join('')}</datalist>
@@ -1419,7 +1430,7 @@ function kalemFormOku() {
 function kalemKaydet() {
   // Tutar kutularında yazım hatası varsa (12a, -50, 10.000.5) sessizce 0 kaydetme, uyar
   const hatali = ['kTutar', 'kToplam', 'kGiris'].find(id => $(id) && $(id).value.trim() && isNaN(tutarOku($(id).value)));
-  if (hatali) { bildir('Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50'); return $(hatali).focus(); }
+  if (hatali) { bildir('Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50.'); return $(hatali).focus(); }
   const g = kalemFormOku();
   if (!g.ad) return bildir(g.tip ? 'Kimden/kime olduğunu yaz.' : 'Kalem adı yaz.');
   if (g.tip && !g.baslamadi && !(g.tutar > 0) && !g.degisken) return bildir('Aylık taksiti yaz ya da "Düzenli taksit yok"u işaretle.');
@@ -1482,7 +1493,7 @@ function grafikCiz() {
       <p class="ipucu" style="margin-top:8px">Bir aya dokunursan o ayın listesi açılır.${borcVar ? ' Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde turuncu olarak görünür.' : ''}</p></section>
     <section class="bolum"><h2>Giderlerin dağılımı<span>${v.yil}</span></h2>
       <div class="kart">${dag}</div>
-      <p class="ipucu" style="margin-top:8px">Kartla yapılan harcamalar ayrı sayılmaz, Kredi kartı satırı içinde görünür.</p></section>`;
+      <p class="ipucu" style="margin-top:8px">Kartla yapılan harcamalar ayrı sayılmaz, kart ekstresini ödediğin kayıtta görünür.</p></section>`;
 }
 
 /** Yıllık tablo (E-Tablo'daki özet sayfasının uygulama içi hâli) */
@@ -1566,104 +1577,126 @@ function krediHesapla() {
       <div><span>Toplam faiz${$('arKrVergi').checked ? ' ve vergi' : ''}</span><b>${TL(taksit * n - P)}</b></div></div>`;
   }
 }
-/* Bütçeme uyar mı? Peşin ve taksit seçeneklerinin bütçeye sığıp sığmadığını ay ay hesaplar.
-   Gelecek aylar: sabit kalemler + önceden yapılmış taksitler + son 3 ayın ortalama ek harcaması. */
+/* Bütçeme uyar mı? Önce bütçenin bu alışveriş olmadan durumu, sonra her ödeme seçeneğiyle durumu.
+   Gelecek aylar: sabit kalemler + borç ödemeleri + önceden yapılmış taksitler + aylık ek harcama tahmini. */
 function butceCiz() {
-  D.cek.n = 1; D.cek.sec = 0; D.cek.kaynak = {};
+  D.cek.n = 1; D.cek.sec = 0; D.cek.ekElle = null;
   const ilkAy = D.raw ? ayEkle_(D.raw.buAy, 1) : '';
-  const satir = i => `<div class="bt-satir" id="arBtR${i}" ${i ? 'hidden' : ''}>
-      <label class="alan"><span>Taksit sayısı</span><input id="arBtS${i}" type="number" min="1" max="36" inputmode="numeric" placeholder="Örn. 6"></label>
-      <label class="alan"><span>Aylık taksit</span><input id="arBtT${i}" inputmode="decimal" placeholder="0"></label>
-      <label class="alan"><span>ya da toplam</span><input id="arBtY${i}" inputmode="decimal" placeholder="0"></label></div>`;
+  const satir = i => `<div class="bt-secenek" id="arBtR${i}" ${i ? 'hidden' : ''}>
+      <div class="yan"><label class="alan"><span>Taksit sayısı</span><input id="arBtS${i}" type="number" min="1" max="36" inputmode="numeric" placeholder="Örn. 6"></label>
+      <label class="alan"><span>Aylık taksit tutarı</span><input id="arBtT${i}" inputmode="decimal" placeholder="Örn. 1.850"></label></div>
+      <p class="bt-toplam" id="arBtY${i}"></p></div>`;
   cekmeceAc(`${aracBaslik('butce', 'Bütçeme uyar mı?')}
-    <p class="aciklama">Almak istediğin şeyin fiyatlarını yaz. Her seçeneğin bütçene sığıp sığmadığını ay ay göstereyim.</p>
-    <label class="alan"><span>Peşin fiyatı (isteğe bağlı)</span><input id="arBtPesin" inputmode="decimal" placeholder="Örn. 10.000"></label>
+    <p class="aciklama">Almak istediğin bir şeyin bütçene sığıp sığmadığını ay ay gösterir.</p>
+    <h4 class="bolum-etiket">ÜRÜNÜN PEŞİN FİYATI</h4>
+    <label class="alan"><input id="arBtPesin" inputmode="decimal" placeholder="Örn. 10.000" aria-label="Ürünün peşin fiyatı"></label>
+    <h4 class="bolum-etiket">TAKSİTLE ALIRSAN <small>(isteğe bağlı)</small></h4>
     ${[0, 1, 2].map(satir).join('')}
-    <button class="btn metin" data-act="arBtEkle" id="arBtEkleBtn">+ Başka taksit seçeneği</button>
+    <button class="btn metin" data-act="arBtEkle" id="arBtEkleBtn">+ Diğer taksit seçeneğini hesapla</button>
     <label class="alan"><span>İlk taksit ayı</span><input id="arBtAy" type="month" value="${esc(ilkAy)}"></label>
+    <h4 class="bolum-etiket">BÜTÇENİN DURUMU</h4>
+    <div id="arBtDurum"></div>
     <div id="arBtSonuc"></div>
-    <p class="dipnot" id="arBtDipnot"></p>`);
+    <p class="dipnot">Gelecek aylar sabit kalemlerinden, borç ödemelerinden ve daha önce taksitle aldıklarının kalan taksitlerinden hesaplanır. Değişken gelir ve giderler tahminidir.</p>`);
   butceHesapla();
 }
-/** Son 3 tam ayın ortalama ek harcaması (eski taksit parçaları hariç; onlar gelecek aylarda ayrıca sayılıyor) */
-function ekOrtalama() {
-  let top = 0, say = 0;
+/** Aylık ek harcama tahmini: son 3 ayın ortanca değeri (tek seferlik büyük bir harcama tahmini bozmasın).
+ *  Eski taksit parçaları sayılmaz; onlar gelecek aylarda ayrıca hesaba giriyor. */
+function ekTahmini() {
+  const aylar = [];
   for (let i = 1; i <= 3; i++) {
     const v = ayHesapla_(ayEkle_(D.raw.buAy, -i), D.raw);
     if (!v.satirlar.length) continue;
-    say++;
-    v.satirlar.forEach(s => { if (!s.tip && !s.kart && s.tur === 'gider' && !s.kalemId && !/\(\d+\/\d+\)$/.test(s.ad)) top += s.tutar; });
+    aylar.push(v.satirlar.reduce((t, s) => t + (!s.tip && !s.kart && s.tur === 'gider' && !s.kalemId && !/\(\d+\/\d+\)$/.test(s.ad) ? s.tutar : 0), 0));
   }
-  return { tutar: say ? top / say : 0, ay: say };
+  if (!aylar.length) return 0;
+  aylar.sort((a, b) => a - b);
+  return aylar.length === 2 ? Math.min(...aylar) : aylar[Math.floor(aylar.length / 2)];
 }
-/** Bir ayın tahmini durumu: gelir, giderler ve (yeni ödeme olmadan) kalan */
-function ayButcesi(ay, ort) {
+/** Bir ayın tahmini durumu (yeni alışveriş olmadan): gelir, giderler, kalan */
+function ayButcesi(ay, ek) {
   const t = akisOzeti(ayHesapla_(ay, D.raw)), bu = ay === D.raw.buAy;
-  const ek = bu ? Math.max(ort, t.ek[1]) : ort + t.ek[1];
-  const gelir = t.giren[1], gider = t.gider[1] + t.odeme[1] + t.verilen[1] + ek;
+  const ekT = bu ? Math.max(ek, t.ek[1]) : ek + t.ek[1];
+  const gelir = t.giren[1], gider = t.gider[1] + t.odeme[1] + t.verilen[1] + ekT;
   return { ay: ay, gelir: gelir, gider: gider, kalan: gelir - gider, maas: t.gelir[1] };
 }
+/** Bu ay: şu an elde olan + bu ay daha gelecek − daha ödenecek − ayın kalan tahmini ek harcaması */
+function buAyButcesi(ek) {
+  const t = akisOzeti(ayHesapla_(D.raw.buAy, D.raw));
+  const elde = devirHesapla(D.raw.buAy) + t.giren[0] - t.cikan[0], kalanEk = Math.max(0, ek - t.ek[1]);
+  const gelir = elde + t.giren[1] - t.giren[0], gider = t.cikan[1] - t.cikan[0] + kalanEk;
+  return { ay: D.raw.buAy, gelir: gelir, gider: gider, kalan: gelir - gider, maas: t.gelir[1] };
+}
+const ayAdiKisa = ay => AYLAR[+ay.slice(5) - 1];
 function butceHesapla(kaynak) {
-  const el = $('arBtSonuc'), c = D.cek; if (!el) return;
-  if (!D.raw) { el.innerHTML = '<p class="ipucu">Veriler yüklenince hesaplanır.</p>'; return; }
-  if (gizliMi()) { el.innerHTML = '<p class="arac-not uyari">Bu araç senin bütçeni kullanır. Tutarlar gizliyken çalışmaz; göz simgesine dokunup tutarları göster.</p>'; return; }
-  // Taksit satırlarında aylık taksit ile toplamdan biri yazılınca diğeri hesaplanır
-  for (let i = 0; i < 3; i++) {
-    const n = parseInt($('arBtS' + i).value, 10);
-    if (kaynak === 'arBtT' + i) c.kaynak[i] = 'T'; else if (kaynak === 'arBtY' + i) c.kaynak[i] = 'Y';
-    if (!(n > 0)) continue;
-    if (c.kaynak[i] === 'T' && kaynak !== 'arBtY' + i) { const t = aracDeger('arBtT' + i); $('arBtY' + i).value = t > 0 ? girisDegeri(Math.round(t * n * 100) / 100) : ''; }
-    if (c.kaynak[i] === 'Y' && kaynak !== 'arBtT' + i) { const y = aracDeger('arBtY' + i); $('arBtT' + i).value = y > 0 ? girisDegeri(Math.round(y / n * 100) / 100) : ''; }
+  const el = $('arBtSonuc'), du = $('arBtDurum'), c = D.cek; if (!el) return;
+  if (!D.raw) { du.innerHTML = '<p class="ipucu">Veriler yüklenince hesaplanır.</p>'; return; }
+  if (gizliMi()) { du.innerHTML = '<p class="arac-not uyari">Bu araç senin bütçeni kullanır. Tutarlar gizliyken çalışmaz; göz simgesine dokunup tutarları göster.</p>'; el.innerHTML = ''; return; }
+  if (kaynak === 'arBtEk') c.ekElle = aracDeger('arBtEk');
+  const ekOner = ekTahmini(), ek = (Number.isFinite(c.ekElle) && c.ekElle >= 0) ? c.ekElle : ekOner;
+  const pesin = aracDeger('arBtPesin'), ilk = $('arBtAy').value || ayEkle_(D.raw.buAy, 1);
+  // Taksit seçenekleri: sayı ve aylık tutar tamamsa toplamı altına yaz
+  const taksitler = [];
+  for (let i = 0; i < c.n; i++) {
+    const n = parseInt($('arBtS' + i).value, 10), t = aracDeger('arBtT' + i), y = $('arBtY' + i);
+    if (n > 0 && t > 0) { taksitler.push({ n: n, taksit: t, toplam: t * n }); y.textContent = `Toplam ${TL(t * n)}` + (pesin > 0 && t * n - pesin > 0.5 ? ` · peşinden ${TL(t * n - pesin)} (%${NF0.format((t * n - pesin) / pesin * 100)}) fazla` : ''); }
+    else y.textContent = '';
   }
-  const ort = ekOrtalama(), pesin = aracDeger('arBtPesin'), ilk = $('arBtAy').value || ayEkle_(D.raw.buAy, 1);
-  $('arBtDipnot').textContent = `Gelecek aylar sabit kalemlerinden ve daha önce yaptığın taksitlerden hesaplanır. Ek harcamalar için ${ort.ay ? 'son ' + ort.ay + ' ayın ortalaması (' + para(ort.tutar) + ')' : 'henüz geçmiş veri olmadığı için 0'} kullanılır. Değişken gelir ve giderler tahminidir.`;
+  // Bütçenin bu alışveriş olmadan durumu
+  const ufuk = Math.min(24, Math.max(6, ...taksitler.map(x => x.n)));
+  const temel = []; for (let k = 0; k < ufuk; k++) temel.push(ayButcesi(ayEkle_(ilk, k), ek));
+  const enAz = temel.reduce((a, b) => b.kalan < a.kalan ? b : a), buAy = buAyButcesi(ek);
+  const ilkMetin = buAy.kalan < 0 ? `⚠️ Bu ay sonunda yaklaşık ${para(-buAy.kalan)} eksik görünüyor.` : `Bu ay sonunda yaklaşık ${para(buAy.kalan)} kalıyor.`;
+  const ikiMetin = enAz.kalan < 0 ? `⚠️ Bu alışveriş olmadan da ${ayAdiKisa(enAz.ay)} ayında gelirin gideri yaklaşık ${para(-enAz.kalan)} karşılamıyor.` : `${ayAdi(ilk)} ayından itibaren ${ufuk} ay boyunca her ay en az ${para(enAz.kalan)} artıyor.`;
+  const temelHtml = `<span class="${buAy.kalan < 0 ? 'eksi' : ''}">${ilkMetin}</span><span class="${enAz.kalan < 0 ? 'eksi' : ''}">${ikiMetin}</span>`;
+  const ekNot = `Market, benzin gibi harcamalar için ${(Number.isFinite(c.ekElle) && c.ekElle >= 0) ? 'senin yazdığın tutar' : 'son 3 ayın ortanca değeri'} kullanılıyor. Değiştirebilirsin.`;
+  const odak = $('arBtEk') === document.activeElement;
+  if (!odak) du.innerHTML = `<p class="bt-temel">${temelHtml}</p>
+    <label class="bt-ek"><span>Aylık ek harcama tahmini</span><input id="arBtEk" inputmode="decimal" value="${ek > 0 ? NF0.format(Math.round(ek)) : ''}"><em>₺</em></label>
+    <p class="ipucu" id="arBtEkNot" style="margin:4px 0 0">${ekNot}</p>`;
+  else { /* yazarken kutuyu yeniden çizme, sadece cümleleri güncelle */ const p = du.querySelector('.bt-temel'); if (p) p.innerHTML = temelHtml; $('arBtEkNot').textContent = ekNot; }
+  // Seçenekler: peşin (fiyat yazıldıysa) ve tamamlanmış taksit seçenekleri
   const secenekler = [];
   if (pesin > 0) secenekler.push({ ad: 'Peşin', pesin: true, toplam: pesin });
-  for (let i = 0; i < c.n; i++) {
-    const n = parseInt($('arBtS' + i).value, 10), t = aracDeger('arBtT' + i);
-    if (n > 0 && t > 0) secenekler.push({ ad: n + ' taksit', n: n, taksit: t, toplam: t * n });
-  }
-  if (!secenekler.length) { el.innerHTML = '<p class="ipucu">Peşin fiyatı ya da bir taksit seçeneği yazınca sonuç burada görünür.</p>'; return; }
+  taksitler.forEach(x => secenekler.push(Object.assign({ ad: x.n + ' taksit' }, x)));
+  if (!secenekler.length) { el.innerHTML = '<p class="ipucu" style="margin-top:14px">Ürünün fiyatını ya da bir taksit seçeneğini yazınca, alışverişin bütçene etkisi burada görünür.</p>'; return; }
   const enUcuz = Math.min(...secenekler.map(s => s.toplam));
-  // Her seçeneğin ay ay durumu ve sonucu
+  // Bu ay sonunda kalacak para: gelecek aylardaki küçük açıkları karşılayabilecek birikim
+  const birikim = Math.max(0, buAy.kalan);
   secenekler.forEach(s => {
+    if (s.pesin) { const b = buAy; s.aylar = [Object.assign({}, b, { gider: b.gider + s.toplam, kalan: b.kalan - s.toplam, once: b.kalan })]; }
+    else s.aylar = temel.slice(0, s.n).map(b => Object.assign({}, b, { gider: b.gider + s.taksit, kalan: b.kalan - s.taksit, once: b.kalan }));
+    const k = s.aylar.reduce((a, b) => b.kalan < a.kalan ? b : a), ay = ayAdiKisa(k.ay);
+    const onceEksi = Math.min(...s.aylar.map(a => a.once)) < 0;
     if (s.pesin) {
-      // Bu ay: şu an elde olan + bu ay daha gelecek − daha ödenecek − ayın kalan tahmini ek harcaması − peşin
-      const v = ayHesapla_(D.raw.buAy, D.raw), t = akisOzeti(v);
-      const elde = devirHesapla(D.raw.buAy) + t.giren[0] - t.cikan[0];
-      const kalanEk = Math.max(0, ort.tutar - t.ek[1]);
-      const aySonu = elde + (t.giren[1] - t.giren[0]) - (t.cikan[1] - t.cikan[0]) - kalanEk - s.toplam;
-      s.aylar = [{ ay: D.raw.buAy, gelir: elde + t.giren[1] - t.giren[0], gider: t.cikan[1] - t.cikan[0] + kalanEk + s.toplam, kalan: aySonu, maas: t.gelir[1] }];
+      s.durum = k.kalan < 0 ? 'zor' : k.kalan < Math.max(0, k.maas) * 0.1 ? 'sikisik' : 'rahat';
+      s.cumle = onceEksi ? `⚠️ Bu ay sonunda bu alışveriş olmadan da eksik var. Peşin ödersen eksik yaklaşık ${para(-k.kalan)} olur.`
+        : s.durum === 'zor' ? `⚠️ Peşin ödersen bu ay sonunda yaklaşık ${para(-k.kalan)} eksik kalırsın.`
+        : s.durum === 'sikisik' ? `🟠 Ödeyebilirsin ama sıkışık. Ay sonunda yaklaşık ${para(k.kalan)} kalır.`
+        : `✅ Peşin ödeyebilirsin. Ay sonunda yaklaşık ${para(k.kalan)} kalır.`;
     } else {
-      s.aylar = [];
-      for (let k = 0; k < s.n; k++) { const b = ayButcesi(ayEkle_(ilk, k), ort.tutar); b.gider += s.taksit; b.kalan -= s.taksit; s.aylar.push(b); }
-    }
-    const enKotu = s.aylar.reduce((a, b) => b.kalan < a.kalan ? b : a);
-    const sinir = Math.max(0, enKotu.maas) * 0.1;
-    s.durum = enKotu.kalan < 0 ? 'zor' : enKotu.kalan < sinir ? 'sikisik' : 'rahat';
-    s.enKotu = enKotu;
-    const ayAd = AYLAR[+enKotu.ay.slice(5) - 1];
-    if (s.pesin) s.cumle = s.durum === 'rahat' ? `✅ Peşin ödeyebilirsin. Ay sonunda yaklaşık ${para(enKotu.kalan)} kalır.`
-      : s.durum === 'sikisik' ? `🟠 Ödeyebilirsin ama sıkışık: ay sonunda yaklaşık ${para(enKotu.kalan)} kalır.`
-      : `⚠️ Peşin ödersen ay sonunda yaklaşık ${para(-enKotu.kalan)} eksik kalırsın.`;
-    else {
-      const enAz = Math.min(...s.aylar.map(a => a.kalan));
-      s.cumle = s.durum === 'rahat' ? `✅ Bütçene rahat sığıyor. Her ay en az ${para(enAz)} artıyor.`
-        : s.durum === 'sikisik' ? `🟠 Sığıyor ama sıkışık: en zor ay ${ayAd}, elinde yaklaşık ${para(enKotu.kalan)} kalıyor.`
-        : `⚠️ ${ayAd} ayında zorlanabilirsin: yaklaşık ${para(-enKotu.kalan)} eksik kalıyor. Ek gelirin yoksa ek harcamaları kısman ya da daha uzun vade seçmen gerekebilir.`;
+      // Gelirin gideri karşılamadığı aylar: açık, bu ay sonunda kalacak birikimle kapanıyorsa yumuşak uyarı
+      const eksikAylar = s.aylar.filter(a => a.kalan < 0), acik = eksikAylar.reduce((t, a) => t - a.kalan, 0);
+      const yer = eksikAylar.length === 1 ? `${ay} ayında` : `${eksikAylar.length} ayda (en çok ${ay} ayında)`;
+      s.durum = !eksikAylar.length ? (k.kalan < Math.max(0, k.maas) * 0.1 ? 'sikisik' : 'rahat') : acik <= birikim ? 'sikisik' : 'zor';
+      s.cumle = !eksikAylar.length
+        ? (s.durum === 'sikisik' ? `🟠 Sığıyor ama sıkışık. En zor ay ${ay}, elinde yaklaşık ${para(k.kalan)} kalıyor.` : `✅ Bütçene rahat sığıyor. Taksitle birlikte her ay en az ${para(k.kalan)} artıyor.`)
+        : acik <= birikim
+          ? `🟠 Taksitle birlikte ${yer} gelirin gideri karşılamıyor${eksikAylar.length > 1 ? `, toplam açık yaklaşık ${para(acik)}` : `, açık yaklaşık ${para(acik)}`}. Bu ay sonunda kalacak birikimin (yaklaşık ${para(birikim)}) bunu karşılar.`
+          : `⚠️ Taksitle birlikte ${yer} gelirin gideri karşılamıyor, toplam açık yaklaşık ${para(acik)}. ${birikim > 0 ? `Bu ay sonunda kalacak birikimin (yaklaşık ${para(birikim)}) bunu karşılamaya yetmiyor.` : 'Bu ay sonunda da birikim kalmıyor.'}${onceEksi ? ' Bu alışveriş olmadan da açık var.' : ''}`;
     }
     s.fark = s.toplam - enUcuz;
   });
   if (c.sec >= secenekler.length) c.sec = 0;
   const kart = (s, i) => `<button class="bt-kart ${i === c.sec ? 'on' : ''} ${s.durum}" data-act="arBtSec" data-v="${i}">
       <span class="bt-ust"><b>${s.ad}</b><b>${TL(s.toplam)}</b></span>
-      <small>${s.pesin ? 'Tek seferde' : s.n + ' × ' + TL(s.taksit, s.taksit % 1 > 0.004)}${s.fark > 0.5 ? ` · en ucuzdan ${TL(s.fark)} (%${NF0.format(s.fark / enUcuz * 100)}) pahalı` : secenekler.length > 1 ? ' · en ucuz' : ''}</small>
+      <small>${s.pesin ? 'Tek seferde, bu ay' : s.n + ' × ' + TL(s.taksit, s.taksit % 1 > 0.004) + ', ' + ayAdi(ilk) + ' ayından başlar'}${s.fark > 0.5 ? ` · en ucuzdan ${TL(s.fark)} fazla` : ''}</small>
       <span class="bt-cumle">${s.cumle}</span></button>`;
   const s = secenekler[c.sec];
   const tablo = `<div class="bt-tablo"><div class="bas"><span>${s.pesin ? 'Bu ay' : 'Ay'}</span><b>${s.pesin ? 'Elde + gelecek' : 'Gelir'}</b><b>Giderler*</b><b>Kalan</b></div>
     ${s.aylar.slice(0, 24).map(a => `<div class="${a.kalan < 0 ? 'eksi' : ''}"><span>${KISA[+a.ay.slice(5) - 1]} ${a.ay.slice(2, 4)}</span><b>${NF0.format(Math.round(a.gelir))}</b><b>${NF0.format(Math.round(a.gider))}</b><b>${a.kalan < 0 ? '−' : ''}${NF0.format(Math.round(Math.abs(a.kalan)))}</b></div>`).join('')}</div>
-    <p class="ipucu" style="margin-top:6px">* ${s.pesin ? 'Bu ay daha ödenecekler, ayın kalan tahmini ek harcaması ve peşin ödeme' : 'Sabit giderler, borç ödemeleri, tahmini ek harcama ve bu taksit'} dahil.${secenekler.length > 1 ? ' Başka bir seçeneğin tablosu için kartına dokun.' : ''}</p>`;
-  el.innerHTML = `<div class="bt-kartlar">${secenekler.map(kart).join('')}</div>${tablo}`;
+    <p class="ipucu" style="margin-top:6px">* ${s.pesin ? 'Bu ay daha ödenecekler, ayın kalan tahmini ek harcaması ve peşin ödeme' : 'Sabit giderler, borç ödemeleri, ek harcama tahmini ve bu taksit'} dahil.${secenekler.length > 1 ? ' Başka bir seçeneğin tablosu için kartına dokun.' : ''}</p>`;
+  el.innerHTML = `<h4 class="bolum-etiket">BU ALIŞVERİŞLE</h4><div class="bt-kartlar">${secenekler.map(kart).join('')}</div>${tablo}`;
 }
 /* Kira artışı */
 function kiraKalemleri() {
@@ -1696,7 +1729,7 @@ function kiraCiz() {
       <label class="alan"><span>Hangi aydan itibaren</span><input id="arKiraAy" type="month" value="${esc(kiraVarsayilanAy(k))}"></label>
       <button class="btn ana" data-act="arKiraUygula">Kira kalemine uygula</button>
     </div>
-    <p class="dipnot">Kira artışında yasal üst sınır, TÜFE'nin (tüketici fiyat endeksi) 12 aylık ortalamasıdır. Oranı TÜİK her ay açıklar. Bu hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.</p>`);
+    <p class="dipnot">Kira artışında yasal üst sınır, TÜFE'nin (tüketici fiyat endeksi) 12 aylık ortalama değişim oranıdır. Oranı TÜİK her ay açıklar. Bu hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.</p>`);
   kiraHesapla();
 }
 function kiraHesapla(kaynak) {
@@ -1759,27 +1792,13 @@ function kurOnYukle() {
     .then(() => { D.kurIstek = null; if (D.cek && D.cek.arac === 'kur') { kurListeCiz(); kurHesapla(); } });
   return D.kurIstek;
 }
-function kurCiz() {
-  if (D.kurlar === undefined) D.kurlar = yerelOku('evb-kurlar');
-  const secili = 'USD'; // her açılışta dolar
-  // Çevirici üstte: yazarken sonuç klavyenin üstünde kalsın. Fiyat tablosu altta.
-  cekmeceAc(`${aracBaslik('kur', 'Döviz ve altın')}
-    <div class="yan" style="margin-top:12px"><label class="alan"><span>Miktar</span><input id="arKurMiktar" inputmode="decimal" placeholder="Örn. 100"></label>
-      <label class="alan"><span>Birim</span><select id="arKurBirim">${KUR_ADLARI.map(x => `<option value="${x[0]}" ${x[0] === secili ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></label></div>
-    <div class="arac-sonuc" id="arKurSonuc"></div>
-    <h4 class="bolum-etiket">GÜNCEL FİYATLAR</h4>
-    <div id="arKurListe"></div>
-    <p class="dipnot" id="arKurDipnot"></p>`);
-  kurListeCiz(); kurHesapla();
-  kurOnYukle(); // fiyatlar eskiyse (15 dakikadan fazla) yenilenir, gelince liste kendiliğinden güncellenir
-}
 const uzunTarihSaat = t => { const m = String(t || '').match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/); return m ? Number(m[3]) + ' ' + AYLAR[+m[2] - 1] + ' ' + m[1] + (m[4] ? ', ' + m[4] + ':' + m[5] : '') : ''; };
 function kurListeCiz() {
   const el = $('arKurListe'), dn = $('arKurDipnot'); if (!el) return;
   const k = D.kurlar;
   if (!k || (!k.doviz && !k.altin)) {
     el.innerHTML = D.kurHata === 'guncelle' ? '<p class="arac-not uyari">Fiyatlar için tablodaki kodun (Kod.gs) güncellenmesi gerekiyor.</p>'
-      : D.kurHata ? '<p class="arac-not uyari">Fiyatlar alınamadı. İnternet bağlantını kontrol edip tekrar aç.</p>' : '<p class="ipucu">Fiyatlar alınıyor…</p>';
+      : D.kurHata ? '<p class="arac-not uyari">Fiyatlar alınamadı. İnternet bağlantını kontrol edip bu sayfayı tekrar aç.</p>' : '<p class="ipucu">Fiyatlar alınıyor…</p>';
     dn.textContent = ''; return;
   }
   const satir = x => { const f = kurBul(x[0]); return f ? `<div><span>${x[1]}</span><b>${TL(f.alis, true)}</b><b>${TL(f.satis, true)}</b></div>` : ''; };
@@ -1794,13 +1813,52 @@ function kurListeCiz() {
   }
   dn.innerHTML = `Döviz kurları Türkiye Cumhuriyet Merkez Bankası'ndan${dt ? ' (' + esc(dt) + ')' : ''}, altın ve diğer değerli metal fiyatları Truncgil Finans'tan${at ? ' (' + esc(at) + ')' : ''} alınmıştır. Kuyumcu ve banka fiyatları biraz farklı olabilir.${eski}`;
 }
+const kurSecim = (id, v, et) => `<select id="${id}"${et ? ` aria-label="${et}"` : ''}><option value="TL" ${v === 'TL' ? 'selected' : ''}>Türk lirası</option>${KUR_ADLARI.map(x => `<option value="${x[0]}" ${x[0] === v ? 'selected' : ''}>${x[1]}</option>`).join('')}</select>`;
+const TAKAS_YATAY = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M16 3l4 4-4 4M20 17H4M8 13l-4 4 4 4"/></svg>';
+function kurCiz() {
+  if (D.kurlar === undefined) D.kurlar = yerelOku('evb-kurlar');
+  // Her açılışta: Türk lirası → Dolar. Okla yer değiştirilir.
+  // Üstte iki birim ve aralarında yer değiştirme oku, altta tutar; sonuç büyük kutuda cümleyle
+  const ust = `<div class="kur-b">
+      <label class="alan"><span>Elindeki</span>${kurSecim('arKurKaynak', 'TL')}</label>
+      <button class="kur-takas" data-act="arKurTakas" aria-label="Yer değiştir">${TAKAS_YATAY}</button>
+      <label class="alan"><span>Neye çevrilsin?</span>${kurSecim('arKurHedef', 'USD')}</label>
+    </div>
+    <label class="alan"><span id="arKurEtiket">Türk lirası miktarı</span><input id="arKurMiktar" inputmode="decimal" placeholder="Örn. 5.000"></label>`;
+  cekmeceAc(`${aracBaslik('kur', 'Döviz ve altın')}<div style="margin-top:12px">${ust}</div>
+    <div id="arKurSonuc"></div>
+    <h4 class="bolum-etiket">GÜNCEL FİYATLAR</h4>
+    <div id="arKurListe"></div>
+    <p class="dipnot" id="arKurDipnot"></p>`);
+  kurListeCiz(); kurHesapla();
+  kurOnYukle();
+}
+const KUR_BIRIM = { TL: 'TL', USD: 'dolar', EUR: 'euro', GBP: 'sterlin', 'gram-altin': 'gram altın', 'ceyrek-altin': 'çeyrek altın', 'yarim-altin': 'yarım altın',
+  'tam-altin': 'tam altın', 'cumhuriyet-altini': 'Cumhuriyet altını', '22-ayar-bilezik': 'gram 22 ayar bilezik', gumus: 'gram gümüş' };
+const kurSayi = n => new Intl.NumberFormat('tr-TR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: n < 10 ? 3 : 2 }).format(n);
+const buyukHarf = t => t[0].toLocaleUpperCase('tr') + t.slice(1);
+/** Elindekini alış fiyatından bozup karşılığını satış fiyatından alıyormuş gibi hesaplar. TL'nin alışı da satışı da 1. */
 function kurHesapla() {
   const el = $('arKurSonuc'); if (!el) return;
-  const kod = $('arKurBirim').value, m = aracDeger('arKurMiktar'), f = kurBul(kod);
-  D.cek.birim = kod;
-  if (!(m > 0) || !f) { el.innerHTML = ''; return; }
-  el.innerHTML = `<div class="bilgi-satirlari"><div><span>Alırken (satış fiyatıyla)</span><b>${TL(m * f.satis)}</b></div>
-    <div><span>Bozdururken (alış fiyatıyla)</span><b>${TL(m * f.alis)}</b></div></div>`;
+  const k = $('arKurKaynak').value, h = $('arKurHedef').value, m = aracDeger('arKurMiktar');
+  const ad = x => KUR_BIRIM[x], miktarYaz = (n, x) => x === 'TL' ? TL(n, true) : kurSayi(n) + ' ' + ad(x);
+  if ($('arKurEtiket')) $('arKurEtiket').textContent = (k === 'TL' ? 'Türk lirası' : buyukHarf(ad(k))) + ' miktarı';
+  const fk = k === 'TL' ? { alis: 1, satis: 1 } : kurBul(k), fh = h === 'TL' ? { alis: 1, satis: 1 } : kurBul(h);
+  if (!fk || !fh || !(m > 0)) { el.innerHTML = ''; return; }
+  const sonuc = k === h ? m : m * fk.alis / fh.satis;
+  const buyuk = `<div class="arac-buyuk"><small>${k === 'TL' ? TL(m) + ' ile alabileceğin' : h === 'TL' ? miktarYaz(m, k) + ' bozdurursan' : miktarYaz(m, k) + ' karşılığı'}</small><b>${miktarYaz(sonuc, h)}</b></div>`;
+  const aciklama = k === h ? '' : k === 'TL' ? `${buyukHarf(ad(h))} satış fiyatıyla hesaplandı: 1 ${ad(h)} = ${TL(fh.satis, true)}.`
+    : h === 'TL' ? `Bozdururken geçerli olan alış fiyatıyla hesaplandı: 1 ${ad(k)} = ${TL(fk.alis, true)}.`
+    : `${buyukHarf(ad(k))} alış fiyatından (${TL(fk.alis, true)}) bozulup ${ad(h)} satış fiyatından (${TL(fh.satis, true)}) alınmış gibi hesaplandı.`;
+  // TL harcanıyorsa: bu ayın sonunda kalacak parayla karşılaştır (Bütçeme uyar mı? ile aynı hesap)
+  let tavsiye = '';
+  if (k === 'TL' && h !== 'TL' && D.raw && !gizliMi()) {
+    const kalan = buAyButcesi(ekTahmini()).kalan;
+    tavsiye = kalan <= 0 ? `<p class="arac-not uyari">⚠️ Bu ay sonunda bütçen eksikte görünüyor. Bu alım bütçene sığmaz.</p>`
+      : m <= kalan ? `<p class="arac-not iyi">✅ Bütçene sığar. Bu ay sonunda yaklaşık ${para(kalan)} kalıyor, bu alımdan sonra yaklaşık ${para(kalan - m)} kalır.</p>`
+      : `<p class="arac-not uyari">⚠️ Bu tutar, bu ay sonunda kalacak paradan (yaklaşık ${para(kalan)}) fazla. O parayla en fazla yaklaşık ${kurSayi(kalan / fh.satis)} ${ad(h)} alabilirsin.</p>`;
+  }
+  el.innerHTML = buyuk + (aciklama ? `<p class="ipucu" style="margin:0 0 8px">${aciklama}</p>` : '') + tavsiye;
 }
 
 /* ---------- AYARLAR ---------- */
@@ -1851,11 +1909,11 @@ function ayarCiz() {
   const seg = (ad, liste) => `<div class="seg">${liste.map(([k, y]) => `<button data-act="ayar" data-k="${ad}" data-v="${k}" class="${a[ad] === k ? 'on' : ''}">${y}</button>`).join('')}</div>`;
   const kats = kategoriler();
   $('icerik').innerHTML = `
-    <section class="ayar-kart"><h3>Tema</h3><p class="ipucu">Ödendi (yeşil) ve ödenmedi (kırmızı) her temada aynı kalır.</p>
+    <section class="ayar-kart"><h3>Tema</h3>
       <div class="tema-satir"><span>Renk</span><div class="renkler">${Object.keys(PALET).map(k => { const r = PALET[k][koyuMu() ? 'koyu' : 'acik']; return `<button class="renk ${a.renk === k ? 'on' : ''}" data-act="ayar" data-k="renk" data-v="${k}"><i style="background:linear-gradient(135deg,${r.ust1} 50%,${r.zemin} 50%)"></i>${PALET[k].ad}</button>`; }).join('')}</div></div>
       <div class="tema-ayrac"></div>
       <div class="tema-satir"><span>Mod</span><div>${seg('mod', [['otomatik', 'Otomatik'], ['acik', 'Açık'], ['koyu', 'Koyu']])}</div></div></section>
-    <section class="ayar-kart"><h3>Görünüm</h3><p class="ipucu">Sıkı: ekrana daha çok satır sığar. Büyük: yazılar ve dokunma alanları daha büyük.</p>
+    <section class="ayar-kart"><h3>Görünüm</h3><p class="ipucu">Sıkı: Ekrana daha çok satır sığar. Büyük: Yazılar ve dokunma alanları daha büyük.</p>
       ${seg('gorunum', GORUNUMLER)}</section>
     <section class="ayar-kart"><h3>Tutarlar</h3>
       <label class="secim" style="margin:0"><input type="checkbox" data-ayar-kurus ${a.kurus === 'evet' ? 'checked' : ''}> Kuruşları göster (21.000,50)</label>
@@ -1894,7 +1952,7 @@ function kurulumCiz(hataMesaji, bag, agAyrinti) {
   $('ust').innerHTML = baslik('Ev Bütçesi', 'Hoş geldin');
   $('icerik').innerHTML = `<div class="karsilama">
     <h3>Tablona bağlan</h3>
-    <p>Google E-Tablo dosyanda üst menüden <b>Bütçe → Bağlantı bilgilerini göster</b>'e tıkla, iki bilgiyi buraya yapıştır. Bu işlem her cihazda bir kez yapılır.</p>
+    <p>Google E-Tablolar dosyanda üst menüden <b>Bütçe → Bağlantı bilgilerini göster</b>'e tıkla, iki bilgiyi buraya yapıştır. Bu işlem her cihazda bir kez yapılır.</p>
     <p>Uygulama başka bir cihazda açıksa orada <b>Ayarlar → Başka cihaza bağla</b> ile karekodu okutman daha kolay.</p>
     <label class="alan" style="margin-top:12px"><span>Bağlantı adresi (…/exec)</span><input class="giris-kutu" id="bUrl" inputmode="url" autocomplete="off" value="${esc(bag.url || '')}" placeholder="https://script.google.com/macros/s/…/exec"></label>
     <label class="alan"><span>Anahtar</span><input class="giris-kutu" id="bAnahtar" autocomplete="off" value="${esc(bag.anahtar || '')}" placeholder="Uzun harf ve rakam dizisi"></label>
@@ -1902,7 +1960,7 @@ function kurulumCiz(hataMesaji, bag, agAyrinti) {
     ${agAyrinti !== undefined && agAyrinti !== '' ? `<div class="ipucu" style="margin-bottom:10px">Olası sebepler:
       <br>• Tarayıcının reklam/izleyici engelleyicisi (Brave kalkanı) bu siteden Google'a giden isteği engelliyor olabilir.
       <br>• Telefonda Özel DNS ya da reklam engelleyici uygulama açıksa script.googleusercontent.com adresini engelliyor olabilir.
-      <br>• Bilgisayarda çalışıyorsa adres ve anahtar doğrudur; sorun bu cihazın bağlantısındadır.
+      <br>• Aynı adres ve anahtarla bilgisayarda bağlanabiliyorsan bilgiler doğrudur; sorun bu cihazın bağlantısındadır.
       <br><small>Teknik ayrıntı: ${esc(agAyrinti)}</small></div>` : ''}
     <button class="btn ana" data-act="baglan">Bağlan</button></div>`;
 }
@@ -2004,12 +2062,27 @@ window.addEventListener('popstate', () => {
 });
 
 /* ---------- Çekmece ---------- */
+/* Klavye: Android'de sayfa klavyeye göre küçülür (interactive-widget). Bunu desteklemeyen tarayıcılarda (iOS)
+   klavyenin yüksekliği visualViewport'tan ölçülür ve çekmece o kadar yukarı alınır. Odaklanan kutu görünür kalır. */
+if (window.visualViewport) {
+  const vv = window.visualViewport, klavyeOlc = () => {
+    const k = Math.round(window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty('--klavye', k > 80 ? k + 'px' : '0px');
+  };
+  vv.addEventListener('resize', klavyeOlc); vv.addEventListener('scroll', klavyeOlc);
+}
+document.addEventListener('focusin', e => {
+  const c = $('cekmece'), el = e.target;
+  if (c && !c.hidden && c.contains(el) && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName))
+    setTimeout(() => { if (document.activeElement === el) el.scrollIntoView({ block: 'nearest' }); }, 350);
+});
 function cekmeceAc(html) {
   $('cekmeceIc').innerHTML = '<div class="cekmece-ust"><div class="tutamak"></div><button class="kapat-btn" data-act="kapat" aria-label="Kapat">✕</button></div>' + html;
   const c = $('cekmece');
   clearTimeout(cekmeceKapat.t); // kapanırken hemen yeniden açılırsa gizlenmesin
   $('perde').hidden = false;
   if (c.hidden) { c.hidden = false; requestAnimationFrame(() => c.classList.add('acik')); } else c.classList.add('acik');
+  c.scrollTop = 0; // yeni çekmece hep en üstten açılsın (önceki çekmecenin kaydırması kalmasın)
   geriKontrol();
 }
 function cekmeceKapat() {
@@ -2049,6 +2122,7 @@ document.addEventListener('click', e => {
       break;
     case 'aracAc': aracAc(v); break;
     case 'arBtEkle': if (D.cek.n < 3) { $('arBtR' + D.cek.n).hidden = false; D.cek.n++; } if (D.cek.n >= 3) t.hidden = true; break;
+    case 'arKurTakas': { const a = $('arKurKaynak'), b = $('arKurHedef'), x = a.value; a.value = b.value; b.value = x; kurHesapla(); break; }
     case 'arBtSec': D.cek.sec = +v; butceHesapla(); break;
     case 'arKiraSec': $('arKiraYeni').value = girisDegeri(+v); D.cek.yeniElle = true; kiraBilgi(); break;
     case 'arKiraUygula': kiraUygula(); break;
@@ -2073,7 +2147,7 @@ document.addEventListener('click', e => {
     case 'kilitAc':
       D.cek = { tip: 'kilit' };
       cekmeceAc(`<h3>${ayAdi(D.ay)} kilitli</h3>
-        <p class="aciklama">Geçmiş ayları değiştirmek raporlarını ve grafikleri etkiler. Sadece düzeltme yapacaksan aç. Başka aya geçtiğinde kilit kendiliğinden kapanır.</p>
+        <p class="aciklama">Geçmiş ayları değiştirmek özet tabloyu ve grafikleri etkiler. Sadece düzeltme yapacaksan aç. Başka aya geçtiğinde kilit kendiliğinden kapanır.</p>
         <button class="btn ana" data-act="kilitOnay">Düzenlemeyi aç</button>
         <button class="btn metin" data-act="kapat">Vazgeç</button>`);
       break;
@@ -2101,7 +2175,7 @@ document.addEventListener('click', e => {
       const s = satirBul(D.cek.id, D.cek.gAy); cekmeceKapat(); if (!s) break;
       const kid = s.bagli, ka = kilitParam(), ad = s.ad;
       if (a === 'borcSil') { if (islem(() => borcSil_(D.raw, kid, ka), 'api_borcSil', kid, ka)) bildir(ad + ' silindi'); }
-      else if (islem(() => kalemSonlandir_(D.raw, kid), 'api_kalemSonlandir', kid)) bildir(ad + ' kapatıldı. Sabitler → Kapananlar bölümünden yeniden açabilirsin.');
+      else if (islem(() => kalemSonlandir_(D.raw, kid), 'api_kalemSonlandir', kid)) bildir(ad + ' kapatıldı. Sabitler → Kapanan borç ve alacaklar bölümünden yeniden açabilirsin.');
       break;
     }
     case 'kapananAc': D.kapananAcik = !D.kapananAcik; ciz(); break;
@@ -2115,7 +2189,7 @@ document.addEventListener('click', e => {
         <div class="bilgi-satirlari">
           <div><span>${k.tip === 'borc' ? 'Ödenen' : 'Alınan'}</span><b>${para(borcOdenen_(k, D.raw))}</b></div>
           ${num_(k.toplam) ? `<div><span>Toplam</span><b>${para(num_(k.toplam))}</b></div>` : ''}
-          ${k.not ? `<div><span>Açıklama</span><b>${esc(k.not)}</b></div>` : ''}
+          ${k.not ? `<div><span>Not</span><b>${esc(k.not)}</b></div>` : ''}
         </div>
         <button class="btn ikinci" data-act="yenidenAc" data-id="${esc(id)}">Yeniden aç</button>`);
       break;
@@ -2164,7 +2238,7 @@ document.addEventListener('click', e => {
       const eski = D.cek.eski, hedef = D.cek.hedef; cekmeceKapat();
       if (islem(() => kategoriTasi_(D.raw, eski, hedef), 'api_kategoriTasi', eski, hedef)) {
         ayarKaydet('kategoriler', kategoriler().filter(x => x !== eski));
-        bildir(`${eski} silindi, kayıtları ${hedef} kategorisine taşındı.`);
+        bildir(`${eski} silindi, kayıtları ${hedef} kategorisine taşındı`);
       }
       break;
     }
@@ -2175,7 +2249,7 @@ document.addEventListener('click', e => {
     case 'gidenIptal':
       if (!D.cek.iptal) { D.cek.iptal = true; durumCiz(); break; }
       cekmeceKapat(); GIDEN = []; gidenKaydet(); G.durum = ''; G.deneme = 0; clearTimeout(G.zaman); durumGoster(); veriYukle();
-      bildir('Bekleyen kayıtlar iptal edildi.'); break;
+      bildir('Bekleyen kayıtlar iptal edildi'); break;
     case 'sKat': D.cek.kat = v; document.querySelectorAll('#sKatlar .cip').forEach(c => c.classList.toggle('on', c.dataset.v === v)); break;
     case 'katEkle': {
       const yeni = $('yeniKat').value.replace(/,/g, ' ').trim();
@@ -2197,7 +2271,8 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   if (['eTaksit', 'eKart'].includes(e.target.id)) ekleIpucu();
   if (e.target.id === 'arKrVergi') krediHesapla();
-  if (e.target.id === 'arKurBirim') kurHesapla();
+  if (e.target.id === 'arBtEk') butceHesapla();
+  if (e.target.id === 'arKurKaynak' || e.target.id === 'arKurHedef') kurHesapla();
   if (e.target.id === 'arKiraKalem') {
     const k = D.raw && D.raw.kalemler.find(x => String(x.id) === e.target.value);
     if (k && !gizliMi()) $('arKiraMevcut').value = girisDegeri(gecerliTutar_(k, D.raw.buAy, D.raw.deg).tutar);
@@ -2237,7 +2312,7 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   const kopya = BAG && yerelOku('evb-veri');
   if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
-  if (typeof ORTAK_SURUM === 'undefined' || ORTAK_SURUM !== '3.12') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
+  if (typeof ORTAK_SURUM === 'undefined' || ORTAK_SURUM !== '3.13') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
   if (GIDEN.length) gonder(); // önceki oturumdan kalan kayıtlar
   veriYukle().then(acilisKapat, acilisKapat);
 })();

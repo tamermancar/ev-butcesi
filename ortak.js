@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.12';
+var ORTAK_SURUM = '3.13';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -54,9 +54,9 @@ function kiraUygula_(veri, kalemId, ay, tutar) {
   const k = veri.kalemler.find(function (x) { return String(x.id) === String(kalemId); });
   if (!k) throw new Error('Kalem bulunamadı.');
   if (!ay) throw new Error('Ayı seç.');
-  if (ayDurumu_(ay) !== 'acik') throw new Error('Geçmiş, kilitli bir aya uygulanamaz. Bu aydan ya da sonraki bir aydan başlat.');
+  if (ayDurumu_(ay) !== 'acik') throw new Error('Kira artışı geçmiş bir aya uygulanamaz. Bu aydan ya da sonraki bir aydan başlat.');
   const t = num_(tutar);
-  if (!(t > 0)) throw new Error('Tutar girin.');
+  if (!(t > 0)) throw new Error('Tutarı gir.');
   tutarDegistir_(String(k.id), ay, t, veri);
 }
 
@@ -214,7 +214,7 @@ function borcEkle_(veri, p) {
   const ad = String(p.ad || '').trim();
   if (!ad) throw new Error(tip === 'borc' ? 'Kimden aldığını yaz.' : 'Kime verdiğini yaz.');
   const tutar = num_(p.tutar);
-  if (!(tutar > 0)) throw new Error('Tutar girin.');
+  if (!(tutar > 0)) throw new Error('Tutarı gir.');
   const k = {
     id: p.kalemId || yeniId_('k'), ad: ad, tur: tip === 'borc' ? 'gider' : 'gelir', kategori: tip === 'borc' ? 'Borç' : 'Alacak',
     degisken: false, aylar: '', zamAyi: '', aktif: true, not: String(p.not || ''), tip: tip, odemeGunu: '', bitis: '',
@@ -222,8 +222,8 @@ function borcEkle_(veri, p) {
   };
   if (p.sekil === 'tek') {
     const t = tarihStr_(p.tarih);
-    if (!t) throw new Error('Geri ödeme tarihini seç.');
-    if (t.slice(0, 7) < ay) throw new Error('Geri ödeme tarihi, borcun alındığı aydan önce olamaz.');
+    if (!t) throw new Error(tip === 'borc' ? 'Geri ödeme tarihini seç.' : 'Geri alınacak tarihi seç.');
+    if (t.slice(0, 7) < ay) throw new Error(tip === 'borc' ? 'Geri ödeme tarihi, borcun alındığı aydan önce olamaz.' : 'Geri alınacak tarih, borcun verildiği aydan önce olamaz.');
     Object.assign(k, { baslangic: t.slice(0, 7), bitis: t.slice(0, 7), odemeGunu: Number(t.slice(8, 10)), tutar: tutar, toplam: tutar });
   } else if (p.sekil === 'taksit') {
     const n = Math.min(120, Math.max(1, parseInt(p.taksitSayisi, 10) || 1));
@@ -248,7 +248,7 @@ function borcSil_(veri, id, kilitAcik) {
   if (!k) return; // zaten silinmiş
   const ait = veri.hareketler.filter(function (h) { return String(h.bagli || '') === String(k.id) || String(h.kalemId) === String(k.id); });
   if (ait.some(function (h) { return h.tur === k.tur && bool_(h.odendi) && h.not !== 'Atlandı'; }))
-    throw new Error('Bu kayda ödeme yapılmış, silinemez. Bunun yerine kapatabilirsin.');
+    throw new Error(k.tip === 'borc' ? 'Bu borca ödeme yapılmış, silinemez. Bunun yerine kapatabilirsin.' : 'Bu alacaktan tahsilat yapılmış, silinemez. Bunun yerine kapatabilirsin.');
   ait.forEach(function (h) { if (ay_(h.ay) < buAy_()) kilitKontrol_(ay_(h.ay), kilitAcik); });
   satirlariSil_('Hareketler', ait.map(function (h) { return h._satir; }));
   satirlariSil_('Kalemler', [k._satir]);
@@ -351,7 +351,7 @@ function satirBul_(id, ay, veri, yeniId) {
     return h;
   }
   const h = veri.hareketler.find(function (x) { return String(x.id) === id; });
-  if (!h) throw new Error('Kayıt bulunamadı. Uygulamayı yeniden açın.');
+  if (!h) throw new Error('Kayıt bulunamadı. Uygulamayı yeniden aç.');
   return h;
 }
 
@@ -469,7 +469,7 @@ function harcamaEkle_(veri, p) {
   kilitKontrol_(ay, p.kilitAcik);
   const n = Math.min(36, Math.max(1, parseInt(p.taksit, 10) || 1));
   const toplam = num_(p.tutar);
-  if (!(toplam > 0)) throw new Error('Tutar girin.');
+  if (!(toplam > 0)) throw new Error('Tutarı gir.');
   // Aynı işlem daha önce kaydedildiyse tekrar ekleme
   if (p.idler && p.idler.length && veri.hareketler.some(function (h) { return p.idler.indexOf(String(h.id)) >= 0; })) return;
   // Borç ödemesi / tahsilat: bağlı olduğu borç ya da alacağın yönünü alır
@@ -505,7 +505,7 @@ function satirSil_(veri, id, kilitAcik) {
   const idler = [].concat(id).map(String);
   const silinecek = veri.hareketler.filter(function (x) { return idler.indexOf(String(x.id)) >= 0; });
   silinecek.forEach(function (h) {
-    if (h.kalemId) throw new Error('Düzenli kalemler silinmez; bu ay için "Bu ay yok" seçin.');
+    if (h.kalemId) throw new Error('Düzenli kalemler silinmez. Bu ay için "Bu ay yok" olarak işaretle.');
     if (ay_(h.ay) < buAy_()) kilitKontrol_(ay_(h.ay), kilitAcik);
   });
   if (silinecek.length) satirlariSil_('Hareketler', silinecek.map(function (h) { return h._satir; }));
