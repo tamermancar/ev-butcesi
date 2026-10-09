@@ -205,7 +205,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.12` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.11 · tablo 3.6`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.13` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.11 · tablo 3.6`.
 - **Hesaplama**, GitHub'daki `ortak.js` dosyasının sürümüdür.
 - **Tablo**, Kod.gs'in sürümüdür.
 
@@ -223,6 +223,9 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.13 (uygulama)**
+- Grafikler'deki Tablo görünümünde gelecek ayların (tahmini) hücreleri kayıyordu: Kasım hücresinde iki değer alt alta duruyordu, yıl toplamları Aralık sütununa düşüyordu. Düzeltildi.
 
 **3.12 (uygulama) · 3.11 (hesaplama) · 3.6 (tablo)**
 - Uygulamanın kendi açılış ekranı kaldırıldı, sadece Chrome'unki çıkıyor. Uygulama telefondaki son veriyle hemen açılıyor, en az 1 saniye daha hızlı.

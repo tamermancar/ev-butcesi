@@ -99,12 +99,12 @@ main{max-width:560px;margin:0 auto;padding:0 14px 96px}
 .goz{display:inline-grid;place-items:center;width:44px;height:44px;margin:-12px -10px -12px -6px;color:inherit}
 .goz svg{width:17px;height:17px}
 .elde strong{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.1;white-space:nowrap}
-.tahmin{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;border-top:1px solid rgba(255,255,255,.22);margin-top:8px;padding-top:7px}
-.tahmin div{min-width:0}
-.tahmin small{display:block;font-size:11px;opacity:.8;white-space:nowrap}
-.tahmin b{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tahmin div:last-child{text-align:right}
-.tahmin div:nth-child(2){text-align:center}
+.ust-tahmin{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;border-top:1px solid rgba(255,255,255,.22);margin-top:8px;padding-top:7px}
+.ust-tahmin div{min-width:0}
+.ust-tahmin small{display:block;font-size:11px;opacity:.8;white-space:nowrap}
+.ust-tahmin b{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ust-tahmin div:last-child{text-align:right}
+.ust-tahmin div:nth-child(2){text-align:center}
 .kalan-satir{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .kalan-satir strong{font-size:34px}
 .devir{display:block;text-align:right;margin-left:auto;font-size:11.5px;opacity:.85;line-height:1.35;white-space:nowrap;padding-bottom:4px}
@@ -384,7 +384,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.12';
+const UYGULAMA_SURUM = '3.13';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -840,7 +840,7 @@ function akisHTML(v) {
         <div class="kasa-top"><span>Toplam</span><span>${para(cikanTop)}</span></div></div>
     </div>
     <div class="elde"><small>Şu an elde kalan<button class="goz" data-act="gizle" aria-label="${gizliMi() ? 'Tutarları göster' : 'Tutarları gizle'}">${gizliMi() ? GOZ_KAPALI : GOZ_ACIK}</button></small><strong>${para(elde)}</strong></div>
-    <div class="tahmin">
+    <div class="ust-tahmin">
       <div><small>Alınacak</small><b>${alinacak > 0.005 ? '+' + para(alinacak) : para(0)}</b></div>
       <div><small>Ödenecek</small><b>${odenecek > 0.005 ? '−' + para(odenecek) : para(0)}</b></div>
       <div><small>Ay sonunda</small><b>${para(aySonu)}</b></div>
