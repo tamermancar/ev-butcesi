@@ -128,6 +128,29 @@ Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde 
 
 Örneğin borç alıp o parayla büyük bir ödeme yaptığın ayda gider çubuğu uzun olur, gelir çubuğunun üstünde de alınan borç görünür. Üstte iki rakam yan yana durur: **Gelir − gider farkı** sadece gelir ile giderin farkıdır. **Borç ve alacakla birlikte** ise borç ve alacak hareketleri de eklenince elindeki paranın yıl içinde gerçekte ne kadar değiştiğini gösterir.
 
+## Araçlar
+
+Alttaki menünün dördüncü sekmesi. Üç hesaplama aracı var:
+
+**Kredi / taksit:** Kredi tutarı, aylık faiz ve vadeyi yazınca aylık taksit, toplam geri ödeme ve toplam faiz çıkar. "Vergiler dahil" işaretliyse ihtiyaç kredilerindeki %15 KKDF ve %15 BSMV faize eklenir. Altındaki **Peşin mi, taksitli mi?** bölümüne peşin fiyatı, taksitli toplamı ve taksit sayısını yazınca vade farkının aylık kaç faize denk geldiği görünür. Paran bundan daha yüksek aylık faiz getiriyorsa taksitli almak kârlıdır.
+
+**Kira artışı:**
+1. Kira kalemini seç. Mevcut kira kendiliğinden gelir.
+2. Artış oranını yaz. Bu oran TÜFE'nin 12 aylık ortalamasıdır, TÜİK her ay açıklar.
+3. Araç yasal üst sınırı gösterir ve **anlaşılan yeni kira** kutusuna yuvarlak bir öneri yazar. Öneri, tam ya da buçuklu bir rakama aşağı yuvarlanmıştır, örneğin 25.487 yerine 25.000. 10.000 ₺'nin altındaki kiralarda öneri 100'lük rakama yuvarlanır. Üstteki düğmelerle diğer seçenekleri seçebilir ya da ev sahibiyle anlaştığın tutarı doğrudan yazabilirsin. Altındaki satır artış yüzdesini ve yasal sınıra göre farkı gösterir.
+4. **Kira kalemine uygula**, kutudaki tutarı seçtiğin aydan itibaren kira kalemine işler. Geçmiş aylar değişmez.
+
+Hesap bilgi amaçlıdır, hukuki danışmanlık yerine geçmez.
+
+**Döviz / altın:** Dolar, euro, sterlin, gram, çeyrek, yarım, tam ve Cumhuriyet altını, 22 ayar bilezik ve gümüşün alış ve satış fiyatları. Altındaki çeviriciye miktar ve birim yazınca, örneğin 8 çeyrek, alırken ve bozdururken kaç TL ettiğini gösterir.
+- Döviz kurları Merkez Bankası'ndan, altın ve diğer değerli metal fiyatları Truncgil Finans'tan alınır. Kaynaklar ve güncelleme zamanları en alttaki dipnotta yazar.
+- Truncgil Finans resmi bir kaynak değildir, kuyumcu fiyatlarıyla birebir aynı olmayabilir. Altın fiyatları bir günden eskiyse dipnot bunu turuncu yazıyla belirtir.
+- Fiyatlar alınamazsa son kayıtlı fiyatlar gösterilir.
+
+## Kaydırınca üstte kalan bar
+
+Aylık listede aşağı kaydırınca üstte ince bir bar belirir. Barda ay, şu an elde kalan ve ay sonunda kalacak tutar görünür. Oklarla başka aya geçebilir, ayın adına dokunup ay seçebilirsin. Grafikler'de aynı barda yıl ve gelir − gider farkı görünür.
+
 ## Ayarlar
 
 - **Tema:** 4 renk (Petrol, Orman, Lacivert, Erik) ve Açık, Koyu ya da Otomatik mod.
@@ -205,7 +228,14 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.16` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.11 · tablo 3.6`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.20.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.12 · tablo 3.7`.
+
+**Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
+- **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
+- **Özellik:** Yeni bir bölüm ya da özellik geldiğinde artar: 3.21.0.
+- **Düzeltme:** Küçük düzeltmelerde artar: 3.20.1.
+
+3.16'ya kadar sürümler iki parçalıydı.
 - **Hesaplama**, GitHub'daki `ortak.js` dosyasının sürümüdür.
 - **Tablo**, Kod.gs'in sürümüdür.
 
@@ -223,6 +253,14 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.20.0 (uygulama) · 3.12 (hesaplama) · 3.7 (tablo)**
+- Yeni **Araçlar** sekmesi: kredi/taksit, kira artışı ve döviz/altın.
+  - Kira artışında yuvarlak tutar önerisi var, sonuç kira kalemine uygulanabiliyor.
+  - Döviz/altın fiyatları Merkez Bankası'ndan ve Truncgil Finans'tan geliyor.
+- Aylık liste ve Grafikler'de aşağı kaydırınca ay ve kalan tutarlar üstte ince bir barda görünür kalıyor.
+- Sürüm numaraları üç parçalı oldu (Büyük.Özellik.Düzeltme).
+- Kod.gs güncellemesi gerekiyor: döviz ve altın fiyatlarını çeken bölüm eklendi. "kurulum"u çalıştırmak gerekmiyor, sadece Yeni sürüm yeterli.
 
 **3.16 (uygulama)**
 - Veri yenilenirken sağ üstte "Güncelleniyor…" yazısı yerine dönen oklu küçük bir simge çıkıyor. Simgeye dokununca "Tablodaki son hâl alınıyor…" balonu görünüyor.

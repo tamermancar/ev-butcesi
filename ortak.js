@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.11';
+var ORTAK_SURUM = '3.12';
 
 /* Toplu işlem: telefonda biriken kayıtlar tek istekte gönderilir.
    Kod.gs'e dokunmadan yeni işlem eklenebilsin diye satirKaydet üzerinden çalışır.
@@ -14,7 +14,7 @@ function topluIslem_(veri, liste) {
     satirKaydet: satirKaydet_, harcamaEkle: harcamaEkle_, satirSil: satirSil_, satirGeriEkle: satirGeriEkle_,
     borcEkle: borcEkle_, borcSil: borcSil_, kalemKaydet: kalemKaydet_, kalemSonlandir: kalemSonlandir_,
     kalemYenidenAc: kalemYenidenAc_, kalemTasi: kalemTasi_, kategoriTasi: kategoriTasi_, ikizOnay: ikizOnay_,
-    kategorilerKaydet: kategorilerKaydet_
+    kategorilerKaydet: kategorilerKaydet_, kiraUygula: kiraUygula_
   };
   var sunucuda = typeof veriOku_ === 'function';
   // Kod.gs 3.6 ve sonrası: kaydedilemeyen bir işlem diğerlerini durdurmaz, hata listesiyle telefona bildirilir.
@@ -46,6 +46,18 @@ function kategorilerKaydet_(veri, liste) {
   if (!l.length) throw new Error('En az bir kategori olmalı.');
   if (typeof ayarYaz_ === 'function') ayarYaz_('kategoriler', l.join(', '));
   if (veri.ayarlar) veri.ayarlar.kategoriler = l;
+}
+
+/** Kira artışı aracı: bir kalemin tutarını seçilen aydan itibaren değiştirir (geçmiş aylar olduğu gibi kalır) */
+function kiraUygula_(veri, kalemId, ay, tutar) {
+  ay = ay_(ay);
+  const k = veri.kalemler.find(function (x) { return String(x.id) === String(kalemId); });
+  if (!k) throw new Error('Kalem bulunamadı.');
+  if (!ay) throw new Error('Ayı seç.');
+  if (ayDurumu_(ay) !== 'acik') throw new Error('Geçmiş, kilitli bir aya uygulanamaz. Bu aydan ya da sonraki bir aydan başlat.');
+  const t = num_(tutar);
+  if (!(t > 0)) throw new Error('Tutar girin.');
+  tutarDegistir_(String(k.id), ay, t, veri);
 }
 
 /** Aynı kimlikle iki kez yazılmış satırları siler (ilkini tutar). Sadece sunucuda çalışır. */
