@@ -28,14 +28,15 @@ Altındaki iki kutu ayın para hareketini gösterir:
 Kutularda sadece **işaretlenmiş**, yani gerçekten gerçekleşmiş tutarlar sayılır.
 
 - **Şu an elde kalan:** giren toplamdan çıkan toplam düşülünce kalan para.
-- **Alınacak / Ödenecek:** bu ay henüz işaretlenmemiş gelirler ve giderler.
+- **Alınacak / Ödenecek:** bu ay henüz işaretlenmemiş gelirler ve giderler. Önceki aylardan kalan **Gecikenler** de buna dahildir; ekranda ayrıca "Önceki aylardan geciken … de hesaba katıldı" yazar.
 - **Ay sonunda:** hepsi gerçekleşince elinde kalacak para.
+- Gelecek bir aya bakarken **Önceki aydan** satırı tahminidir: bu ayın "Ay sonunda" rakamı ve aradaki ayların planı.
 - En alttaki cümle ayın kısa özetidir: "Bu ay giderlerin karşılanıyor." ya da "Bu ay giderlerin karşılanmıyor, bütçen 3.000 ₺ açık veriyor." Devreden para ve alınan borç da hesaba katılır.
 - Geçen aydan devreden para, alınan borç ya da tahsilat varsa cümlenin yanında **Detaylı bilgi** çıkar. Dokununca bunlar olmasaydı ne olacağı yazar, örneğin "Geçen aydan devreden para olmasaydı da gelirin giderlerini karşılayacak, 16.749 ₺ artacaktı."
 
 ### Göz simgesi (gizli mod)
 
-Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar `•••• ₺` olur, adların sadece ilk iki harfi görünür, açıklamalar gizlenir. Gizli moddayken değişiklik yapılamaz. Tekrar dokununca her şey görünür. Bu ayar sadece o cihazda geçerlidir.
+Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar `•••• ₺` olur, adların sadece ilk iki harfi görünür, açıklamalar, ayın özet cümlesi, grafiklerdeki oranlar ve yüzdeler gizlenir. Gizli moddayken değişiklik yapılamaz (işaretleme ve ekleme de). Tekrar dokununca her şey görünür. Bu ayar sadece o cihazda geçerlidir.
 
 ## Kayıtları işaretleme
 
@@ -54,7 +55,7 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
 
 ## Ekleme (sağ alttaki + düğmesi)
 
-**Tutar yazımı:** `1250`, `1.250`, `1.250,50` ya da `1250,50` yazabilirsin, ₺ ve TL de yazılabilir. Virgül kuruşu ayırır. Nokta binlik ayracıdır. Noktadan sonra 3'ten az rakam varsa, örneğin `12.50`, nokta da kuruş sayılır. Harf ya da eksi işareti olan bir tutar kabul edilmez.
+**Tutar yazımı:** `1250`, `1.250`, `1.250,50` ya da `1250,50` yazabilirsin, ₺ ve TL de yazılabilir. Virgül kuruşu ayırır. Nokta binlik ayracıdır. Noktadan sonra 3'ten az rakam varsa, örneğin `12.50`, nokta da kuruş sayılır. Harf ya da eksi işareti olan, kuruştan küçük basamağı olan (`1250,505`) bir tutar kabul edilmez.
 
 **Gider / Gelir:** Tek seferlik harcama ya da gelir ekler. Örnekler: market, benzin, bir defalık iş geliri.
 - Kategori seçilir. Kategorileri Ayarlar'dan düzenlersin.
@@ -66,12 +67,12 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
   - **Para eline geçti mi?** (alacakta **Bu ayın bütçesinden mi verdin?**) Varsayılan **Evet**: tutar o ayın gelirine (alacakta giderine) yazılır. **Hayır** seçersen, örneğin birinin kredi kartını kullandıysan ya da altın verdiysen, bu aya bir şey yazılmaz; sadece borç ve ödemeleri takip edilir.
   - Geri ödeme şekli seçilir:
   - **Tek seferde:** belli bir tarihte tamamı ödenecek.
-  - **Taksitli:** her ay belli bir taksit ödenecek.
+  - **Taksitli:** her ay belli bir taksit ödenecek. İlk taksit ayı geçmiş bir ay olamaz; eski bir borcu girerken ödenmiş taksitleri toplamdan düşüp bu aydan başlat.
   - **Belli değil:** ödedikçe girilecek.
 - **Borç ödedim / Alacak tahsil ettim:** açık borçlardan birini seçip ödediğin tutarı yazarsın.
   - O borcun bu ay ödenmemiş bir taksiti varsa, taksit ödendi olarak işaretlenir. Yazdığın tutar farklıysa taksitin tutarı da o olur.
   - Bu ayın taksiti zaten ödendiyse ek bir ödeme olarak ayrı satıra yazılır.
-- Borç tamamen ödenince yeni taksit satırı oluşmaz. Bir borcu satırından **Borcu kapat** ile elle de kapatabilirsin.
+- Kalan borç takip edilir: fazla ödersen son taksitler azalır, kısmi tahsilat beklenen tutarı düşürür. Borç tamamen ödenince taksit satırı kalmaz, eski ödenmemiş taksitler de Gecikenler'den kalkar. Bir borcu satırından **Borcu kapat** ile elle de kapatabilirsin.
 - Yanlış girilen bir borcu Sabitler'de borcun penceresinden **Borcu sil** ile silebilirsin (ödemesi yapılmamışsa).
 - Birikimden bozdurup harcadığın parayı gelir olarak **Birikimden** kategorisiyle ekleyebilirsin.
 
@@ -83,7 +84,8 @@ Her ay listeye kendiliğinden gelen düzenli kalemlerin listesi: maaş, kira, fa
 - **Ödeme günü:** bu gün geçip ödenmemişse kayıt kırmızı (gecikti) görünür.
 - **Zam ayı:** her yıl zam yapılan ay. O ay satırda "Zam ayı, tutarı kontrol et" hatırlatması çıkar.
 - Tutarı değiştirince yeni tutar bu aydan itibaren geçerli olur, geçmiş aylar olduğu gibi kalır.
-- Artık olmayan bir kalemi **kapat**. Geçmişte görünmeye devam eder, yeni aylara gelmez. Kapatılanlar alttaki **Kapananlar** bölümünde durur ve oradan yeniden açılabilir.
+- Artık olmayan bir kalemi **kapat**. Geçmişte görünmeye devam eder, bu ayın satırı yerinde kalır (gerekmiyorsa "Bu ay yok" de), sonraki aylara gelmez. Kapatılanlar alttaki **Kapananlar** bölümünde durur ve oradan yeniden açılabilir.
+- Bir kalemin adını, bitişini ya da aylarını değiştirmek geçmiş ayları değiştirmez (aşağıda: Geçmiş aylar sabittir). Başlangıcı geçmiş bir aya koyarsan (örneğin geçen ay başlayan kira) kalem son 3 aya eklenir, arşivdeki aylara eklenmez.
 - Sırayı oklarla değiştirebilirsin.
 
 ## Gecikenler
@@ -97,6 +99,10 @@ Eski aylar yanlışlıkla değişmesin diye kilitlenir:
 - **Önceki ay** her ayın 10'una kadar açıktır. Bu sayede ay başında geç gelen faturaları rahatça girersin.
 - **Son 3 ay** kilitlidir. Üstteki kilide dokunup onaylayınca o ayı düzenleyebilirsin.
 - **Daha eski aylar** arşivdir ve değiştirilemez.
+- Bir kaydı başka bir aya taşırken hedef ay açık olmalıdır. Kilitli bir aya ancak kilidi açılmış bir aydan taşınabilir, arşive hiç taşınmaz.
+- İnternetsizken yaptığın bir değişiklik, ay kilitlendikten sonra gönderilse bile yaptığın güne göre değerlendirilir ve kaydedilir. Ödeme günü de o gün olarak yazılır.
+
+**Geçmiş aylar sabittir.** Yeni bir aya girince, bir önceki aya kadar her ayın düzenli kalemleri tabloya yazılır. Sonra bir kalemi kapatsan, adını, bitişini ya da aylarını değiştirsen de geçmiş aylardaki kayıtlar olduğu gibi kalır. Yıllar sonra baktığında o ayda ne yazıyorsa onu görürsün.
 
 ## Kopya kayıt uyarısı
 
@@ -208,7 +214,7 @@ Uygulama üç parçadan oluşur:
 | **Kod.gs** | Tabloda Uzantılar → Apps Komut Dosyası | Tabloya okuma ve yazma, yedekler ve özet sayfası. Nadiren değişir. |
 | **GitHub dosyaları** | github.com'daki `ev-butcesi` deposu | Telefondaki ekran (`index.html`) ve hesaplama kodu (`ortak.js`). Kod.gs de hesaplama kodunu buradan okur. |
 
-Depodaki dosyalar: `index.html`, `ortak.js`, `sw.js`, `manifest.webmanifest`, `README.md` ve 4 ikon (`ikon-192.png`, `ikon-512.png`, `ikon-maskable-512.png`, `apple-touch-icon.png`).
+Depodaki dosyalar: `index.html`, `ortak.js`, `sw.js`, `qrcode.js` (karekod), `manifest.webmanifest`, `README.md`, `Kod.gs` (yedek kopya) ve 4 ikon (`ikon-192.png`, `ikon-512.png`, `ikon-maskable-512.png`, `apple-touch-icon.png`).
 
 ## İlk kurulum
 
@@ -248,7 +254,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.24.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.14 · tablo 3.8`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.25.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.15 · tablo 3.9`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -267,12 +273,24 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 - **"Bağlantı anahtarı hatalı":** Anahtar yenilenmiş olabilir. Tabloda **Bütçe → Bağlantı bilgilerini göster** ile yeni anahtarı al.
 - **Bağlanılamadı / turuncu üçgen geçmiyor:** İnterneti kontrol et. Brave kullanıyorsan kalkanı (Shields) bu site için kapat. Apps Script dağıtımında Erişim'in **Herkes** olduğundan emin ol.
 - **Veriler bozuldu ya da yanlışlıkla silindi:** **Ayarlar → Yedekler**'den uygun yedeği geri yükle.
-- **Anahtarın başkasının eline geçtiğinden şüpheleniyorsan:** Tabloda **Bütçe → Bağlantı anahtarını yenile**'yi kullan, sonra her cihazda yeni anahtarla bağlan.
+- **Anahtarın başkasının eline geçtiğinden şüpheleniyorsan:** Tabloda **Bütçe → Bağlantı anahtarını yenile**'yi kullan, sonra her cihazda yeni anahtarla bağlan. Eski anahtarla açılan bir cihaz bunu fark edince kendindeki kayıt kopyasını siler.
+- **Bağlantı linki ve karekod** anahtarı içerir, kimseyle paylaşma. Başka bir cihazı bağladıktan sonra linki gönderdiğin mesajı sil.
 - **Tüm verileri sıfırlamak:** Tabloda **Bütçe → Tüm verileri sıfırla**. Kalemler ve kayıtlar silinir, ayarlar ve kategoriler kalır. Silmeden önce otomatik yedek alınır.
 
 ---
 
 # Neler değişti
+
+**3.25.0 (uygulama, hesaplama 3.15, tablo 3.9) — hata ve güvenlik düzeltmeleri. Kod.gs de değişti, yeni izin gerekmiyor.**
+- Tablonun kabul etmediği bir değişikliğin sebebi balonda yazıyor. İnternetsizken yapılan değişiklik, yapıldığı güne göre kaydediliyor.
+- **Geçmiş aylar sabit:** kalemi kapatmak, adını, bitişini ya da aylarını değiştirmek geçmiş ayları değiştirmiyor. Başlangıcı geçmişe konan kalem sadece son 3 aya ekleniyor.
+- **Ay sonunda** önceki aylardan geciken ödemeleri de hesaba katıyor. Gelecek aylarda "Önceki aydan" bu ayın tahmini ay sonundan başlıyor.
+- Borç ve alacaklar kalan tutara göre planlanıyor: fazla ödeme son taksitleri azaltıyor, kısmi tahsilat beklenen tutarı düşürüyor.
+- Gizli modda değişiklik yapılamıyor; özet cümlesi ve grafik oranları da gizleniyor.
+- Başka bir tabloya bağlayan link açılınca önce soruluyor.
+- Grafiklerde geçmiş aylar gerçekleşen tutarlarla gösteriliyor. Gelecek ayların tahmini tutarları soluk. Kuruş ve eksi işareti yazımı düzeldi.
+- Alttaki bilgi balonu + düğmesinin üstünde çıkıyor; uzun mesajda + düğmesine basınca yanlışlıkla "Geri al" çalışmıyor.
+- Hesaplar daha hızlı. Çeşitli hata ve güvenlik düzeltmeleri.
 
 **3.24.0 (uygulama, hesaplama 3.14)**
 - Bütçeme uyar mı? sadece bu ayın gelir ve giderlerine bakıyor; gelecek ay tahmini ve ek harcama ortalaması kaldırıldı. Seçili seçeneğin hesabı kısa bir döküm olarak görünüyor.

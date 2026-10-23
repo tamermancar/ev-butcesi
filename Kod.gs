@@ -1,5 +1,5 @@
 /**
- * EV BÜTÇESİ — Gelir Gider Defteri  (sürüm 3.7)
+ * EV BÜTÇESİ — Gelir Gider Defteri  (sürüm 3.9)
  * Veriler: Google E-Tablolar  |  Uygulama ekranı ve hesaplama kodu (ortak.js): GitHub Pages
  * Bu dosya sadece tabloya okuma/yazma, yedek ve özet sayfası işlerini yapar.
  * Hesaplama kuralları GitHub'daki ortak.js'tedir; Kod.gs onu oradan okur. Bu yüzden bu dosya nadiren değişir.
@@ -13,7 +13,7 @@
  *   Ayarlar              → kategoriler ve görünüm ayarları
  */
 
-const SURUM = '3.8';
+const SURUM = '3.9';
 const YEDEK_KLASORU = 'Ev Bütçesi Yedekleri';
 const YEDEK_SAYISI = 7;        // son 7 yedek (günlük, elle alınan, geri yükleme öncesi...)
 const AYLIK_YEDEK_SAYISI = 3;  // ayrıca her ayın ilk otomatik yedeği, son 3 ay
@@ -57,9 +57,9 @@ const ISLEMLER = {
   harcamaEkle: function (p) { return api_harcamaEkle(p); },
   satirSil: function (id, kilitAcik) { return api_satirSil(id, kilitAcik); },
   satirGeriEkle: function (h, kilitAcik) { return api_satirGeriEkle(h, kilitAcik); },
-  borcEkle: function (p) { return yaz_(function (v) { borcEkle_(v, p); }); },
-  borcSil: function (id, kilitAcik) { return yaz_(function (v) { borcSil_(v, id, kilitAcik); }); },
-  kalemYenidenAc: function (id) { return yaz_(function (v) { kalemYenidenAc_(v, id); }); },
+  borcEkle: function (p) { return yaz_(function (v) { return borcEkle_(v, p); }); },
+  borcSil: function (id, kilitAcik) { return yaz_(function (v) { return borcSil_(v, id, kilitAcik); }); },
+  kalemYenidenAc: function (id) { return yaz_(function (v) { return kalemYenidenAc_(v, id); }); },
   kalemKaydet: function (g) { return api_kalemKaydet(g); },
   kalemSonlandir: function (id) { return api_kalemSonlandir(id); },
   kalemTasi: function (id, yon) { return api_kalemTasi(id, yon); },
@@ -218,13 +218,14 @@ function kurulum() {
 function api_veri() {
   return kilitli_(function () { return veriPaketi_(veriOku_()); });
 }
-function api_satirKaydet(p) { return yaz_(function (v) { satirKaydet_(v, p); }); }
-function api_harcamaEkle(p) { return yaz_(function (v) { harcamaEkle_(v, p); }); }
-function api_satirSil(id, kilitAcik) { return yaz_(function (v) { satirSil_(v, id, kilitAcik); }); }
-function api_satirGeriEkle(h, kilitAcik) { return yaz_(function (v) { satirGeriEkle_(v, h, kilitAcik); }); }
-function api_kalemKaydet(g) { return yaz_(function (v) { kalemKaydet_(v, g); }); }
-function api_kalemSonlandir(id) { return yaz_(function (v) { kalemSonlandir_(v, id); }); }
-function api_kalemTasi(id, yon) { return yaz_(function (v) { kalemTasi_(v, id, yon); }); }
+// Sonuç geri döndürülür: toplu gönderimde kaydedilemeyen işlemlerin listesi (hatalar) telefona bu yolla ulaşır.
+function api_satirKaydet(p) { return yaz_(function (v) { return satirKaydet_(v, p); }); }
+function api_harcamaEkle(p) { return yaz_(function (v) { return harcamaEkle_(v, p); }); }
+function api_satirSil(id, kilitAcik) { return yaz_(function (v) { return satirSil_(v, id, kilitAcik); }); }
+function api_satirGeriEkle(h, kilitAcik) { return yaz_(function (v) { return satirGeriEkle_(v, h, kilitAcik); }); }
+function api_kalemKaydet(g) { return yaz_(function (v) { return kalemKaydet_(v, g); }); }
+function api_kalemSonlandir(id) { return yaz_(function (v) { return kalemSonlandir_(v, id); }); }
+function api_kalemTasi(id, yon) { return yaz_(function (v) { return kalemTasi_(v, id, yon); }); }
 function api_ayarKaydet(anahtar, deger) {
   if (IZINLI_AYARLAR.indexOf(anahtar) < 0) throw new Error('Bilinmeyen ayar.');
   return kilitli_(function () {
@@ -345,6 +346,7 @@ function api_yedekGeriYukle(id) {
       if (son > 1) sh.deleteRows(2, son - 1);
       const satirlar = (yedek.veri[ad] || []).slice(1);
       if (satirlar.length) {
+        satirYeriAc_(sh, 1 + satirlar.length);
         const gen = satirlar.reduce(function (m, r) { return Math.max(m, r.length); }, 0);
         sh.getRange(2, 1, satirlar.length, gen).setValues(satirlar.map(function (r) {
           while (r.length < gen) r.push('');
@@ -354,12 +356,22 @@ function api_yedekGeriYukle(id) {
       METIN_SUTUNLARI[ad].forEach(function (a) { sh.getRange(a).setNumberFormat('@'); });
     });
     semaKontrol_();
+    // Geri yüklenen veride geçmiş aylar baştan sabitlensin (yedek, sabitlemeden önce alınmış olabilir)
+    ayarYaz_('donmusAy', '');
     return veriPaketi_(veriOku_());
   });
 }
+/** Yedek klasörü kimliğiyle bulunur. Sadece ilk seferde adıyla aranır, sonra kimliği saklanır; böylece başkasının
+ *  aynı adla paylaştığı bir klasör yedek yeri olarak kullanılamaz. */
 function yedekKlasoru_() {
+  const pr = PropertiesService.getScriptProperties(), id = pr.getProperty('YEDEK_KLASOR_ID');
+  if (id) {
+    try { const f = DriveApp.getFolderById(id); if (!f.isTrashed()) return f; } catch (e) { console.warn('Yedek klasörü bulunamadı: ' + e); }
+  }
   const it = DriveApp.getFoldersByName(YEDEK_KLASORU);
-  return it.hasNext() ? it.next() : DriveApp.createFolder(YEDEK_KLASORU);
+  const f = it.hasNext() ? it.next() : DriveApp.createFolder(YEDEK_KLASORU);
+  pr.setProperty('YEDEK_KLASOR_ID', f.getId());
+  return f;
 }
 function yedekDosyalari_() {
   const it = yedekKlasoru_().getFiles(), liste = [];
@@ -401,8 +413,13 @@ function semaKontrol_() {
       METIN_SUTUNLARI[ad].forEach(function (a) { sh.getRange(a).setNumberFormat('@'); });
     }
   });
-  // Sürüm 3.6: ad, kategori ve not sütunları da düz metin, tutar sütunları sayı biçiminde olsun (bir kez yapılır)
   const pr = PropertiesService.getScriptProperties();
+  // Sürüm 3.9: ay ve gün hesabı Türkiye saatine göre yapılsın (tablonun saat dilimi farklıysa ay yanlış saatte değişir)
+  if (pr.getProperty('SAAT_DILIMI') !== 'Europe/Istanbul') {
+    if (ss_().getSpreadsheetTimeZone() !== 'Europe/Istanbul') ss_().setSpreadsheetTimeZone('Europe/Istanbul');
+    pr.setProperty('SAAT_DILIMI', 'Europe/Istanbul');
+  }
+  // Sürüm 3.6: ad, kategori ve not sütunları da düz metin, tutar sütunları sayı biçiminde olsun (bir kez yapılır)
   if (pr.getProperty('METIN_SUTUN_SURUM') !== '3.6') {
     Object.keys(METIN_SUTUNLARI).forEach(function (ad) {
       const sh = ss_().getSheetByName(ad);
@@ -479,15 +496,23 @@ function oku_(ad) {
   }
   return out;
 }
+/** Sayfada en az "son" numaralı satıra kadar yer açar. Yeni bir sayfa 1000 satırla başlar; dolunca yazma
+ *  hata verirdi. Gerekirse 500 satır fazlasıyla eklenir. */
+function satirYeriAc_(sh, son) {
+  const max = sh.getMaxRows();
+  if (son > max) sh.insertRowsAfter(max, son - max + 500);
+}
 function satirYaz_(ad, n) {
   const sh = sayfa_(ad), b = BASLIK[ad];
   const r = n._satir || sh.getLastRow() + 1;
+  satirYeriAc_(sh, r);
   sh.getRange(r, 1, 1, b.length).setValues([b.map(function (k) { return n[k] === undefined || n[k] === null ? '' : n[k]; })]);
   n._satir = r;
 }
 function topluEkle_(ad, liste) {
   if (!liste.length) return;
   const sh = sayfa_(ad), b = BASLIK[ad], bas = sh.getLastRow() + 1;
+  satirYeriAc_(sh, bas + liste.length - 1);
   sh.getRange(bas, 1, liste.length, b.length).setValues(liste.map(function (n) {
     return b.map(function (k) { return n[k] === undefined || n[k] === null ? '' : n[k]; });
   }));
@@ -575,6 +600,14 @@ const AY_ADLARI = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temm
 
 /** Özet sayfası için: geçmiş ayların kayıtlarını oluşturur, sonra yıllık tabloyu ortak.js ile hesaplar */
 function yillikIcerik_(yil, veri) {
+  // ortak.js 3.15 ve sonrası: geçmiş aylar sabitlenir; bu ay ve sonrası tablodaki gibi sanal satırlarla hesaplanır.
+  // Böylece özet sayfası, kalemi sonradan değişen geçmiş aylara yeni satır yazmaz.
+  if (typeof gecmisiDondur_ === 'function') {
+    if (gecmisiDondur_(veri)) veri = veriOku_();
+    veri.ayarlar = ayarlarOku_();
+    veri.sanalHepsi = true;
+    return yillikMatris_(veri, yil);
+  }
   const bu = buAy_();
   for (let m = 1; m <= 12; m++) { const a = yil + '-' + String(m).padStart(2, '0'); if (a <= bu) ayiHazirla_(a, veri); }
   return yillikMatris_(veri, yil); // ortak.js
@@ -657,6 +690,8 @@ function yillikTablo_(yil) {
     deg.push(d); arka.push(a); yazi.push(y); kalin.push(k); egik.push(e); notlar.push(nt); hiza.push(hz);
   });
   const govde = sh.getRange(ust + 1, 1, n, SUTUN);
+  // Kalem adı = + - @ ile başlıyorsa başına ' konur: formül olarak çalışmaz, tabloda olduğu gibi görünür
+  deg.forEach(function (r) { if (typeof r[0] === 'string' && /^[=+\-@]/.test(r[0])) r[0] = "'" + r[0]; });
   govde.setValues(deg).setBackgrounds(arka).setFontColors(yazi).setFontWeights(kalin).setFontStyles(egik)
     .setNotes(notlar).setHorizontalAlignments(hiza).setVerticalAlignment('middle');
   sh.getRange(ust + 1, 2, n, SUTUN - 1).setNumberFormat('#,##0 "₺";-#,##0 "₺";""');
