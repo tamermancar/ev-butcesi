@@ -46,6 +46,7 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
   - Tek seferlik kayıtlarda adı, kategoriyi, ayı ve "Kartla ödedim"i de değiştirebilirsin.
   - **Bu ay yok:** düzenli bir kalem bu ay olmayacaksa (örneğin o ay fatura gelmedi) bunu seç.
 - Değişiklikten sonra altta beliren balondaki **Geri al** ile son işlemi birkaç saniye içinde geri alabilirsin.
+- Bir satıra **basılı tutunca** menü açılır: Düzenle, Sil ya da Bu ay yok, En üste/En alta taşı. Düzenli kalemleri basılı tutup sürükleyerek sıralayabilirsin.
 
 ### Renkler
 
@@ -84,9 +85,9 @@ Her ay listeye kendiliğinden gelen düzenli kalemlerin listesi: maaş, kira, fa
 - **Ödeme günü:** bu gün geçip ödenmemişse kayıt kırmızı (gecikti) görünür.
 - **Zam ayı:** her yıl zam yapılan ay. O ay satırda "Zam ayı, tutarı kontrol et" hatırlatması çıkar.
 - Tutarı değiştirince yeni tutar bu aydan itibaren geçerli olur, geçmiş aylar olduğu gibi kalır.
-- Artık olmayan bir kalemi **kapat**. Geçmişte görünmeye devam eder, bu ayın satırı yerinde kalır (gerekmiyorsa "Bu ay yok" de), sonraki aylara gelmez. Kapatılanlar alttaki **Kapananlar** bölümünde durur ve oradan yeniden açılabilir.
+- Artık olmayan bir kalemi **kapat**. Geçmişte görünmeye devam eder, bu ayın satırı yerinde kalır (gerekmiyorsa "Bu ay yok" de), sonraki aylara gelmez. Kapatılan düzenli kalemler, borçlar ve alacaklar alttaki **Kapananlar** bölümünde durur ve oradan yeniden açılabilir.
 - Bir kalemin adını, bitişini ya da aylarını değiştirmek geçmiş ayları değiştirmez (aşağıda: Geçmiş aylar sabittir). Başlangıcı geçmiş bir aya koyarsan (örneğin geçen ay başlayan kira) kalem son 3 aya eklenir, arşivdeki aylara eklenmez.
-- Sırayı oklarla değiştirebilirsin.
+- Sırayı değiştirmek için kaleme basılı tut ve sürükle; ya da basılı tutunca açılan menüden "En üste taşı / En alta taşı"yı seç. Sıra aylık listede de aynıdır.
 
 ## Gecikenler
 
@@ -254,7 +255,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.25.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.15 · tablo 3.9`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.26.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.15 · tablo 3.9`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -280,6 +281,26 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.26.0 (uygulama) — basılı tutma menüsü, sürükleyerek sıralama ve kullanım düzeltmeleri**
+- Bir satıra basılı tutunca menü açılıyor (kısa bir titreşimle). Sabitler'de: Düzenle, En üste taşı, En alta taşı, Kalemi sonlandır (borçta Borcu kapat). Aylık listede düzenli kalemlerde: Düzenle, En üste taşı, En alta taşı, Bu ay yok; ek harcamalarda: Düzenle, Sil.
+- Parmağını kaldırmadan sürüklersen satır yükselip parmağını takip ediyor, bırakacağın yerde boşluk açılıyor. Ekranın kenarına yaklaşınca liste kendiliğinden kayıyor. Sıralama okları kaldırıldı.
+- Sıra tek: aylık listede ya da Sabitler'de değiştirdiğin sıra her yerde ve bütün aylarda aynı. Ek harcamalar eklendiği sırada kalıyor.
+- Kategori silinince "Geri al" çıkıyor. Büyük görünümde üstteki yazılar kesilmiyor.
+- + penceresi kaydetmeden kapanırsa yazdıkların, pencereyi yeniden açınca geri geliyor.
+- Grafikler'den bir aya geçip geri tuşuna basınca Grafikler'e dönülüyor.
+- Okunabilirlik: Orman temasının üst bölümü bir ton koyu, üstteki küçük yazılar daha net, yazı kutularının çerçevesi daha belirgin, yıllık tabloda ödenenler kalın, koyu temada + düğmesinin çevresi belirgin. "Geri al", "Detaylı bilgi" ve kategori silme düğmelerinin dokunma alanı büyüdü.
+- Bir pencere açılınca alttaki balon kapanıyor; "Geri al" pencerenin düğmesinin üstünde kalmıyor.
+- Düzenleme penceresinde klavyenin Tamam tuşu sadece kaydediyor, kaydı ödendi yapmıyor.
+- "Emin misin? Tekrar dokun" düğmelerinde hızlı çift dokunuş onay sayılmıyor.
+- Sonlandırılan düzenli kalemler de Sabitler → **Kapananlar** bölümünde; oradan yeniden açılabiliyor. Sonlandırdıktan hemen sonra "Geri al" da var.
+- İşaret yuvarlağının dokunma alanı büyüdü (görünüm aynı).
+- Gelecek ayların tahmini tutarları, üstteki kutulardaki 0 satırları ve açık temadaki yeşil "Ödendi" daha kolay okunuyor.
+- Hiçbir şey değiştirmeden Kaydet'e basınca "Değişiklik yapılmadı" yazıyor, tabloya bir şey gönderilmiyor.
+- Taksitli harcama silinince "Sadece bu ayın taksiti (1/6) silindi" yazıyor.
+- Gizli modda Aylık liste dışındaki sayfalarda uyarı "Aylık liste sayfasındaki göz simgesine…" diyor.
+- Ödenmiş bir kaydın işareti kaldırılınca balonla "Geri al" çıkıyor.
+- Düzenleme penceresinde tutarlar noktalı görünüyor (2.340). Kaydı olmayan aylarda özet cümlesi çıkmıyor.
 
 **3.25.0 (uygulama, hesaplama 3.15, tablo 3.9) — hata ve güvenlik düzeltmeleri. Kod.gs de değişti, yeni izin gerekmiyor.**
 - Tablonun kabul etmediği bir değişikliğin sebebi balonda yazıyor. İnternetsizken yapılan değişiklik, yapıldığı güne göre kaydediliyor.
