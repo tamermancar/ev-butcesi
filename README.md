@@ -255,7 +255,7 @@ Bilgisayardan yapmak daha kolay, toplam 20 dakika kadar sürer.
 2. **Dağıt → Dağıtımları yönet → ✏️ → Sürüm: Yeni sürüm → Dağıt.** Adres değişmez.
 3. Güncelleme notunda "kurulum çalıştır" yazıyorsa **kurulum**'u bir kez çalıştır. Yeni bir izin ya da tablo sütunu gerektiğinde bu gerekir.
 
-**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.26.0` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.15 · tablo 3.9`.
+**Sürüm kontrolü:** Ayarlar'ın en altında `Ev Bütçesi · Sürüm 3.26.1` yazar. Bu uygulamanın sürümüdür. Bu satıra dokununca altında teknik sürümler görünür, örneğin `hesaplama 3.15 · tablo 3.9`.
 
 **Sürüm numaraları** üç parçadan oluşur: **Büyük.Özellik.Düzeltme**, örneğin 3.20.0.
 - **Büyük:** Kapsamlı bir yenilikte artar, örneğin tasarım yenilemesi 4.0.0 olur.
@@ -281,6 +281,14 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.26.1 (uygulama) — düzeltmeler**
+- Sürüklerken en üste ve en alta taşıma düzeldi: ilk ve son satır da yer açıyor.
+- Sürükleme sırasında tablodan cevap gelince satır parmağın altından kaçıyordu, düzeldi.
+- Menü açıkken başka bir satıra basılı tutunca o satırın menüsü açılıyor. Basılı tutmada tek titreşim var.
+- Pencereler ekranın üst kısmını kapatmıyor (klavye açıkken de çarpı rahat basılıyor). Pencere, tutamağından aşağı çekilerek ya da arkadaki karartılmış alana dokunarak da kapanıyor.
+- Klavyenin üstünde daha önce yazılan tutarlar önerilmiyor.
+- Tutar düğmeleri yine sade çerçeveli. Parmakla yakınlaştırma kapalı (yazıları büyütmek için Ayarlar → Büyük görünüm).
 
 **3.26.0 (uygulama) — basılı tutma menüsü, sürükleyerek sıralama ve kullanım düzeltmeleri**
 - Bir satıra basılı tutunca menü açılıyor (kısa bir titreşimle). Sabitler'de: Düzenle, En üste taşı, En alta taşı, Kalemi sonlandır (borçta Borcu kapat). Aylık listede düzenli kalemlerde: Düzenle, En üste taşı, En alta taşı, Bu ay yok; ek harcamalarda: Düzenle, Sil.

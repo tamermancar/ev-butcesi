@@ -2,7 +2,7 @@
 <html lang="tr" data-gorunum="normal">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Ev Bütçesi</title>
 <meta name="theme-color" content="#1D5870">
 <meta name="mobile-web-app-capable" content="yes">
@@ -206,7 +206,7 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 .sag{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}
 .son{font-size:11px;color:var(--soluk);white-space:nowrap}
 .satir.d-gecikti .son{color:var(--kirmizi);font-weight:600}
-.tutar{font-weight:700;text-align:right;white-space:nowrap;padding:5px 9px;color:var(--gri);border:1px solid color-mix(in srgb,var(--soluk) 80%,var(--yuzey));background:var(--yuzey2);border-radius:9px}
+.tutar{font-weight:700;text-align:right;white-space:nowrap;padding:5px 9px;color:var(--gri);border:1px solid var(--cizgi);background:var(--yuzey2);border-radius:9px}
 .tutar:active{border-color:var(--vurgu)}
 .satir.d-odendi .tutar{color:var(--yesil)}
 .satir.d-gecikti .tutar{color:var(--kirmizi)}
@@ -231,11 +231,13 @@ body.mini-acik .senk{top:calc(11px + env(safe-area-inset-top,0px));right:max(12p
 
 /* ---------- Çekmece ---------- */
 .perde{position:fixed;inset:0;background:rgba(10,20,24,.45);z-index:10}
-.cekmece{position:fixed;left:0;right:0;bottom:var(--klavye,0px);max-height:90vh;max-height:calc(90dvh - var(--klavye,0px));overflow:auto;background:var(--yuzey);border-radius:20px 20px 0 0;z-index:11;padding:8px 18px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .22s ease-out}
+.cekmece{position:fixed;left:0;right:0;bottom:var(--klavye,0px);max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px - var(--klavye,0px));overflow:auto;background:var(--yuzey);border-radius:20px 20px 0 0;z-index:11;padding:8px 18px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .22s ease-out}
 .cekmece.acik{transform:none}
 .cekmece-ic{max-width:520px;margin:0 auto}
 .cekmece-ust{position:sticky;top:-8px;z-index:3;background:var(--yuzey);height:36px;padding-top:8px;margin:-8px 0 7px} /* pencere kaydırılınca da çarpı görünür kalır */
 .tutamak{width:40px;height:4px;border-radius:2px;background:var(--cizgi);margin:4px auto 0}
+.cekmece-ust{touch-action:none} /* tutamaktan aşağı çekince pencere kapanır */
+.cekmece.cekiliyor{transition:none!important}
 .kapat-btn{position:absolute;right:-8px;top:4px;width:40px;height:40px;border-radius:20px;font-size:18px;color:var(--soluk)}
 .kapat-btn:active{background:var(--yuzey2)}
 .cekmece h3{margin:0;font-size:20px;font-weight:800;letter-spacing:-.01em}
@@ -489,7 +491,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Birikimden','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.26.0';
+const UYGULAMA_SURUM = '3.26.1';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -617,7 +619,9 @@ function bildir(m, geriAl, etiket) {
    bu da imleçle düzeltmeyi zorlaştırıyordu. Yeni eklenen her yazı kutusunda kapatılır. */
 (function () {
   const kapat = k => (k.matches && k.matches('input,textarea') ? [k] : []).concat(k.querySelectorAll ? [...k.querySelectorAll('input,textarea')] : [])
-    .forEach(i => { if (i.spellcheck !== false) { i.spellcheck = false; i.setAttribute('autocorrect', 'off'); } });
+    .forEach(i => { if (i.spellcheck !== false) { i.spellcheck = false; i.setAttribute('autocorrect', 'off'); }
+      // Klavyenin üstünde daha önce yazılan tutarlar/adlar önerilmesin
+      if (!i.hasAttribute('autocomplete') || i.getAttribute('autocomplete') !== 'off') i.setAttribute('autocomplete', 'off'); });
   kapat(document.body);
   new MutationObserver(l => l.forEach(m => m.addedNodes.forEach(kapat))).observe(document.body, { childList: true, subtree: true });
 })();
@@ -870,6 +874,9 @@ function ayarKaydet(anahtar, deger) {
 
 /* ---------- Çizim ---------- */
 function ciz() {
+  // Basılı tutma ya da sürükleme sürerken ekran yeniden çizilmez (tablodan gelen cevap satırı parmağın altından
+  // almasın); parmak kalkınca çizilir
+  if (S || U) { D.cizBekle = true; return; }
   geriKontrol();
   if (D.eslesmeBekleyen) return eslesmeOnayCiz();
   if (D.raw && !D.raw.__hz) hesapHazirla_(D.raw); // aylar bir kez gruplanır, hesaplar hızlanır
@@ -2186,6 +2193,18 @@ document.addEventListener('focusin', e => {
   if (c && !c.hidden && c.contains(el) && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName))
     setTimeout(() => { if (document.activeElement === el) el.scrollIntoView({ block: 'nearest' }); }, 350);
 });
+/* Pencereyi tutamak bölgesinden aşağı çekerek kapatma (100 px'den fazla çekilirse kapanır, azsa yerine döner) */
+(function () {
+  let y0 = null, dy = 0;
+  const c = $('cekmece');
+  c.addEventListener('touchstart', e => { if (e.touches.length === 1 && e.target.closest('.cekmece-ust') && !e.target.closest('.kapat-btn')) { y0 = e.touches[0].clientY; dy = 0; c.classList.add('cekiliyor'); } }, { passive: true });
+  c.addEventListener('touchmove', e => { if (y0 === null) return; dy = Math.max(0, e.touches[0].clientY - y0); c.style.transform = `translateY(${dy}px)`; if (e.cancelable) e.preventDefault(); }, { passive: false });
+  const bitir = () => {
+    if (y0 === null) return; y0 = null; c.classList.remove('cekiliyor');
+    if (dy > 100) { cekmeceKapat(); setTimeout(() => { c.style.transform = ''; }, 260); } else c.style.transform = '';
+  };
+  c.addEventListener('touchend', bitir); c.addEventListener('touchcancel', bitir);
+})();
 function cekmeceAc(html) {
   $('cekmeceIc').innerHTML = '<div class="cekmece-ust"><div class="tutamak"></div><button class="kapat-btn" data-act="kapat" aria-label="Kapat">✕</button></div>' + html;
   const c = $('cekmece');
@@ -2264,13 +2283,16 @@ function uzunBaslat(el, x, y) {
   U = { el, x0: x, y0: y, x, y, tetik: false };
   U.t = setTimeout(uzunTetik, UZUN_SURE);
 }
-function uzunIptal() { if (U) { clearTimeout(U.t); if (U.el) U.el.classList.remove('basili'); } U = null; }
+function uzunIptal() {
+  if (U) { clearTimeout(U.t); if (U.el && !D.menu) U.el.classList.remove('basili'); }
+  U = null;
+  if (D.cizBekle && !S) { D.cizBekle = false; ciz(); }
+}
 function uzunTetik() {
   if (!U) return;
   if (gizliMi()) { D.tikEngel = { t: Date.now(), el: U.el }; uzunIptal(); gizliUyari(); return; }
   U.tetik = true; U.xT = U.x; U.yT = U.y;
   U.el.classList.add('basili');
-  try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
   menuAc(U.el, U.x, U.y);
 }
 function uzunHareket(x, y, olay) {
@@ -2288,15 +2310,19 @@ function uzunBirak() {
   if (tetik) D.tikEngel = { t: Date.now(), el: U.el }; // basılı tutmanın ardından gelen dokunuş satırı açmasın
   uzunIptal();
 }
-/* Dokunmatik */
+/* Dokunmatik. Hareket ve bırakma, dokunulan öğenin kendisinden dinlenir: ekran bu arada yeniden çizilip öğe
+   sayfadan çıksa bile parmak takip edilmeye devam eder. */
+const tMove = e => { if (U) uzunHareket(e.touches[0].clientX, e.touches[0].clientY, e); };
+const tEnd = e => { dinlemeBirak(e.currentTarget); uzunBirak(); };
+const tCancel = e => { dinlemeBirak(e.currentTarget); if (S) surukBitir(true); uzunIptal(); };
+function dinle(h) { h.addEventListener('touchmove', tMove, { passive: false }); h.addEventListener('touchend', tEnd); h.addEventListener('touchcancel', tCancel); }
+function dinlemeBirak(h) { h.removeEventListener('touchmove', tMove); h.removeEventListener('touchend', tEnd); h.removeEventListener('touchcancel', tCancel); }
 document.addEventListener('touchstart', e => {
-  if (e.touches.length !== 1) { uzunIptal(); return; }
+  if (e.touches.length !== 1) { if (S) surukBitir(true); uzunIptal(); return; }
   const el = e.target.closest('[data-uzun]'); if (!el) return;
+  dinle(e.target);
   uzunBaslat(el, e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
-document.addEventListener('touchmove', e => { if (U) uzunHareket(e.touches[0].clientX, e.touches[0].clientY, e); }, { passive: false });
-document.addEventListener('touchend', () => uzunBirak());
-document.addEventListener('touchcancel', () => { if (S) surukBitir(true); uzunIptal(); });
 /* Fare (bilgisayar) */
 document.addEventListener('mousedown', e => {
   if (e.button !== 0 || (window.matchMedia && matchMedia('(hover: none)').matches)) return;
@@ -2343,7 +2369,13 @@ function menuKapat() {
 }
 // Parmak kalkınca tarayıcının gönderdiği dokunuş perdeye düşer; menü hemen kapanmasın
 $('uzunPerde').addEventListener('click', e => { e.stopPropagation(); if (D.menu && Date.now() - D.menu.t > 700) menuKapat(); });
-$('uzunPerde').addEventListener('touchstart', () => { if (D.menu && !U) menuKapat(); }, { passive: true });
+// Menü açıkken başka bir satıra basılırsa: menü kapanır ve o satırda basılı tutma yeniden başlar
+$('uzunPerde').addEventListener('touchstart', e => {
+  if (!D.menu || U) return;
+  menuKapat();
+  const p = e.touches[0], alt = document.elementFromPoint(p.clientX, p.clientY), el = alt && alt.closest('[data-uzun]');
+  if (el) { dinle(e.target); uzunBaslat(el, p.clientX, p.clientY); }
+}, { passive: true });
 kaydirEl().addEventListener('scroll', () => { if (D.menu && !S) menuKapat(); }, { passive: true });
 function menuIslem(v, id) {
   const m = D.sonMenu || {};
@@ -2383,9 +2415,15 @@ function surukGuncelle() {
   let dy = (S.y - S.y0) + (k.scrollTop - S.kay0);
   dy = Math.max(S.ust[0] - S.ust[i], Math.min(S.ust[n - 1] + S.boy[n - 1] - S.boy[i] - S.ust[i], dy)); // grubun dışına çıkmaz
   S.el.style.transform = `translateY(${dy}px) scale(1.02)`;
+  // Hedef: satırın ortası komşunun ortasını geçince yer değişir. Uçlarda (en üst/en alt) satırların boyu 1 px farklı
+  // olabildiği için 2 px pay bırakılır; böylece ilk ve son satır da yer açar.
   const orta = S.ust[i] + dy + S.boy[i] / 2;
-  let hedef = 0;
-  for (let j = 0; j < n; j++) if (j !== i && S.ust[j] + S.boy[j] / 2 < orta) hedef++;
+  let hedef = i;
+  for (let j = 0; j < n; j++) {
+    const m = S.ust[j] + S.boy[j] / 2;
+    if (j > i && m <= orta + 2) hedef++;
+    if (j < i && m >= orta - 2) hedef--;
+  }
   S.hedef = hedef;
   S.satirlar.forEach((r, j) => {
     if (j === i) return;
