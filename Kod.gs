@@ -13,7 +13,7 @@
  *   Ayarlar              → kategoriler ve görünüm ayarları
  */
 
-const SURUM = '3.9';
+const SURUM = '3.10';
 const YEDEK_KLASORU = 'Ev Bütçesi Yedekleri';
 const YEDEK_SAYISI = 7;        // son 7 yedek (günlük, elle alınan, geri yükleme öncesi...)
 const AYLIK_YEDEK_SAYISI = 3;  // ayrıca her ayın ilk otomatik yedeği, son 3 ay
@@ -262,7 +262,7 @@ function veriPaketi_(veri) {
       return {
         _satir: h._satir, id: String(h.id), ay: ay_(h.ay), kalemId: h.kalemId ? String(h.kalemId) : '', ad: String(h.ad),
         tur: h.tur === 'gelir' ? 'gelir' : 'gider', kategori: String(h.kategori || ''), tutar: num_(h.tutar),
-        odendi: bool_(h.odendi), kart: bool_(h.kart), not: String(h.not || ''), sonTarih: tarihStr_(h.sonTarih),
+        odendi: bool_(h.odendi), kart: String(h.kart) === 'birikim' ? 'birikim' : bool_(h.kart), not: String(h.not || ''), sonTarih: tarihStr_(h.sonTarih),
         tarih: tarihStr_(h.tarih), tip: String(h.tip || ''), bagli: String(h.bagli || '')
       };
     }),

@@ -483,7 +483,7 @@ body:has(#fab:not([hidden])) .bildirim{bottom:calc(146px + env(safe-area-inset-b
 <div class="uzun-menu" id="uzunMenu" role="menu" hidden></div>
 
 <!-- Hesaplama kodu: telefonda ve Apps Script'te aynı dosya çalışır -->
-<script src="ortak.js?v=3.15"></script>
+<script src="ortak.js?v=3.16"></script>
 
 <script>
 /* ---------- Sabitler ---------- */
@@ -491,7 +491,7 @@ const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağus
 const KISA = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
 const GELIR_KAT = ['Ek gelir','Satış','Hediye','Birikimden','Diğer'];
 const VARS_AYAR = { renk: 'petrol', mod: 'otomatik', gorunum: 'normal', kurus: 'hayir', birim: 'evet', gizli: 'hayir' };
-const UYGULAMA_SURUM = '3.26.1';
+const UYGULAMA_SURUM = '3.27.0';
 const GORUNUMLER = [['siki','Sıkı'],['normal','Normal'],['buyuk','Büyük']];
 /* Renk temaları: ana renk + ona uyumlu zemin, kart, çizgi ve yazı tonları (açık ve koyu). Ödendi/ödenmedi renkleri sabit kalır. */
 const PALET = {
@@ -766,7 +766,7 @@ function oncekiHal(s) {
   const h = s.sanal ? null : hamSatir(s.id);
   const tek = !s.kalemId && !s.tip;
   return { ay: s.geciken ? s.ay : D.ay, ad: tek ? s.ad : undefined, tutar: s.tutar, odendi: s.odendi, not: s.not, sonTarih: h ? (h.sonTarih || '') : '',
-    kategori: tek ? s.kategori : undefined, kart: tek && s.tur === 'gider' ? !!s.kart : undefined,
+    kategori: tek ? s.kategori : undefined, kart: !s.tip && s.tur === 'gider' ? (s.kart || false) : undefined,
     kilitAcik: kilitParam(), gecikenOdeme: s.geciken ? true : undefined };
 }
 function satiraDon(id, once) {
@@ -1065,7 +1065,8 @@ function akisHTML(v) {
     </div>
     ${cumle ? `<p class="ozet-cumle ayrac">${cumle}</p>` : '<div style="height:8px"></div>'}
     ${gecNot ? `<p class="ozet-cumle" style="opacity:.75;margin-top:-4px">Önceki aylardan ${gecNot} de hesaba katıldı (Gecikenler).</p>` : ''}
-    ${o.kart > 0 ? `<p class="ozet-cumle" style="opacity:.75;margin-top:-4px">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}`;
+    ${o.kart > 0 ? `<p class="ozet-cumle" style="opacity:.75;margin-top:-4px">Kartla yapılan ${para(o.kart)} toplama dahil değil, kart ekstresiyle ödenir.</p>` : ''}
+    ${o.birikim > 0 ? `<p class="ozet-cumle" style="opacity:.75;margin-top:-4px">Birikimden ödenen ${para(o.birikim)} toplama dahil değil.</p>` : ''}`;
 }
 /** Bu aydan önceki aylarda vadesi geçmiş, ödenmemiş kayıtlar (borç taksitleri, faturalar, tahsilatlar).
  *  Sabitlenmiş geçmiş aylarda sadece tablodaki kayıtlara bakılır; ay sınırı yoktur. */
@@ -1124,12 +1125,21 @@ function ikizKapat(anahtar) {
 /* Durum: ödendi (yeşil), ödenmedi (kırmızı), bekliyor (koyu gri) */
 function durum(s) {
   const g = s.tur === 'gelir';
-  if (s.kart) return { k: 'notr', y: 'Kartla' };
+  if (s.kart) return { k: 'notr', y: s.kart === 'birikim' ? 'Birikimden' : 'Kartla' };
   if (s.atlandi) return { k: 'notr', y: 'Bu ay yok' };
   if (s.odendi) return { k: 'odendi', y: g ? 'Alındı' : 'Ödendi' };
   if (s.gecikti) return { k: 'gecikti', y: g ? 'Alınmadı' : 'Ödenmedi' };
   return { k: 'bekliyor', y: g ? 'Bekleniyor' : 'Bekliyor' };
 }
+/** Ödeme yeri seçimi: Maaştan / Kartla / Birikimden. Birikimden için tablonun (Kod.gs) 3.10 ya da üstü olması gerekir. */
+const birikimHazir = () => { const [a, b] = String((D.raw && D.raw.surum) || '0').split('.').map(Number); return a > 3 || (a === 3 && b >= 10); };
+const ODEME_YERI = [['', 'Maaştan'], ['kart', 'Kartla'], ['birikim', 'Birikimden']];
+const odemeYeriSec = (act, sec) => `<p class="ipucu" style="margin-bottom:6px">Nereden ödendi?</p>
+  <div class="seg" id="${act}Seg">${ODEME_YERI.map(([v, y]) => `<button data-act="${act}" data-v="${v}" class="${(sec || '') === v ? 'on' : ''}">${y}</button>`).join('')}</div>`;
+const ODEME_YERI_IPUCU = {
+  kart: 'Kartla ödenenler elde kalandan düşmez ve toplamlara eklenmez. Toplama, kart ekstresini ödediğinde girer.',
+  birikim: 'Birikimden ödenenler elde kalandan düşmez ve toplamlara eklenmez. Kenara ayırdığın para zaten maaştan düşmüştü.'
+};
 const borcGirisi = s => !!s.tip && !s.kalemId && ((s.tip === 'borc') === (s.tur === 'gelir'));
 const BORC_ETIKET = s => s.tip === 'borc' ? (s.tur === 'gider' ? 'Borç ödemesi' : 'Borç alındı') : (s.tur === 'gelir' ? 'Tahsilat' : 'Borç verildi');
 function satirHTML(s) {
@@ -1143,7 +1153,7 @@ function satirHTML(s) {
   s.rozetler.forEach(x => r.push(`<span class="rozet">${esc(x)}</span>`));
   const notSatiri = s.not && !s.atlandi ? `<div class="not-satir">${esc(gizliMi() ? '•••' : s.not)}</div>` : '';
   const tik = s.kart
-    ? '<span class="tik kartik" aria-hidden="true">💳</span>'
+    ? `<span class="tik kartik" aria-hidden="true">${s.kart === 'birikim' ? '💰' : '💳'}</span>`
     : borcGirisi(s) ? `<span class="tik" aria-hidden="true">${TIK}</span>`
     : `<button class="tik" data-act="tik" data-id="${esc(s.id)}" data-ay="${s.geciken ? s.ay : ''}" aria-label="${esc(adG(s.ad))}: ${d.y}">${TIK}</button>`;
   const bosTutar = !(s.tutar > 0) && !s.atlandi;
@@ -1212,11 +1222,16 @@ function satirAc(id, ay) {
   const giris = borcGirisi(s);
   let b;
   if (!s.kalemId && !s.tip) D.cek.kat = s.kategori;
-  if (s.kart || giris) b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>`;
+  const yerVar = s.tur === 'gider' && !s.tip && !s.atlandi;
+  D.cek.yerVar = yerVar; D.cek.yer = s.kart || '';
+  if (giris) b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>`;
   else if (!s.odendi || s.atlandi) b = `<button class="btn ana" data-act="satirKaydet" data-odendi="1">${odYazi} olarak kaydet</button>
       <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">Sadece tutarı kaydet</button>`;
   else b = `<button class="btn ana" data-act="satirKaydet">Kaydet</button>
       <button class="btn ikinci" data-act="satirKaydet" data-odendi="0">${s.tur === 'gelir' ? 'Alınmadı' : 'Ödenmedi'} olarak kaydet</button>`;
+  // Kartla ya da birikimden seçilince tek düğme kalır: Kaydet (ödendi sayılır)
+  if (yerVar) b = `<div id="sYerMaas" style="display:${D.cek.yer ? 'none' : 'contents'}">${b}</div>
+      <div id="sYerDiger" style="display:${D.cek.yer ? 'contents' : 'none'}"><button class="btn ana" data-act="satirKaydet">Kaydet</button></div>`;
   if (giris) b += `<button class="btn metin tehlike" data-act="borcSil">${s.tip === 'borc' ? 'Borcu sil (yanlış girdiysen)' : 'Alacağı sil (yanlış girdiysen)'}</button>`;
   else if (s.kalemId) b += s.atlandi ? `<button class="btn metin" data-act="geriAl">Bu ay için geri getir</button>`
     : s.odendi ? '' : `<button class="btn metin" data-act="atla">Bu ay yok</button>`; // ödenmiş kayıtta "Bu ay yok" ödemeyi silerdi
@@ -1232,9 +1247,10 @@ function satirAc(id, ay) {
     ${!s.kalemId && !s.tip ? `<label class="alan"><span>Ad</span><input id="sAd" value="${esc(s.ad)}"></label>
       <div class="cipler" id="sKatlar">${[...new Set((s.tur === 'gelir' ? GELIR_KAT : kategoriler()).concat([s.kategori]).filter(Boolean))].map(x => `<button class="cip ${x === s.kategori ? 'on' : ''}" data-act="sKat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>
       <div class="yan">
-        ${s.tur === 'gider' ? `<label class="secim"><input type="checkbox" id="sKart" ${s.kart ? 'checked' : ''}> Kartla ödedim</label>` : '<span></span>'}
+        <span></span>
         <label class="alan"><span>Ay</span><input id="sAy" type="month" value="${esc(D.ay)}"></label>
       </div>` : ''}
+    ${yerVar ? odemeYeriSec('sYer', D.cek.yer) + `<p class="ipucu" id="sYerIpucu" style="margin-top:-6px">${ODEME_YERI_IPUCU[D.cek.yer] || ''}</p>` : ''}
     <div class="${sadeGelir ? '' : 'yan'}">
       ${sadeGelir ? '' : `<label class="alan"><span>${s.tur === 'gelir' ? 'Beklenen tarih' : 'Son ödeme tarihi'}</span><input id="sSon" type="date" value="${esc(s.sonTarih || '')}"></label>`}
       <label class="alan"><span>Not</span><input id="sNot" value="${esc(s.atlandi ? '' : s.not)}" placeholder="İsteğe bağlı"></label>
@@ -1246,12 +1262,12 @@ function satirKaydet(odendi) {
   const s = satirBul(D.cek.id, D.cek.gAy); if (!s) return cekmeceKapat();
   const t = tutarOku($('sTutar').value);
   if (isNaN(t) || t < 0) return bildir('Geçerli bir tutar yaz. Örn. 1.250 ya da 1250,50.');
-  if (odendi === '1' && !(t > 0)) return bildir('Tutar yaz, sonra işaretle.');
+  if ((odendi === '1' || (D.cek.yerVar && D.cek.yer && !s.kart)) && !(t > 0)) return bildir('Tutar yaz, sonra işaretle.');
   const p = satirParam(s, { tutar: t, not: $('sNot').value.trim() });
   if ($('sSon') && $('sSon').value !== (s.sonTarih || '')) p.sonTarih = $('sSon').value;
   if ($('sAd') && $('sAd').value.trim() && $('sAd').value.trim() !== s.ad) p.ad = $('sAd').value.trim();
   if (D.cek.kat && D.cek.kat !== s.kategori) p.kategori = D.cek.kat;
-  if ($('sKart') && $('sKart').checked !== !!s.kart) p.kart = $('sKart').checked;
+  if (D.cek.yerVar && D.cek.yer !== (s.kart || '')) p.kart = D.cek.yer || false;
   if ($('sAy') && $('sAy').value && $('sAy').value !== D.ay) p.yeniAy = $('sAy').value;
   if (odendi === '1') p.odendi = true; else if (odendi === '0') p.odendi = false;
   if ($('sSonraki') && $('sSonraki').checked) p.sonraki = true;
@@ -1339,16 +1355,17 @@ function ekleCiz(k) {
   cekmeceAc(`${seg}${tutarAlan}
     <div class="cipler">${kats.map(x => `<button class="cip ${x === c.kat ? 'on' : ''}" data-act="eKat" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     <label class="alan"><span>Ad</span><input id="eAd" placeholder="Boş bırakırsan ${esc(c.kat)} yazılır" value="${esc(k.ad || '')}"></label>
+    ${gider ? odemeYeriSec('eYer', c.yer) : ''}
     ${gider ? `<div class="yan">
-      <label class="secim"><input type="checkbox" id="eKart" ${k.kart ? 'checked' : ''}> Kartla ödedim</label>
-      <label class="alan"><span>Taksit</span><select id="eTaksit">${[1, 2, 3, 4, 5, 6, 8, 9, 10, 12].map(n => `<option value="${n}" ${String(k.taksit) === String(n) ? 'selected' : ''}>${n === 1 ? 'Tek çekim' : n + ' taksit'}</option>`).join('')}</select></label>
+      <span></span>
+      <label class="alan"><span>Taksit</span><select id="eTaksit" ${c.yer === 'birikim' ? 'disabled' : ''}>${[1, 2, 3, 4, 5, 6, 8, 9, 10, 12].map(n => `<option value="${n}" ${String(k.taksit) === String(n) ? 'selected' : ''}>${n === 1 ? 'Tek çekim' : n + ' taksit'}</option>`).join('')}</select></label>
     </div>` : ''}
     <p class="ipucu" id="eIpucu"></p>
     ${btn}`);
   ekleIpucu();
 }
 const ekleKoru = () => ({
-  tutar: alanDeger('eTutar'), ad: alanDeger('eAd'), kart: $('eKart') && $('eKart').checked, taksit: alanDeger('eTaksit'),
+  tutar: alanDeger('eTutar'), ad: alanDeger('eAd'), taksit: alanDeger('eTaksit'),
   kisi: alanDeger('eKisi'), not: alanDeger('eNot'), tarih: alanDeger('eTarih'), taksitT: alanDeger('eTaksitT'), sayi: alanDeger('eSayi'), ilkAy: alanDeger('eIlkAy')
 });
 function ekleIpucu() {
@@ -1360,7 +1377,7 @@ function ekleIpucu() {
   }
   const n = +(alanDeger('eTaksit') || 1), t = tutarOku(alanDeger('eTutar'));
   if ($('eTaksit') && n > 1) m.push(`Yazdığın toplam tutar ${n} aya bölünür${t > 0 ? ', aylık ' + para(t / n) : ''}.`);
-  if ($('eKart') && $('eKart').checked) m.push('Kartla yapılanlar kayıtta durur ama toplamlara eklenmez. Toplama, kart ekstresini ödediğinde girer.');
+  if ($('eYerSeg') && ODEME_YERI_IPUCU[D.cek.yer]) m.push(ODEME_YERI_IPUCU[D.cek.yer]);
   el.textContent = m.join(' ');
 }
 function ekleKaydet() {
@@ -1418,7 +1435,7 @@ function ekleKaydet() {
   const n = $('eTaksit') ? +$('eTaksit').value : 1;
   const p = {
     ay: D.ay, tur: c.tur, kategori: c.kat, ad: $('eAd').value.trim() || c.kat, tutar: t,
-    kart: $('eKart') ? $('eKart').checked : false, taksit: n, idler: Array.from({ length: n }, () => yeniId_('h')),
+    kart: c.tur === 'gider' && c.yer ? c.yer : false, taksit: n, idler: Array.from({ length: n }, () => yeniId_('h')),
     kilitAcik: kilitParam()
   };
   temizle(p);
@@ -1617,7 +1634,7 @@ function grafikCiz() {
       <p class="ipucu" style="margin-top:8px">Bir aya dokunursan o ayın listesi açılır.${borcVar ? ' Borç ve alacak hareketleri gelir ya da gider sayılmaz, çubukların üstünde turuncu olarak görünür.' : ''}</p></section>
     <section class="bolum"><h2>Giderlerin dağılımı<span>${v.yil}</span></h2>
       <div class="kart">${dag}</div>
-      <p class="ipucu" style="margin-top:8px">Kartla yapılan harcamalar ayrı sayılmaz, kart ekstresini ödediğin kayıtta görünür.</p></section>`;
+      <p class="ipucu" style="margin-top:8px">Kartla ya da birikimden ödenenler dağılıma girmez. Kartla yapılanlar, kart ekstresini ödediğin kayıtta görünür.</p></section>`;
 }
 
 /** Yıllık tablo (E-Tablo'daki özet sayfasının uygulama içi hâli) */
@@ -2222,7 +2239,7 @@ function cekmeceKapat() {
   if (D.cek && D.cek.tip === 'ekle' && !D.cek.kaydedildi && $('eTutar')) {
     const alan = ekleKoru();
     if (Object.keys(alan).some(k => alan[k] && k !== 'taksit' && k !== 'ilkAy' && k !== 'tarih'))
-      D.ekleTaslak = { t: Date.now(), ay: D.ay, alan: alan, cek: { tur: D.cek.tur, kat: D.cek.kat, alt: D.cek.alt, sekil: D.cek.sekil, bagli: D.cek.bagli, giris: D.cek.giris } };
+      D.ekleTaslak = { t: Date.now(), ay: D.ay, alan: alan, cek: { tur: D.cek.tur, kat: D.cek.kat, alt: D.cek.alt, sekil: D.cek.sekil, bagli: D.cek.bagli, giris: D.cek.giris, yer: D.cek.yer } };
   }
   if (document.activeElement) document.activeElement.blur();
   c.classList.remove('acik'); $('perde').hidden = true;
@@ -2605,6 +2622,16 @@ document.addEventListener('click', e => {
       if (!D.cek.iptal) { D.cek.iptal = true; durumCiz(); break; }
       cekmeceKapat(); GIDEN = []; gidenKaydet(); G.durum = ''; G.deneme = 0; clearTimeout(G.zaman); durumGoster(); veriYukle();
       bildir('Bekleyen kayıtlar iptal edildi'); break;
+    case 'sYer': case 'eYer': {
+      if (v === 'birikim' && !birikimHazir()) { bildir('Birikimden seçeneği için tablodaki Kod.gs\'i güncellemen gerekiyor (README → Güncelleme).'); break; }
+      D.cek.yer = v;
+      document.querySelectorAll('#' + a + 'Seg button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
+      if (a === 'sYer') {
+        $('sYerMaas').style.display = v ? 'none' : 'contents'; $('sYerDiger').style.display = v ? 'contents' : 'none';
+        $('sYerIpucu').textContent = ODEME_YERI_IPUCU[v] || '';
+      } else { if ($('eTaksit')) { if (v === 'birikim') $('eTaksit').value = '1'; $('eTaksit').disabled = v === 'birikim'; } ekleIpucu(); }
+      break;
+    }
     case 'sKat': D.cek.kat = v; document.querySelectorAll('#sKatlar .cip').forEach(c => c.classList.toggle('on', c.dataset.v === v)); break;
     case 'katEkle': {
       const yeni = $('yeniKat').value.replace(/,/g, ' ').trim();
@@ -2674,7 +2701,7 @@ if (KOYU_SORGU && KOYU_SORGU.addEventListener) KOYU_SORGU.addEventListener('chan
   const kopya = BAG && yerelOku('evb-veri');
   if (kopya && kopya.kalemler) { try { veriAyarla(kopya); ciz(); } catch (e) { console.warn(e); } }
   else ciz();
-  if (typeof ORTAK_SURUM === 'undefined' || ORTAK_SURUM !== '3.15') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
+  if (typeof ORTAK_SURUM === 'undefined' || ORTAK_SURUM !== '3.16') bildir('Güncelleme yükleniyor. Birkaç dakika sonra uygulamayı kapatıp yeniden aç.');
   if (GIDEN.length) gonder(); // önceki oturumdan kalan kayıtlar
   veriYukle().then(acilisKapat, acilisKapat);
 })();

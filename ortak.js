@@ -4,7 +4,7 @@
  * Ay hesabı, borç/alacak, kilitler, tahminler ve kayıt işlemleri buradadır.
  * Tablo işlemleri (satirYaz_, topluEkle_, satirlariSil_) ve tarih yardımcıları (buAy_, bugun_...) çalıştığı yerde tanımlıdır.
  */
-var ORTAK_SURUM = '3.15';
+var ORTAK_SURUM = '3.16';
 
 /* İşlem günü: değişikliğin telefonda yapıldığı gün (internetsizken biriken kayıtlar sonradan gönderilir).
    Kilit kontrolü ve ödeme tarihi bu güne göre yapılır; böylece ay kilitlenmeden önce yapılan bir değişiklik,
@@ -160,6 +160,11 @@ function num_(v) {
 }
 
 function bool_(v) { return v === true || v === 1 || String(v).toUpperCase() === 'TRUE'; }
+/** Ödeme yeri (tablodaki "kart" sütunu): '' maaştan, 'kart' kartla, 'birikim' birikimden.
+ *  Eski kayıtlarda bu sütun evet/hayır tutar; evet "kartla" sayılır. */
+function odemeYeri_(v) { return String(v) === 'birikim' ? 'birikim' : (String(v) === 'kart' || bool_(v)) ? 'kart' : ''; }
+/** Tabloya yazılacak değer: kartla TRUE (eski sürümler de okuyabilsin), birikimden "birikim", maaştan FALSE */
+function odemeYeriYaz_(v) { const y = odemeYeri_(v); return y === 'birikim' ? 'birikim' : y === 'kart'; }
 
 function aylarListe_(v) {
   return String(v === undefined || v === null ? '' : v).split(/[^0-9]+/).filter(Boolean).map(Number)
@@ -212,7 +217,7 @@ function satirGeriEkle_(veri, h, kilitAcik) {
   if (veri.hareketler.some(function (x) { return String(x.id) === String(h.id); })) return;
   topluEkle_('Hareketler', [{
     id: String(h.id), ay: ay_(h.ay), kalemId: '', ad: String(h.ad), tur: h.tur === 'gelir' ? 'gelir' : 'gider',
-    kategori: String(h.kategori || ''), tutar: num_(h.tutar), odendi: !!h.odendi, kart: !!h.kart,
+    kategori: String(h.kategori || ''), tutar: num_(h.tutar), odendi: !!h.odendi, kart: odemeYeriYaz_(h.kart),
     tarih: tarihStr_(h.tarih), not: String(h.not || ''), sonTarih: tarihStr_(h.sonTarih),
     tip: String(h.tip || ''), bagli: String(h.bagli || '')
   }]);
@@ -455,7 +460,7 @@ function satirNesne_(h, k, ay, veri, bu, sanal) {
   const s = {
     id: String(h.id), kalemId: h.kalemId ? String(h.kalemId) : '',
     ad: String(h.ad), tur: h.tur === 'gelir' ? 'gelir' : 'gider', kategori: String(h.kategori || ''),
-    tutar: num_(h.tutar), odendi: bool_(h.odendi), kart: bool_(h.kart), not: String(h.not || ''),
+    tutar: num_(h.tutar), odendi: bool_(h.odendi), kart: odemeYeri_(h.kart), not: String(h.not || ''),
     sanal: !!sanal, sira: k ? num_(k.sira) : 9999, satir: h._satir || 0,
     tip: String(h.tip || (k && k.tip) || ''), bagli: String(h.bagli || (k && k.tip ? k.id : '') || ''),
     rozetler: [], gecikti: false, zam: false, atlandi: false
@@ -532,9 +537,9 @@ function ayHesapla_(ay, veri) {
   }
   satirlar.sort(function (a, b) { return (a.sira - b.sira) || (a.satir - b.satir); });
 
-  const o = { gelir: 0, gider: 0, gelirAlinan: 0, giderOdenen: 0, kart: 0, borc: 0 };
+  const o = { gelir: 0, gider: 0, gelirAlinan: 0, giderOdenen: 0, kart: 0, birikim: 0, borc: 0 };
   satirlar.forEach(function (s) {
-    if (s.kart) { o.kart += s.tutar; return; }
+    if (s.kart) { o[s.kart === 'birikim' ? 'birikim' : 'kart'] += s.tutar; return; } // maaştan çıkmadı: kalana ve toplama girmez
     if (s.tip) { o.borc += s.tur === 'gelir' ? s.tutar : -s.tutar; return; } // gelir/gider sayılmaz, kalana dahil
 
     if (s.tur === 'gelir') { o.gelir += s.tutar; if (s.odendi) o.gelirAlinan += s.tutar; }
@@ -632,10 +637,15 @@ function satirKaydet_(veri, p) {
   if (p.not !== undefined) h.not = String(p.not);
   if (!gecikenOdeme) {
     if (p.ad !== undefined && !h.kalemId && String(p.ad).trim()) h.ad = String(p.ad).trim();
-    // Tek seferlik kayıtlarda kategori, kart ve ay sonradan değiştirilebilir
+    // Ödeme yeri (maaştan, kartla, birikimden): sabit giderlerde ve tek seferlik harcamalarda; borç ve alacakta yok.
+    // Kartla ya da birikimden ödenen gider ödendi sayılır.
+    if (p.kart !== undefined && h.tur === 'gider' && !h.tip) {
+      h.kart = odemeYeriYaz_(p.kart);
+      if (odemeYeri_(h.kart) && !bool_(h.odendi)) { h.odendi = true; h.tarih = ay >= islemAyi_() ? islemGunu_() : ''; }
+    }
+    // Tek seferlik kayıtlarda kategori ve ay sonradan değiştirilebilir
     if (!h.kalemId && !h.tip) {
       if (p.kategori !== undefined && String(p.kategori).trim()) h.kategori = String(p.kategori).trim();
-      if (p.kart !== undefined && h.tur === 'gider') { h.kart = !!p.kart; if (h.kart) h.odendi = true; }
       if (yeniAy && yeniAy !== ay_(h.ay)) h.ay = yeniAy;
     }
   }
@@ -673,7 +683,7 @@ function harcamaEkle_(veri, p) {
   }
   const parca = Math.round(toplam / n * 100) / 100;
   const tur = p.tur === 'gelir' ? 'gelir' : 'gider';
-  const kart = tur === 'gider' && !!p.kart;
+  const kart = tur === 'gider' ? odemeYeriYaz_(p.kart) : false;
   const ad = String(p.ad || p.kategori || 'Harcama').trim();
   const yeni = [];
   for (let i = 0; i < n; i++) {
@@ -682,7 +692,7 @@ function harcamaEkle_(veri, p) {
       ad: n > 1 ? ad + ' (' + (i + 1) + '/' + n + ')' : ad,
       tur: tur, kategori: String(p.kategori || 'Diğer'),
       tutar: i === n - 1 ? Math.round((toplam - parca * (n - 1)) * 100) / 100 : parca,
-      odendi: kart || i === 0, kart: kart, tarih: i === 0 && ay >= islemAyi_() ? islemGunu_() : '', not: String(p.not || ''), tip: '', bagli: ''
+      odendi: !!kart || i === 0, kart: kart, tarih: i === 0 && ay >= islemAyi_() ? islemGunu_() : '', not: String(p.not || ''), tip: '', bagli: ''
     });
   }
   topluEkle_('Hareketler', yeni);
@@ -875,7 +885,8 @@ function yillikMatris_(veri, yil) {
   hesap.forEach(function (h, mi) {
     h.satirlar.forEach(function (s) {
       let key, ad, bolum, srt;
-      if (s.kart) { key = 'kart'; ad = 'Kartla yapılanlar (toplama dahil değil)'; bolum = 'kart'; srt = 99999; }
+      if (s.kart === 'birikim') { key = 'birikim'; ad = 'Birikimden ödenenler (toplama dahil değil)'; bolum = 'birikim'; srt = 99999; }
+      else if (s.kart) { key = 'kart'; ad = 'Kartla yapılanlar (toplama dahil değil)'; bolum = 'kart'; srt = 99999; }
       else if (s.tip) {
         const bk = veri.kalemler.find(function (x) { return String(x.id) === String(s.bagli || s.kalemId); });
         key = 'b:' + (s.bagli || s.kalemId); bolum = 'borc'; srt = bk ? num_(bk.sira) : 9999;
@@ -885,7 +896,7 @@ function yillikMatris_(veri, yil) {
       else { key = 'e:' + s.tur + ':' + (s.kategori || 'Diğer'); ad = s.kategori || 'Diğer'; bolum = s.tur === 'gelir' ? 'gelir' : 'diger'; srt = 10000 + ad.charCodeAt(0); }
       if (!gruplar[key]) { gruplar[key] = { ad: ad, bolum: bolum, sira: srt, aylar: aylar.map(function () { return null; }) }; sira.push(key); }
       const g = gruplar[key];
-      if (s.kalemId && !s.tip) g.ad = s.ad;
+      if (s.kalemId && !s.tip && !s.kart) g.ad = s.ad; // kart/birikim grubunun adı sabit kalır
       const c = g.aylar[mi] || (g.aylar[mi] = { tutar: 0, durumlar: [], notlar: [] });
       c.tutar += (bolum === 'borc' && s.tur !== 'gelir') ? -s.tutar : s.tutar;
       c.durumlar.push(s.kart ? 'notr' : s.atlandi ? 'atla' : s.odendi ? 'odendi' : s.gecikti ? 'gecikti' : aylar[mi] > bu ? 'tahmin' : 'bekliyor');
@@ -928,6 +939,7 @@ function yillikMatris_(veri, yil) {
   }
   toplamSatiri('toplamGider', 'Toplam gider', function (o) { return o.gider; });
   if (gruplar.kart) ekle('kart', gruplar.kart.ad, gruplar.kart);
+  if (gruplar.birikim) ekle('kart', gruplar.birikim.ad, gruplar.birikim); // tablo görünümü kartla aynı
   const borclar = bolumu('borc');
   if (borclar.length) {
     satirlar.push({ tip: 'bosluk', ad: '' });

@@ -43,7 +43,8 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
 - Satırın solundaki yuvarlağa dokununca kayıt **ödendi** (gelirse **alındı**) olur ve yeşil tik çıkar. Tekrar dokunursan geri alınır.
 - Satırın kendisine dokununca düzenleme penceresi açılır. Burada tutarı, açıklamayı ve son ödeme tarihini değiştirebilirsin.
   - Düzenli bir kalemde **Sonraki aylarda da bu tutar olsun** işaretlenirse, yeni tutar bu aydan itibaren geçerli olur (örneğin zam).
-  - Tek seferlik kayıtlarda adı, kategoriyi, ayı ve "Kartla ödedim"i de değiştirebilirsin.
+  - Tek seferlik kayıtlarda adı, kategoriyi ve ayı da değiştirebilirsin.
+  - Giderlerde (sabit ve tek seferlik) **Nereden ödendi?** seçilebilir: Maaştan, Kartla ya da Birikimden.
   - **Bu ay yok:** düzenli bir kalem bu ay olmayacaksa (örneğin o ay fatura gelmedi) bunu seç.
 - Değişiklikten sonra altta beliren balondaki **Geri al** ile son işlemi birkaç saniye içinde geri alabilirsin.
 - Bir satıra **basılı tutunca** menü açılır: Düzenle, Sil ya da Bu ay yok, En üste/En alta taşı. Düzenli kalemleri basılı tutup sürükleyerek sıralayabilirsin.
@@ -61,7 +62,11 @@ Ekranı birine gösterirken "Şu an elde kalan" yanındaki göze dokun. Tutarlar
 **Gider / Gelir:** Tek seferlik harcama ya da gelir ekler. Örnekler: market, benzin, bir defalık iş geliri.
 - Kategori seçilir. Kategorileri Ayarlar'dan düzenlersin.
 - **Taksit:** Toplam tutarı yazıp taksit sayısını seçersen tutar o kadar aya bölünür.
-- **Kartla ödedim:** Kredi kartıyla yapılan harcama kayıtta görünür ama toplamlara eklenmez. Para, kartın ekstresini ödediğinde "Kredi kartı" satırından çıkar. Böylece aynı harcama iki kez sayılmaz.
+- **Nereden ödendi?** Varsayılan **Maaştan**: elde kalandan düşer. Sabit giderlerde de (elektrik, su, kira…) seçilebilir; borç ve alacak taksitlerinde yoktur.
+  - **Kartla:** Kredi kartıyla yapılan ödeme kayıtta görünür (💳) ama toplamlara eklenmez. Para, kartın ekstresini ödediğinde "Kredi kartı" satırından çıkar. Böylece aynı harcama iki kez sayılmaz.
+  - **Birikimden:** Yedek hesaptan ya da kumbaradan ödenen (💰) kayıtta görünür ama elde kalandan düşmez, toplamlara da eklenmez. Kenara ayırdığın para maaştan zaten gider olarak düşmüştü; ikinci kez sayılmaz.
+  - Seçim sadece o ayın kaydı için geçerlidir. Gelecek ayın faturası yine Maaştan gelir.
+  - Birikimden ödediğin bir gider için ayrıca "Birikimden" gelir kaydı girme; ikisi birlikte girilirse elde kalan fazla görünür. Birikimden ödenen harcama taksitlendirilemez.
 
 **Borç / Alacak:**
 - **Borç aldım / Borç verdim:** kimden ya da kime, ne kadar.
@@ -281,6 +286,13 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 ---
 
 # Neler değişti
+
+**3.27.0 (uygulama, hesaplama 3.16, tablo 3.10)** — Kod.gs de güncellenir (kurulum gerekmez)
+- **Nereden ödendi?** Giderlerde "Kartla ödedim" kutusunun yerine üç seçenek: Maaştan, Kartla, Birikimden. Artık sabit giderlerde (elektrik, su, kira) de seçilebiliyor.
+- Birikimden ödenenler elde kalandan düşmüyor, toplamlara eklenmiyor; listede 💰 ve "Birikimden" yazıyor, ana ekranda ayrı bir notla, yıllık tabloda "Birikimden ödenenler" satırında görünüyor.
+- Daha önce "Kartla" işaretlenen kayıtlar aynen kalıyor.
+- Kurulum sırası: önce GitHub dosyalarını yükle, birkaç dakika bekle, sonra Kod.gs'i güncelle.
+- Düzeltme: yıllık tabloda kartla ödenen bir sabit gider, "Kartla yapılanlar" satırının adını değiştiriyordu.
 
 **3.26.1 (uygulama) — düzeltmeler**
 - Sürüklerken en üste ve en alta taşıma düzeldi: ilk ve son satır da yer açıyor.
