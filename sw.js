@@ -1,6 +1,6 @@
 /* Ev Bütçesi — çevrimdışı açılış için basit önbellek.
    Her açılışta önce internetteki güncel dosya denenir; bu yüzden güncellemeler hemen gelir. */
-const ONBELLEK = 'evb-v20';
+const ONBELLEK = 'evb-v21';
 const DOSYALAR = ['./', 'index.html', 'ortak.js?v=3.16', 'qrcode.js', 'manifest.webmanifest', 'ikon-192.png', 'ikon-512.png'];
 
 self.addEventListener('install', e => {

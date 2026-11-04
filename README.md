@@ -287,6 +287,10 @@ Güncellemeden sonra beklenen numaraları görmüyorsan uygulamayı birkaç kez 
 
 # Neler değişti
 
+**3.27.1 (uygulama)**
+- Kartla ve birikimden ödenenler de ödendi gibi yeşil görünüyor: dairenin çizgisi yeşil, içinde 💳 ya da 💰; durum yazısı yeşil.
+- Kategoriler tek liste: sabit kalemlerde de ek harcamalardaki gibi çiplerden seçiliyor, "+ Yeni" ile yeni kategori ekleniyor. Sabit kalemde açılan yeni gider kategorisi Ayarlar'daki listeye ve ek harcamalara da geliyor.
+
 **3.27.0 (uygulama, hesaplama 3.16, tablo 3.10)** — Kod.gs de güncellenir (kurulum gerekmez)
 - **Nereden ödendi?** Giderlerde "Kartla ödedim" kutusunun yerine üç seçenek: Maaştan, Kartla, Birikimden. Artık sabit giderlerde (elektrik, su, kira) de seçilebiliyor.
 - Birikimden ödenenler elde kalandan düşmüyor, toplamlara eklenmiyor; listede 💰 ve "Birikimden" yazıyor, ana ekranda ayrı bir notla, yıllık tabloda "Birikimden ödenenler" satırında görünüyor.
